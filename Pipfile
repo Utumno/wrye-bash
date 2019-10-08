@@ -14,3 +14,7 @@ wxpython = {file = "https://github.com/wrye-bash/dev-tools/raw/master/wheels/wxP
 
 [requires]
 python_version = "2.7"
+
+[scripts]
+bash = "python \"Mopy/Wrye Bash Launcher.pyw\""
+build = "python scripts/build.py"
