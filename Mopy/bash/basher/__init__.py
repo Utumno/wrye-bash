@@ -177,15 +177,12 @@ class SashPanel(NotebookPanel):
         VLayout(item_weight=1, item_expand=True,
                 items=[self.splitter]).apply_to(self)
 
-    def ShowPanel(self, **kwargs):
-        """Unfortunately can't use EVT_SHOW, as the panel needs to be
-        populated for position to be set correctly."""
-        if self._firstShow:
-            for key, ui_set in self._ui_settings.items():
-                sashPos = settings.get(self.__class__.keyPrefix + key,
-                                       ui_set.default_(self))
-                ui_set.set_(self, sashPos)
-            self._firstShow = False
+    def _handle_first_show(self):
+        for key, ui_set in self._ui_settings.items():
+            sashPos = settings.get(self.__class__.keyPrefix + key,
+                                   ui_set.default_(self))
+            ui_set.set_(self, sashPos)
+        self._firstShow = False
 
     def ClosePanel(self, destroy=False):
         if not self._firstShow and destroy: # if the panel was shown
@@ -216,13 +213,14 @@ class SashUIListPanel(SashPanel):
     def RefreshUIColors(self):
         self.uiList.RefreshUI(focus_list=False)
 
+    def _handle_first_show(self):
+        super(SashUIListPanel, self)._handle_first_show()
+        self.uiList.SetScrollPosition()
+
     def ShowPanel(self, **kwargs):
         """Resize the columns if auto is on and set Status bar text. Also
         sets the scroll bar and sash positions on first show. Must be _after_
         RefreshUI for scroll bar to be set correctly."""
-        if self._firstShow:
-            super(SashUIListPanel, self).ShowPanel()
-            self.uiList.SetScrollPosition()
         self.uiList.autosizeColumns()
         self.uiList.Focus()
         self.SetStatusCount()
@@ -1949,9 +1947,12 @@ class INIDetailsPanel(_DetailsMixin, SashPanel):
             bosh.iniInfos.ini = self.current_ini_path
         return new_target
 
+    def _handle_first_show(self):
+        super(INIDetailsPanel, self)._handle_first_show()
+        self._firstShow = True  # to display the target ini
+
     def ShowPanel(self, target_changed=False, clean_targets=False, **kwargs):
         if self._firstShow:
-            super(INIDetailsPanel, self).ShowPanel(**kwargs)
             target_changed = True # to display the target ini
         target_changed |= self.check_new_target()
         self._enable_buttons() # if a game ini was deleted will disable edit

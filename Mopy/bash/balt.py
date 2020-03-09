@@ -44,7 +44,7 @@ from .gui import Button, CancelButton, CheckBox, HBoxedLayout, HLayout, \
     Font, CheckListBox, UIListCtrl, PanelWin, Colors, DocumentViewer, \
     ImageWrapper, BusyCursor, GlobalMenu, WrappingTextMixin, HorizontalLine, \
     staticBitmap, bell, copy_files_to_clipboard, FileOpenMultiple, FileOpen, \
-    FileSave
+    FileSave, WithFirstShow
 from .gui.base_components import _AComponent
 
 # Print a notice if wx.html2 is missing
@@ -2294,7 +2294,7 @@ class DnDStatusBar(wx.StatusBar):
         if event: event.Skip()
 
 #------------------------------------------------------------------------------
-class NotebookPanel(PanelWin):
+class NotebookPanel(WithFirstShow, PanelWin):
     """Parent class for notebook panels."""
     # UI settings keys prefix - used for sashPos and uiList gui settings
     keyPrefix = u'OVERRIDE'
