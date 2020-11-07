@@ -99,7 +99,7 @@ class ModReadError(ModError):
         else:
             message = f'{debug_str}: Attempted to read past ({try_pos}) end ' \
                       f'({max_pos}) of file/buffer.'
-        super(ModReadError, self).__init__(in_name.s, message)
+        super(ModReadError, self).__init__(in_name, message)
 
 class ModSizeError(ModError):
     """Mod Error: Record/subrecord has wrong size."""
@@ -113,7 +113,7 @@ class ModSizeError(ModError):
         debug_str = _join_sigs(debug_str)
         message_form = f'{debug_str}: Expected one of sizes ' \
                        f'{expected_sizes}, but got {actual_size}'
-        super(ModSizeError, self).__init__(in_name.s, message_form)
+        super(ModSizeError, self).__init__(in_name, message_form)
 
 class ModFidMismatchError(ModError):
     """Mod Error: Two FormIDs that should be equal are not."""
@@ -121,7 +121,7 @@ class ModFidMismatchError(ModError):
         debug_str = _join_sigs(debug_str)
         message_form = f'{debug_str}: FormIDs do not match - expected ' \
                        f'{fid_expected!r} but got {fid_actual!r}'
-        super(ModFidMismatchError, self).__init__(in_name.s, message_form)
+        super(ModFidMismatchError, self).__init__(in_name, message_form)
 
 class ModSigMismatchError(ModError):
     """Mod Error: A record is getting overridden by a record with a different
@@ -131,7 +131,7 @@ class ModSigMismatchError(ModError):
                        f'overwritten by a record with the same FormID but a ' \
                        f'different type. This is undefined behavior and ' \
                        f'could lead to crashes.'
-        super(ModSigMismatchError, self).__init__(in_name.s, message_form)
+        super(ModSigMismatchError, self).__init__(in_name, message_form)
 
 # Shell (OS) File Operation exceptions ----------------------------------------
 class FileOperationError(OSError):  ##: revisit uses - use builtin exceptions

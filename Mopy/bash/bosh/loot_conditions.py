@@ -154,7 +154,7 @@ def _fn_active(path_or_regex):
         # obviously only be in Data, no need to process the path here
         matches_regex = re.compile(path_or_regex).match
         for p in cached_active_tuple():
-            if matches_regex(p.s):
+            if matches_regex(p):
                 return True
         return False
     else:
