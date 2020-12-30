@@ -35,7 +35,7 @@ from itertools import chain
 from .basic_elements import MelBase, MelNull, MelObject, MelStruct, \
     MelSequential
 from .. import exception
-from ..bolt import GPath, structs_cache, attrgetter_cache, deprint, cext_
+from ..bolt import structs_cache, attrgetter_cache, deprint, cext_, CIstr
 
 #------------------------------------------------------------------------------
 class _MelDistributor(MelNull):
@@ -593,7 +593,7 @@ class FidNotNullDecider(ACommonDecider):
         # can't import bush in __init__...
         from .. import bush
         return getattr(record, self._target_attr) != (
-            GPath(bush.game.master_file), 0) ## FIXME CIStr
+            CIstr(bush.game.master_file), 0)
 
 class AttrValDecider(ACommonDecider):
     """Decider that returns an attribute value (may optionally apply a function
