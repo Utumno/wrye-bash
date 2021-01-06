@@ -953,8 +953,7 @@ class UIList(wx.Panel):
         specified.
         :param itemDex: the index of the item in the list - must be given if
         item is None
-        :param item: a bolt.Path or an int (Masters) or a string (People),
-        the key in self.data
+        :param item: a CIstr or an int (Masters), the key in self.data
         """
         insert = False
         if item is not None:
@@ -1371,7 +1370,7 @@ class UIList(wx.Panel):
     #--Item/Index Translation -------------------------------------------------
     def GetItem(self,index):
         """Return item (key in self.data_store) for specified list index.
-        :rtype: bolt.Path | str | int
+        :rtype: CIstr | str | int
         """
         return self.__gList.FindItemAt(index)
 
