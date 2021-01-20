@@ -1395,7 +1395,7 @@ class PickleDict(object):
 
         Three objects are writen - a version string and the vdata and
         pickled_data dictionaries, in this order. Current version string is
-        VDATA2."""
+        VDATA3."""
         if self.readOnly: return False
         #--Pickle it
         with self._pkl_path.temp.open(u'wb') as out:
