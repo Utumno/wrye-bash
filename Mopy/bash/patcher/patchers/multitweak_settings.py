@@ -1393,11 +1393,11 @@ class GmstTweak_Arrow_MaxArrowsAttachedToNPC(_AGmstCCTweak):
     tweak_tip = _(u'The Maximum number of arrows that can be sticking out of '
                   u'an actor.')
     tweak_key = (u'iMaxAttachedArrows',)
-    tweak_choices = [(u'3',       3),
-                     (u'10',   10.0),
-                     (u'30',   30.0),
-                     (u'50',   50.0),
-                     (u'100', 100.0)]
+    tweak_choices = [(u'3',     3),
+                     (u'10',   10),
+                     (u'30',   30),
+                     (u'50',   50),
+                     (u'100', 100)]
     default_choice = u'3'
 
 #------------------------------------------------------------------------------
@@ -1415,7 +1415,6 @@ class GmstTweak_Actor_MerchantRestockTime(_AGmstTweak):
                   u'and gold.')
     tweak_key = (u'iDaysToRespawnVendor',)
     tweak_choices = [(_(u'Instant'),    0),
-                     (_(u'12 Hours'), 0.5),
                      (_(u'1 Day'),      1),
                      (_(u'2 Days'),     2),
                      (_(u'4 Days'),     4),

@@ -51,11 +51,9 @@ def _early_setup(debug):
     # ensure we are in the correct directory so relative paths will work
     # properly
     if bass.is_standalone:
-        pathToProg = os.path.dirname(
-            str(sys.executable, bolt.Path.sys_fs_enc))
+        pathToProg = os.path.dirname(sys.executable)
     else:
-        pathToProg = os.path.dirname(
-            str(sys.argv[0], bolt.Path.sys_fs_enc))
+        pathToProg = os.path.dirname(sys.argv[0])
     if pathToProg:
         os.chdir(pathToProg)
     bolt.deprintOn = debug
@@ -65,13 +63,9 @@ def _early_setup(debug):
         # Also, setup stdout/stderr to the debug log if debug mode /
         # standalone before wxPython is up
         global _bugdump_handle
-        # PY3: Replace with this
-        # _bugdump_handle = io.open(
-        #     os.path.join(os.getcwdu(), u'BashBugDump.log'), u'w', buffering=1,
-        #     encoding=u'utf-8')
-        _bugdump_handle = codecs.getwriter(u'utf-8')(
-            open(os.path.join(os.getcwd(), u'BashBugDump.log'), u'w',
-                 buffering=0))
+        _bugdump_handle = open(
+            os.path.join(os.getcwd(), u'BashBugDump.log'), u'w', buffering=1,
+            encoding=u'utf-8')
         sys.stdout = _bugdump_handle
         sys.stderr = _bugdump_handle
 

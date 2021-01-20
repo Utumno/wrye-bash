@@ -58,7 +58,7 @@ import io
 import os
 import sys
 import time
-from collections import OrderedDict, namedtuple
+from collections import OrderedDict, namedtuple, defaultdict
 from functools import partial, reduce
 
 
@@ -67,8 +67,7 @@ import wx
 
 #--Local
 from .. import bush, bosh, bolt, bass, env, load_order, archives
-from ..bolt import GPath, SubProgress, deprint, round_size, \
-    OrderedDefaultDict, dict_sort
+from ..bolt import GPath, SubProgress, deprint, round_size, dict_sort
 from ..bosh import omods, ModInfo
 from ..exception import AbstractError, BoltError, CancelError, FileError, \
     SkipError, UnknownListener
@@ -388,10 +387,12 @@ class MasterList(_ModsUIList):
     def _handle_key_up(self, wrapped_evt): pass
 
     def OnDClick(self, lb_dex_and_flags):
-        if self.mouse_index < 0: return # nothing was clicked
-        curr_name = self.data_store[self.mouse_index].curr_name
-        if not curr_name in bosh.modInfos: return
-        balt.Link.Frame.notebook.SelectPage(u'Mods', curr_name)
+        if self.mouse_index is None or self.mouse_index < 0:
+            return # Nothing was clicked
+        sel_curr_name = self.data_store[self.mouse_index].curr_name
+        if sel_curr_name not in bosh.modInfos:
+            return # Master that is not installed was clicked
+        balt.Link.Frame.notebook.SelectPage(u'Mods', sel_curr_name)
 
     #--Set ModInfo
     def SetFileInfo(self,fileInfo):
@@ -580,7 +581,7 @@ class MasterList(_ModsUIList):
 class INIList(balt.UIList):
     column_links = Links()  #--Column menu
     context_links = Links()  #--Single item menu
-    global_links = OrderedDefaultDict(lambda: Links()) # Global menu
+    global_links = defaultdict(lambda: Links()) # Global menu
     _shellUI = True
     _sort_keys = {
         u'File'     : None,
@@ -837,7 +838,7 @@ class ModList(_ModsUIList):
     #--Class Data
     column_links = Links() #--Column menu
     context_links = Links() #--Single item menu
-    global_links = OrderedDefaultDict(lambda: Links()) # Global menu
+    global_links = defaultdict(lambda: Links()) # Global menu
     _sort_keys = {
         u'File'      : None,
         u'Author'    : lambda self, a:self.data_store[a].header.author.lower(),
@@ -2058,7 +2059,7 @@ class SaveList(balt.UIList):
     #--Class Data
     column_links = Links() #--Column menu
     context_links = Links() #--Single item menu
-    global_links = OrderedDefaultDict(lambda: Links()) # Global menu
+    global_links = defaultdict(lambda: Links()) # Global menu
     _editLabels = _copy_paths = True
     _sort_keys = {
         u'File'    : None, # just sort by name
@@ -2354,7 +2355,7 @@ class SavePanel(BashTab):
 class InstallersList(balt.UIList):
     column_links = Links()
     context_links = Links()
-    global_links = OrderedDefaultDict(lambda: Links()) # Global menu
+    global_links = defaultdict(lambda: Links()) # Global menu
     icons = installercons
     _sunkenBorder = False
     _shellUI = True
@@ -3324,7 +3325,7 @@ class InstallersPanel(BashTab):
 class ScreensList(balt.UIList):
     column_links = Links() #--Column menu
     context_links = Links() #--Single item menu
-    global_links = OrderedDefaultDict(lambda: Links()) # Global menu
+    global_links = defaultdict(lambda: Links()) # Global menu
     _shellUI = True
     _editLabels = _copy_paths = True
 
@@ -3453,7 +3454,7 @@ class ScreensPanel(BashTab):
 class BSAList(balt.UIList):
     column_links = Links() #--Column menu
     context_links = Links() #--Single item menu
-    global_links = OrderedDefaultDict(lambda: Links()) # Global menu
+    global_links = defaultdict(lambda: Links()) # Global menu
     _sort_keys = {u'File'    : None,
                   u'Modified': lambda self, a: self.data_store[a].mtime,
                   u'Size'    : lambda self, a: self.data_store[a].fsize,
