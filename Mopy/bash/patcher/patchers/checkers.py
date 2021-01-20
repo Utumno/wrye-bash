@@ -144,7 +144,7 @@ class ContentsCheckerPatcher(Patcher):
                         keep(record.fid)
                 # Log the result if we removed at least one entry
                 if id_removed:
-                    log(u'\n=== ' + rec_type)
+                    log(u'\n=== ' + rec_type.decode('ascii'))
                     for contId in sorted(id_removed):
                         log(u'* ' + id_eid[contId])
                         for removedId in sorted(id_removed[contId]):

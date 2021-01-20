@@ -749,7 +749,7 @@ class _AListsMerger(ListPatcher):
             patch_block = self.patchFile.tops[list_type_sig]
             stored_lists = self.type_list[list_type_sig]
             for stored_list in sorted(stored_lists.values(),
-                                      key=attrgetter(u'eid')):
+                                      key=lambda l: l.eid or ''):
                 if not stored_list.mergeOverLast: continue
                 list_fid = stored_list.fid
                 keep(list_fid)
@@ -768,7 +768,7 @@ class _AListsMerger(ListPatcher):
             # Build a dict mapping leveled lists to other leveled lists that
             # they are sublists in
             sub_supers = {x: [] for x in stored_lists} ##: defaultdict??
-            for stored_list in sorted(stored_lists.values()):
+            for stored_list in stored_lists.values():
                 list_fid = stored_list.fid
                 if not stored_list.items:
                     empty_lists.append(list_fid)

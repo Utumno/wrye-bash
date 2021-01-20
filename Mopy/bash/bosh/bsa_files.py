@@ -174,8 +174,7 @@ def _hash_ba2_string(ba2_string):
     normalized_string = ba2_string.encode(u'ascii', u'ignore').lower()
     ret = 0
     for c in normalized_string:
-        # PY3: drop the ord() here since py3 bytes yields ints when iterated
-        ret = (ret >> 8) ^ _BA2_CRC_TABLE[(ret ^ ord(c)) & 0xFF]
+        ret = (ret >> 8) ^ _BA2_CRC_TABLE[(ret ^ c) & 0xFF]
     return ret
 
 # Headers ---------------------------------------------------------------------

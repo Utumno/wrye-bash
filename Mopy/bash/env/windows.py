@@ -26,7 +26,6 @@ import os
 import re
 import sys
 import datetime
-import struct
 import xml.etree.ElementTree as xml
 import winreg as winreg  # PY3
 from ctypes import byref, c_wchar_p, c_void_p, POINTER, Structure, windll, \
@@ -252,13 +251,9 @@ class _WindowsStoreFinder(object):
     @staticmethod
     def _read_registry_filetime(reg_key, filetime_name):
         filetime, value_type = winreg.QueryValueEx(reg_key, filetime_name)
-        if value_type == 11: # REG_QWORD on Python 3.6+
-            try:
-                filetime, = struct.unpack('q', filetime)
-            except struct.error:
-                return datetime.datetime(0)
+        if value_type == winreg.REG_QWORD:
             return _datetime_from_windows_filetime(filetime)
-        return datetime.datetime(0)
+        return datetime.datetime.fromtimestamp(0)
 
     @classmethod
     def _get_package_locations(cls, package_index):
@@ -295,7 +290,6 @@ class _WindowsStoreFinder(object):
     def _get_package_full_names(package_name):
         """Get all `package_full_name`s for this app."""
         try:
-            full_names = []
             with winreg.OpenKey(winreg.HKEY_CLASSES_ROOT,
                 r'Local Settings\Software\Microsoft\Windows\CurrentVersion'
                 r'\AppModel\Repository\Families') as families_key:

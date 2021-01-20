@@ -26,12 +26,11 @@
 - rework encoding/decoding
 """
 
-
-
 __author__ = u'Utumno'
 
 import copy
 import io
+import sys
 import zlib
 from collections import OrderedDict
 from functools import partial
@@ -541,7 +540,9 @@ class Fallout4SaveHeader(SkyrimSaveHeader): # pretty similar to skyrim
         # So handle it by concatenating digits until we hit a non-digit char
         def parse_int(gd_bytes):
             int_data = b''
-            for c in gd_bytes:
+            # PY3.10: Use iterbytes (PEP 467)
+            for i in gd_bytes:
+                c = i.to_bytes(1, sys.byteorder)
                 if c.isdigit():
                     int_data += c
                 else:
