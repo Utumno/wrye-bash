@@ -1345,8 +1345,8 @@ class PickleDict(object):
         self.pickled_data.clear()
         cor = cor_name =  None
         def _perform_load():
-            self.vdata.update(pickle.load(ins))
-            self.pickled_data.update(pickle.load(ins))
+            self.vdata.update(pickle.load(ins, encoding='bytes'))
+            self.pickled_data.update(pickle.load(ins, encoding='bytes'))
         for path in (self._pkl_path, self.backup):
             if cor is not None:
                 cor.moveTo(cor_name)
@@ -1355,7 +1355,7 @@ class PickleDict(object):
                 resave = False
                 with path.open(u'rb') as ins:
                     try:
-                        firstPickle = pickle.load(ins)
+                        firstPickle = pickle.load(ins, encoding='bytes')
                     except ValueError:
                         cor = path
                         cor_name = GPath(
