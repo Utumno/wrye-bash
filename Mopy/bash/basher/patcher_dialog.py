@@ -58,8 +58,7 @@ class PatchDialog(DialogWindow):
         title = _(u'Update ') + u'%s' % patchInfo
         super(PatchDialog, self).__init__(parent, title=title,
             icon_bundle=Resources.bashBlue, sizes_dict=balt.sizes,
-            # PY3: drop the unicode()
-            size=balt.sizes.get(str(self.__class__.__name__), (500, 600)))
+            size=balt.sizes.get(self.__class__.__name__, (500, 600)))
         #--Data
         list_patches_dir() # refresh cached dir
         patchConfigs = patchInfo.get_table_prop(u'bash.patch.configs', {})
