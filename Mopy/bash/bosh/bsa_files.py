@@ -31,7 +31,6 @@ http://www.uesp.net/wiki/Tes5Mod:Archive_File_Format
 __author__ = u'Utumno'
 
 import collections
-import errno
 import os
 import zlib
 from functools import partial
@@ -465,13 +464,6 @@ class Ba2Folder(object):
         self.folder_assets = collections.OrderedDict() # keep files order
 
 # Files -----------------------------------------------------------------------
-def _makedirs_exists_ok(target_dir):
-    try:
-        os.makedirs(target_dir)
-    except OSError as e:
-        if e.errno != errno.EEXIST:
-            raise
-
 class ABsa(AFile):
     """:type bsa_folders: collections.OrderedDict[unicode, BSAFolder]"""
     _header_type = BsaHeader
@@ -552,7 +544,7 @@ class ABsa(AFile):
                 # BSA paths always have backslashes, so we need to convert them
                 # to the platform's path separators before we extract
                 target_dir = os.path.join(dest_folder, *folder.split(u'\\'))
-                _makedirs_exists_ok(target_dir)
+                os.makedirs(target_dir, exist_ok=True)
                 for filename, record in file_records:
                     data_size = record.raw_data_size()
                     bsa_file.seek(record.raw_file_data_offset)
@@ -777,7 +769,7 @@ class BA2(ABsa):
                 # BSA paths always have backslashes, so we need to convert them
                 # to the platform's path separators before we extract
                 target_dir = os.path.join(dest_folder, *folder.split(u'\\'))
-                _makedirs_exists_ok(target_dir)
+                os.makedirs(target_dir, exist_ok=True)
                 for filename, record in file_records:
                     if is_dx10:
                         # We're dealing with a DX10 BA2, need to combine all
@@ -920,7 +912,8 @@ class MorrowindBsa(ABsa):
                 # result, making sure to create any needed directories
                 raw_data = bsa_file.read(file_record.file_size)
                 out_path = os.path.join(dest_folder, rec_name)
-                _makedirs_exists_ok(os.path.dirname(out_path))
+                target_dir = os.path.dirname(out_path)
+                os.makedirs(target_dir, exist_ok=True)
                 with open(out_path, u'wb') as out:
                     out.write(raw_data)
 
