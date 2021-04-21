@@ -313,8 +313,7 @@ def format_date(secs): # type: (float) -> unicode
     except (OSError, ValueError):
         # local time in windows can't handle negative values
         local = time.gmtime(secs)
-    return bolt.decoder(time.strftime(u'%c', local), ##: decoder?
-                        locale.getpreferredencoding(do_setlocale=False))
+    return time.strftime(u'%c', local)
 
 # PY3: Probably drop in py3?
 def unformat_date(date_str):
