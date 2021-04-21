@@ -78,7 +78,7 @@ class MasterMap(object):
 
 class LoadFactory(object):
     """Factory for mod representation objects."""
-    def __init__(self, keepAll, by_sig=(), generic=()): # PY3 keyword args
+    def __init__(self, keepAll, *, by_sig=(), generic=()):
         """Pass a collection of signatures to load - either by their
         respective type or using generic MreRecord.
         :param by_sig: pass an iterable of top group signatures to load

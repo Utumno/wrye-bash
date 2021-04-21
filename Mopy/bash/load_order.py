@@ -143,9 +143,13 @@ class LoadOrder(object):
                 u'_loadOrder': self.loadOrder}
 
     def __setstate__(self, dct):
-        if not isinstance(next(iter(dct)), str):# PY3: TTT accepts bytes keys?
-            dct = {(k if type(k) is str else k.decode(u'ascii')): v for
+        if not all(isinstance(k, str) for k in dct): # bytes keys from older versions
+            dct = {(k if isinstance(k, str) else k.decode(u'ascii')): v for
                    k, v in dct.items()}
+        for k in ('_activeOrdered', '_loadOrder'):
+            if k not in dct:
+                bolt.deprint(f'Unpickling {dct} missing "{k}"')
+                dct[k] = tuple()
         self.__dict__.update(dct)   # update attributes # __dict__ prints empty
         self._active = frozenset(self._activeOrdered)
         self.__mod_loIndex = {a: i for i, a in enumerate(self._loadOrder)}

@@ -1348,25 +1348,24 @@ class InstallerArchive(Installer):
         #--Get fileSizeCrcs
         fileSizeCrcs = self.fileSizeCrcs = []
         self.isSolid = False
-        class _li(object): # line info - PY3: we really want nonlocal here
-            filepath = size = crc = isdir = cumCRC = 0
-            __slots__ = ()
+        filepath = listed_size = listed_crc = isdir_ = cumCRC = 0
         def _parse_archive_line(key, value):
+            nonlocal filepath, listed_size, listed_crc, isdir_, cumCRC
             if   key == u'Solid': self.isSolid = (value[0] == u'+')
-            elif key == u'Path': _li.filepath = value
-            elif key == u'Size': _li.size = int(value)
-            elif key == u'Attributes': _li.isdir = value and (u'D' in value)
-            elif key == u'CRC' and value: _li.crc = int(value,16)
+            elif key == u'Path': filepath = value
+            elif key == u'Size': listed_size = int(value)
+            elif key == u'Attributes': isdir_ = value and (u'D' in value)
+            elif key == u'CRC' and value: listed_crc = int(value,16)
             elif key == u'Method':
-                if _li.filepath and not _li.isdir and _li.filepath != \
+                if filepath and not isdir_ and filepath != \
                         tempArch.s:
-                    fileSizeCrcs.append((_li.filepath, _li.size, _li.crc))
-                    _li.cumCRC += _li.crc
-                _li.filepath = _li.size = _li.crc = _li.isdir = 0
+                    fileSizeCrcs.append((filepath, listed_size, listed_crc))
+                    cumCRC += listed_crc
+                filepath = listed_size = listed_crc = isdir_ = 0
         with self.abs_path.unicodeSafe() as tempArch:
             try:
                 list_archive(tempArch, _parse_archive_line)
-                self.crc = _li.cumCRC & 0xFFFFFFFF
+                self.crc = cumCRC & 0xFFFFFFFF
             except:
                 archive_msg = u"Unable to read archive '%s'." % self.abs_path
                 deprint(archive_msg, traceback=True)
@@ -1456,9 +1455,9 @@ class InstallerArchive(Installer):
             list_archive(tempArch, _parse_archive_line)
         list_text.sort()
         #--Output
-        for node, isdir in list_text:
+        for node, isdir_ in list_text:
             log(u'  ' * node.count(os.sep) + os.path.split(node)[1] + (
-                os.sep if isdir else u''))
+                os.sep if isdir_ else u''))
 
     def _open_txt_file(self, rel_path):
         with gui.BusyCursor():

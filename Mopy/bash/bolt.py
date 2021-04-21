@@ -1775,15 +1775,7 @@ def deprint(*args,**keyargs):
                 msg += u' %r' % x
     if keyargs.get(u'traceback',False):
         exc_fmt = traceback.format_exc()
-        # PY3: This should be good to go
-        if isinstance(exc_fmt, bytes):
-            try:
-                msg += u'\n%s' % str(exc_fmt, u'utf-8')
-            except UnicodeError:
-                traceback.print_exc()
-                msg += u'\n%r' % exc_fmt
-        else:
-            msg += u'\n%s' % exc_fmt
+        msg += f'\n{exc_fmt}'
     try:
         # Should work if stdout/stderr is going to wxPython output
         print(msg)
