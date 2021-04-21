@@ -810,11 +810,8 @@ class Path(object):
             os.makedirs(self.shead)
         return io.open(self._s, *args, **kwdargs)
     def makedirs(self):
-        try:
-            os.makedirs(self._s)
-        except OSError as e:
-            if e.errno != errno.EEXIST:
-                raise
+        os.makedirs(self._s, exist_ok=True)
+
     def remove(self):
         try:
             if self.exists(): os.remove(self._s)
@@ -1170,7 +1167,7 @@ class AFile(object):
         #Set cache info (mtime, size[, ctime]) and reload if load_cache is True
         try:
             self._reset_cache(self._stat_tuple(), load_cache)
-        except (OSError, IOError):
+        except OSError:
             if raise_on_error: raise
             self._reset_cache(self._null_stat, load_cache=False)
 
@@ -1188,7 +1185,7 @@ class AFile(object):
         is False user must check if file exists."""
         try:
             stat_tuple = self._stat_tuple()
-        except (OSError, IOError): # PY3: FileNotFoundError case?
+        except OSError: # PY3: FileNotFoundError case?
             file_was_stated = self._file_changed(self._null_stat)
             self._reset_cache(self._null_stat, load_cache=False)
             if raise_on_error: raise
@@ -1360,7 +1357,7 @@ class PickleDict(object):
                     path.copyTo(path.root + u'-vdata2.dat.bak')
                     self.save()
                 return 1 + (path == self.backup)
-            except (OSError, IOError, EOFError, ValueError,
+            except (OSError, EOFError, ValueError,
                     pickle.UnpicklingError): #PY3:FileNotFound
                 pass
         else:

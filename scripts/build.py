@@ -331,7 +331,7 @@ def pack_installer(nsis_path, version, file_version):
     download_redists()
     nsis_path = os.path.join(nsis_root, u'makensis.exe')
     if not os.path.isfile(nsis_path):
-        raise IOError(u"Could not find 'makensis.exe', aborting installer creation.")
+        raise OSError(u"Could not find 'makensis.exe', aborting installer creation.")
     # Build the installer
     utils.run_subprocess(
         [
@@ -448,7 +448,7 @@ def taglists_need_update():
     try:
         with open(TAGINFO, u'r') as ins:
             last_ml_ver = ins.read()
-    except (IOError, OSError): pass # we'll have to update
+    except OSError: pass # we'll have to update
     latest_ml_ver = update_taglist.MASTERLIST_VERSION
     if LooseVersion(last_ml_ver) < LooseVersion(latest_ml_ver):
         # LOOT version changed so the syntax probably changed too,
@@ -473,7 +473,7 @@ def main(args):
         # Get repository files
         version_info = get_version_info(args.version)
         # create distributable directory
-        utils.mkdir(DIST_PATH, exists_ok=True)
+        os.makedirs(DIST_PATH, exist_ok=True)
         # Copy the license so it's included in the built releases
         license_real = os.path.join(ROOT_PATH, u'LICENSE.md')
         license_temp = os.path.join(MOPY_PATH, u'LICENSE.md')
