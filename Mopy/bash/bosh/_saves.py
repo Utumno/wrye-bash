@@ -317,16 +317,13 @@ class SaveFile(object):
             #--Fids
             num = unpack_int(ins)
             self.fids = array.array(u'I')
-            # PY3: self.fids.fromfile(ins, num)
-            self.fids.fromstring(ins.read(num * self.fids.itemsize))
+            self.fids.fromfile(ins, num)
             for iref,fid in enumerate(self.fids):
                 self.irefs[fid] = iref
             #--WorldSpaces
             num = unpack_int(ins)
             self.worldSpaces = array.array(u'I')
-            # PY3: self.worldSpaces.fromfile(ins, num)
-            self.worldSpaces.fromstring(
-                ins.read(num * self.worldSpaces.itemsize))
+            self.worldSpaces.fromfile(ins, num)
         #--Done
         progress(progress.full,_(u'Finished reading.'))
 
@@ -378,12 +375,10 @@ class SaveFile(object):
             _pack(u'I',fidsPos)
             out.seek(fidsPos)
             _pack(u'I',len(self.fids))
-            # PY3: self.fids.tofile(out)
-            out.write(self.fids.tostring())
+            self.fids.tofile(out)
             #--Worldspaces
             _pack(u'I',len(self.worldSpaces))
-            # PY3: self.worldSpaces.tofile(out)
-            out.write(self.worldSpaces.tostring())
+            self.worldSpaces.tofile(out)
             #--Done
             progress(1.0,_(u'Writing complete.'))
 

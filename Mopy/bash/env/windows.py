@@ -565,7 +565,7 @@ def _get_known_path(known_folder_id, user_handle=_UserHandle.current):
 #       MA 02110-1301, USA.
 #
 # Edits have been made to it to fit Wrye Bash's code style and to port it to
-# 64bit/py3.
+# 64bit/python3.
 # BEGIN TASKDIALOG PART =======================================================
 _BUTTONID_OFFSET                 = 1000
 
