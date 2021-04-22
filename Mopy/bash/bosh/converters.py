@@ -139,7 +139,7 @@ class ConvertersData(DataDict):
             progress.setFull(len(pending))
             for index, bcf_archive in enumerate(sorted(pending)):
                 progress(index,
-                         _(u'Scanning Converter...') + u'\n%s' % bcf_archive)
+                         _(u'Scanning Converter...') + f'\n{bcf_archive}')
                 pendingChanged |= self.addConverter(bcf_archive)
         changed = pendingChanged or (len(newData) != len(bcfCRC_converter))
         self._prune_converters()
@@ -289,7 +289,7 @@ class InstallerConverter(object):
         """Load BCF.dat. Called once when a BCF is first installed, during a
         fullRefresh, and when the BCF is applied"""
         if not self.fullPath.exists(): raise StateError(
-                u"\nLoading %s:\nBCF doesn't exist." % self.fullPath)
+            f"\nLoading {self.fullPath}:\nBCF doesn't exist.")
         def translate(out):
             ##: Does this usage (including translator and decode) work?
             stream = io.BytesIO(out)
@@ -359,7 +359,7 @@ class InstallerConverter(object):
             srcInstaller = crc_installer[srcCRC]
             files = bolt.sortFiles([x[0] for x in srcInstaller.fileSizeCrcs])
             if not files: continue
-            progress(0, (u'%s\n' % srcInstaller) + _(u'Extracting files...'))
+            progress(0, f'{srcInstaller}\n' + _(u'Extracting files...'))
             tempCRC = srcInstaller.crc
             srcInstaller.crc = realCRC
             self._unpack(srcInstaller, files,
@@ -409,15 +409,15 @@ class InstallerConverter(object):
                 srcDir = u'%s' % srcDir # Path defines __str__()
                 srcFile = tempJoin(srcDir, srcFile)
             else:
-                srcFile = tempJoin(u'%08X' % srcDir, srcFile)
+                srcFile = tempJoin(f'{srcDir:08X}', srcFile)
             destFile = destJoin(destFile)
             if not srcFile.exists():
-                raise StateError(u'%s: Missing source file:\n%s' % (
-                    self.fullPath.stail, srcFile))
+                raise StateError(
+                    f'{self.fullPath.stail}: Missing source file:\n{srcFile}')
             if destFile is None:
                 raise StateError(
-                    u'%s: Unable to determine file destination for:\n%s' % (
-                    self.fullPath.stail, srcFile))
+                    f'{self.fullPath.stail}: Unable to determine file '
+                    f'destination for:\n{srcFile}')
             numDupes = dupes[crcValue]
             #--Keep track of how many times the file is referenced by
             # convertedFiles
@@ -522,13 +522,13 @@ class InstallerConverter(object):
                 #--No files to pack, but subArchives were unpacked
                 sProgress = SubProgress(progress, lastStep, lastStep + 0.5)
                 lastStep += 0.5
-        sProgress(0, u'%s\n' % BCFArchive + _(u'Mapping files...'))
+        sProgress(0, f'{BCFArchive}\n' + _(u'Mapping files...'))
         sProgress.setFull(1 + len(destFiles))
         #--Map the files
         for index, (fileCRC, fileName) in enumerate(destFiles):
             convertedFileAppend((fileCRC, srcFiles.get(fileCRC), fileName))
-            sProgress(index, u'%s\n' % BCFArchive + _(
-                    u'Mapping files...') + u'\n' + fileName)
+            sProgress(index, f'{BCFArchive}\n' + _(
+                u'Mapping files...') + u'\n' + fileName)
         #--Build the BCF
         tempDir2 = bass.newTempDir().join(u'BCF-Missing')
         if len(self.bcf_missing_files):
@@ -573,7 +573,7 @@ class InstallerConverter(object):
         extracted to its own sub-directory to prevent file thrashing"""
         #--Sanity check
         if not fileNames: raise ArgumentError(
-                u'No files to extract for %s.' % srcInstaller)
+            f'No files to extract for {srcInstaller}.')
         tmpDir = bass.getTempDir()
         tempList = bolt.Path.baseTempDir().join(u'WryeBash_listfile.txt')
         #--Dump file list
@@ -588,9 +588,9 @@ class InstallerConverter(object):
         installerCRC = srcInstaller.crc
         apath = srcInstaller if isinstance(srcInstaller,
                                            Path) else srcInstaller.abs_path
-        subTempDir = tmpDir.join(u'%08X' % installerCRC)
+        subTempDir = tmpDir.join(f'{installerCRC:08X}')
         if progress:
-            progress(0, u'%s\n' % apath + _(u'Extracting files...'))
+            progress(0, f'{apath}\n' + _(u'Extracting files...'))
             progress.setFull(1 + len(fileNames))
         #--Extract files
         with apath.unicodeSafe() as arch:

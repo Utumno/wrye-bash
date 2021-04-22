@@ -395,7 +395,7 @@ class MobObjects(MobBase):
         return iter(self.records)
 
     def __repr__(self):
-        return u'<%s GRUP: %u record(s)>' % (self.label, len(self.records))
+        return f'<{self.label} GRUP: {len(self.records)} record(s)>'
 
 #------------------------------------------------------------------------------
 ##: MobDial, MobCell and MobWorld need a base class; same with MobDials,
@@ -589,8 +589,7 @@ class MobDial(MobObjects):
         self.records = sorted_infos
 
     def __repr__(self):
-        return u'<DIAL (%r): %u INFO record(s)>' % (self.dial,
-                                                    len(self.records))
+        return f'<DIAL ({self.dial!r}): {len(self.records)} INFO record(s)>'
 
 class MobDials(MobBase):
     """DIAL top block of mod file."""
@@ -778,7 +777,7 @@ class MobDials(MobBase):
                 dest_dial.updateRecords(src_dial, mergeIds)
 
     def __repr__(self):
-        return u'<DIAL GRUP: %u record(s)>' % len(self.dialogues)
+        return f'<DIAL GRUP: {len(self.dialogues)} record(s)>'
 
 #------------------------------------------------------------------------------
 class MobCell(MobBase):
