@@ -83,8 +83,8 @@ class Color(object):
                 and self.alpha == other.alpha)
 
     def __repr__(self):
-        return u'Color(red=%s, green=%s, blue=%s, alpha=%s)' % (
-            self.red, self.green, self.blue, self.alpha)
+        return f'Color(red={self.red}, green={self.green}, ' \
+               f'blue={self.blue}, alpha={self.alpha})'
 
     @classmethod
     def from_wx(cls, color): # type: (_wx.Colour) -> Color
@@ -160,8 +160,8 @@ class _AComponent(object):
         elif obj is None:
             return None
         else:
-            raise RuntimeError(u"Failed to resolve object '%r' to wx object." %
-                               obj)
+            raise RuntimeError(f"Failed to resolve object '{obj!r}' to wx "
+                               f"object.")
 
     def get_component_name(self): # type: () -> unicode
         """Returns the name of this component.
@@ -207,7 +207,7 @@ class _AComponent(object):
         self._native_widget.Enable(is_enabled)
 
     @property
-    def tooltip(self): # type: () -> unicode
+    def tooltip(self): # type: () -> str
         """Returns the current contents of this component's tooltip. If no
         tooltip is set, returns an empty string.
 
@@ -215,7 +215,7 @@ class _AComponent(object):
         return self._native_widget.GetToolTipText() or u''
 
     @tooltip.setter
-    def tooltip(self, new_tooltip): # type: (unicode) -> None
+    def tooltip(self, new_tooltip): # type: (str) -> None
         """Sets the tooltip of this component to the specified string. If the
         string is empty or None, the tooltip is simply removed.
 
@@ -471,13 +471,13 @@ class ImageWrapper(object):
         try:
             self._img_type = imageType or self.typesDict[filename.cext[1:]]
         except KeyError:
-            deprint(u'Unknown image extension %s' % filename.cext)
+            deprint(f'Unknown image extension {filename.cext}')
             self._img_type = _wx.BITMAP_TYPE_ANY
         self.bitmap = None
         self.icon = None
         self.iconSize = iconSize
         if not os.path.exists(self._img_path.split(u';')[0]):
-            raise ArgumentError(u'Missing resource file: %s.' % filename)
+            raise ArgumentError(f'Missing resource file: {filename}.')
 
     def GetBitmap(self):
         if not self.bitmap:

@@ -80,7 +80,7 @@ class FileEditError(BoltError): ##: never raised?
     """Unable to edit a file"""
     def __init__(self, file_path, message=None):
         ## type: (Path, str) -> None
-        message = message or (u'Unable to edit file %s.' % file_path)
+        message = message or f'Unable to edit file {file_path}.'
         super(FileEditError, self).__init__(message)
         self.filePath = file_path
 
@@ -102,11 +102,11 @@ class ModReadError(ModError):
         ## type: (Path, str|bytes, int, int) -> None
         debug_str = _join_sigs(debug_str)
         if try_pos < 0:
-            message = (u'%s: Attempted to read before (%s) beginning of '
-                       u'file/buffer.' % (debug_str, try_pos))
+            message = f'{debug_str}: Attempted to read before ({try_pos}) ' \
+                      f'beginning of file/buffer.'
         else:
-            message = (u'%s: Attempted to read past (%s) end (%s) of '
-                       u'file/buffer.' % (debug_str, try_pos, max_pos))
+            message = f'{debug_str}: Attempted to read past ({try_pos}) end ' \
+                      f'({max_pos}) of file/buffer.'
         super(ModReadError, self).__init__(in_name.s, message)
 
 class ModSizeError(ModError):
@@ -119,27 +119,26 @@ class ModSizeError(ModError):
         :type expected_sizes: tuple[int]
         :type actual_size: int"""
         debug_str = _join_sigs(debug_str)
-        message_form = (u'%s: Expected one of sizes [%s], but got %u' % (
-            debug_str, u', '.join([u'%s' % x for x in expected_sizes]),
-            actual_size))
+        message_form = f'{debug_str}: Expected one of sizes ' \
+                       f'{expected_sizes}, but got {actual_size}'
         super(ModSizeError, self).__init__(in_name.s, message_form)
 
 class ModFidMismatchError(ModError):
     """Mod Error: Two FormIDs that should be equal are not."""
     def __init__(self, in_name, debug_str, fid_expected, fid_actual):
         debug_str = _join_sigs(debug_str)
-        message_form = (u'%s: FormIDs do not match - expected %r but got %r'
-                        % (debug_str, fid_expected, fid_actual))
+        message_form = f'{debug_str}: FormIDs do not match - expected ' \
+                       f'{fid_expected!r} but got {fid_actual!r}'
         super(ModFidMismatchError, self).__init__(in_name.s, message_form)
 
 class ModSigMismatchError(ModError):
     """Mod Error: A record is getting overridden by a record with a different
     signature. This is undefined behavior."""
     def __init__(self, in_name, record):
-        message_form = (u'%r is likely overriding or being overwritten by a '
-                        u'record with the same FormID but a different type. '
-                        u'This is undefined behavior and could lead to '
-                        u'crashes.') % record
+        message_form = f'{record!r} is likely overriding or being ' \
+                       f'overwritten by a record with the same FormID but a ' \
+                       f'different type. This is undefined behavior and ' \
+                       f'could lead to crashes.'
         super(ModSigMismatchError, self).__init__(in_name.s, message_form)
 
 # Shell (OS) File Operation exceptions ----------------------------------------
@@ -162,7 +161,7 @@ class InvalidPathsError(FileOperationError):
 class DirectoryFileCollisionError(FileOperationError):
     def __init__(self, source, dest):  ## type: (Path, Path) -> None
         super(DirectoryFileCollisionError, self).__init__(
-            -1, u'collision: moving %s to %s' % (source, dest))
+            -1, f'collision: moving {source} to {dest}')
 
 class NonExistentDriveError(FileOperationError):
     def __init__(self, failed_paths):  ## type: (List[Path]) -> None
@@ -175,14 +174,14 @@ class BSAError(FileError): pass
 class BSACompressionError(BSAError):
     def __init__(self, in_name, compression_type, orig_error):
         # type: (str, str, Exception) -> None
-        super(BSACompressionError, self).__init__(
-            in_name, u'%s error while compressing record: %s' % (
-                compression_type, repr(orig_error)))
+        super(BSACompressionError, self).__init__(in_name,
+            f'{compression_type} error while compressing record: '
+            f'{orig_error!r}')
 
 class BSADecodingError(BSAError):
     def __init__(self, in_name, message): # type: (str, str) -> None
         super(BSADecodingError, self).__init__(
-            in_name, u'Undecodable string %r' % message)
+            in_name, f'Undecodable string {message!r}')
 
 class BSADecompressionError(BSAError):
     def __init__(self, in_name, compression_type, orig_error):
@@ -193,16 +192,15 @@ class BSADecompressionError(BSAError):
 
 class BSADecompressionSizeError(BSAError):
     def __init__(self, in_name, compression_type, expected_size, actual_size):
-        super(BSADecompressionSizeError, self).__init__(
-            in_name, u'%s-decompressed record size incorrect - expected %s, '
-                     u'but got %s' % (
-                compression_type, expected_size, actual_size))
+        super(BSADecompressionSizeError, self).__init__(in_name,
+            f'{compression_type}-decompressed record size incorrect - '
+            f'expected {expected_size}, but got {actual_size}')
 
 class BSAFlagError(BSAError):
     def __init__(self, in_name, message, flag):
         # type: (str, str, int) -> None
-        super(BSAFlagError, self).__init__(
-            in_name, u'%s (flag %s) unset' % (message, flag))
+        super(BSAFlagError, self).__init__(in_name,
+            f'{message} (flag {flag}) unset')
 
 # Cosave exceptions -----------------------------------------------------------
 class CosaveError(FileError):
@@ -212,13 +210,13 @@ class InvalidCosaveError(CosaveError):
     """Invalid cosave."""
     def __init__(self, in_name, message):
         super(InvalidCosaveError, self).__init__(in_name,
-            u'Invalid cosave: %s' % message)
+                                                 f'Invalid cosave: {message}')
 
 class UnsupportedCosaveError(CosaveError):
     """Unsupported cosave."""
     def __init__(self, in_name, message):
         super(UnsupportedCosaveError, self).__init__(in_name,
-            u'Unsupported cosave: %s' % message)
+            f'Unsupported cosave: {message}')
 
 # DDS exceptions --------------------------------------------------------------
 class DDSError(Exception): pass
@@ -249,7 +247,7 @@ class _ALPError(Exception):
         # Build up the final error message
         final_msg = err_msg
         if target_str:
-            final_msg += u'\nOccurred here: %s' % target_str
+            final_msg += f'\nOccurred here: {target_str}'
         if start_pos >= 0:
             # Offset by -1 to account for the '^' part of the marker
             end_pos = start_pos if end_pos < 0 else end_pos - 1
@@ -257,9 +255,9 @@ class _ALPError(Exception):
             marker_offset = u' ' * (15 + start_pos)
             # The actual ^~~~~ marker itself
             line_marker = u'^' + u'~' * (end_pos - start_pos)
-            final_msg += u'\n%s%s' % (marker_offset, line_marker)
+            final_msg += f'\n{marker_offset}{line_marker}'
         if line_num >= 0:
-            final_msg += u'\nLine Number: %s' % line_num
+            final_msg += f'\nLine Number: {line_num}'
         super(_ALPError, self).__init__(final_msg)
 
 class LexerError(_ALPError):
@@ -286,7 +284,7 @@ class MasterMapError(BoltError):
     """Attempt to map a fid when mapping does not exist."""
     def __init__(self, modIndex):  # type: (int) -> None
         super(MasterMapError, self).__init__(
-            u'No valid mapping for mod index 0x%02X' % modIndex)
+            f'No valid mapping for mod index 0x{modIndex:02X}')
 
 class SaveHeaderError(Exception): pass
 
@@ -296,8 +294,8 @@ class EnvError(Exception):
     """Attempt to use a feature that is not available on this operating
     system."""
     def __init__(self, env_feature):
-        super(EnvError, self).__init__(u"'%s' is not available on %s" % (
-            env_feature, platform.system()))
+        super(EnvError, self).__init__(
+            f"'{env_feature}' is not available on {platform.system()}")
 
 class BPConfigError(Exception):
     """The configuration of the Bashed Patch is invalid in some way. Note that

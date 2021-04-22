@@ -1408,13 +1408,13 @@ class TrustedBinariesPage(_AFixedPage):
             out.write(u'badDlls # %s\n' % _(u'Binaries whose installation you '
                                             u'have forbidden'))
             if bass.settings[u'bash.installers.badDlls']:
-                for dll in bass.settings[u'bash.installers.badDlls']:
-                    out.write(u'dll: %s:\n' % dll)
-                    for i, version in enumerate(
-                            bass.settings[u'bash.installers.badDlls'][dll]):
+                for dll, versions in bass.settings[
+                    u'bash.installers.badDlls'].items():
+                    out.write(f'dll: {dll}:\n')
+                    for i, version in enumerate(versions):
                         v_name, v_size, v_crc = version
-                        out.write(u"version %02d: ['%s', %d, %d]\n" % (
-                            i, v_name, v_size, v_crc))
+                        out.write(f"version {i:02d}: ['{v_name}', {v_size:d}, "
+                                  f"{v_crc:d}]\n")
             else: out.write(u'# %s\n' % _(u'None')) # Treated as a comment
 
     def _import_lists(self):

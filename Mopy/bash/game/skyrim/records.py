@@ -1045,20 +1045,17 @@ class MelVmad(MelBase):
             elif property_type == 13: # sint32 array
                 array_len = len(property_data)
                 out_data += __packers[u'I'](array_len)
-                return out_data + struct_pack(
-                    u'=' + repr(array_len) + u'i', *property_data)
+                return out_data + struct_pack(f'={array_len}i', *property_data)
             elif property_type == 14: # float array
                 array_len = len(property_data)
                 out_data += __packers[u'I'](array_len)
-                return out_data + struct_pack(
-                    u'=' + repr(array_len) + u'f', *property_data)
+                return out_data + struct_pack(f'={array_len}f', *property_data)
             elif property_type == 15: # bool array (stored as uint8 array)
                 array_len = len(property_data)
                 out_data += __packers[u'I'](array_len)
                 # Faster than [int(x) for x in property_data]
-                return out_data + struct_pack(
-                    u'=' + repr(array_len) + u'B', *[x != 0 for x
-                                                     in property_data])
+                return out_data + struct_pack(f'={array_len}B',
+                                              *[x != 0 for x in property_data])
             else:
                 # TODO(inf) Dumped file name! Please!
                 raise ModError(u'', u'Unrecognized VMAD property type: %u' %

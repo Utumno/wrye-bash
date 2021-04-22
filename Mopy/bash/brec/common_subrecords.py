@@ -713,11 +713,11 @@ class MelDebrData(MelStruct):
 
     def load_mel(self, record, ins, sub_type, size_, *debug_strs):
         byte_data = ins.read(size_, *debug_strs)
-        (record.percentage,) = unpack_byte(ins, byte_data[0:1])
+        record.percentage = unpack_byte(ins, byte_data[0:1])[0]
         record.modPath = byte_data[1:-2]
         if byte_data[-2] != null1:
-            raise ModError(ins.inName,u'Unexpected subrecord: %s' % (debug_strs,))
-        (record.flags,) = struct_unpack(u'B',byte_data[-1])
+            raise ModError(ins.inName, f'Unexpected subrecord: {debug_strs}')
+        record.flags = struct_unpack(u'B', byte_data[-1])[0]
 
     def pack_subrecord_data(self, record):
         return b''.join(
