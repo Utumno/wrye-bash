@@ -34,7 +34,7 @@ from .. import bass, bosh, bolt, balt, bush, load_order, initialization
 from ..balt import EnabledLink, AppendableLink, Link, CheckLink, ChoiceLink, \
     ItemLink, SeparatorLink, OneItemLink, UIList_Rename
 from ..bolt import GPath, SubProgress
-from ..bosh import faces, SaveInfo
+from ..bosh import faces
 from ..exception import ArgumentError, BoltError, ModError, AbstractError
 from ..gui import BusyCursor, ImageWrapper, FileSave
 from ..mod_files import LoadFactory, MasterMap, ModFile
