@@ -3411,7 +3411,6 @@ class ScreensDetails(_DetailsMixin, NotebookPanel):
         else:
             self.screenshot_control.set_bitmap(self.file_info.cached_bitmap)
 
-
     def RefreshUIColors(self):
         self.screenshot_control.SetBackground(colors[u'screens.bkgd.image'])
 

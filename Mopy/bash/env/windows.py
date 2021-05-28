@@ -31,6 +31,7 @@ import winreg
 from ctypes import byref, c_wchar_p, c_void_p, POINTER, Structure, windll, \
     wintypes, WINFUNCTYPE, c_uint, c_long, Union, c_ushort, c_int, \
     c_longlong, c_ulong, c_wchar, sizeof, wstring_at, ARRAY
+import functools
 from uuid import UUID
 
 import win32api
@@ -915,7 +916,8 @@ def setUAC(handle, uac=True):
     if _isUAC and win32gui:
         win32gui.SendMessage(handle, 0x0000160C, None, uac)
 
-def getJava(): # PY3: cache this
+@functools.lru_cache(maxsize=None) ##: cached in py 3.9
+def getJava():
     """Locate javaw.exe to launch jars from Bash."""
     try:
         java_home = GPath(os.environ[u'JAVA_HOME'])

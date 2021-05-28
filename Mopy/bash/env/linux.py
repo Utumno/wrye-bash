@@ -25,6 +25,7 @@
 import os
 import subprocess
 import sys
+import functools
 
 from .common import WinAppInfo
 from ..bolt import deprint, GPath, structs_cache, Path, dict_sort
@@ -93,7 +94,8 @@ def setUAC(_handle, _uac=True):
 def is_uac():
     return False # Not a thing on Linux
 
-def getJava(): # PY3: cache this
+@functools.lru_cache(maxsize=None) ##: cached in py 3.9
+def getJava():
     try:
         java_home = GPath(os.environ[u'JAVA_HOME'])
         java_bin_path = java_home.join(u'bin', u'java')
