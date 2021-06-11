@@ -961,6 +961,12 @@ class Path(object):
         dec = other if isinstance(other, str) else decoder(other)
         return self._cs <= (os.path.normpath(dec).lower() if dec else dec)
 
+def popen_common(popen_cmd, **kwargs):
+    """Wrapper around subprocess.Popen with commonly needed parameters."""
+    return subprocess.Popen(popen_cmd, stdin=subprocess.DEVNULL,
+                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                            startupinfo=startupinfo, **kwargs)
+
 def clearReadOnly(dirPath):
     """Recursively (/S) clear ReadOnly flag if set - include folders (/D)."""
     cmd = u'' r'attrib -R "%s\*" /S /D' % dirPath

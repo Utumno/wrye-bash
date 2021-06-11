@@ -50,6 +50,7 @@ from contextlib import contextmanager, suppress
 from distutils.version import LooseVersion
 
 import pygit2
+import PyInstaller.__main__
 
 import update_taglist
 import utils
@@ -66,7 +67,6 @@ MOPY_PATH = os.path.join(ROOT_PATH, u'Mopy')
 APPS_PATH = os.path.join(MOPY_PATH, u'Apps')
 NSIS_PATH = os.path.join(SCRIPTS_PATH, u'build', u'nsis')
 TESTS_PATH = os.path.join(MOPY_PATH, u'bash', u'tests')
-REDIST_PATH = os.path.join(MOPY_PATH, u'redist')
 TAGLISTS_PATH = os.path.join(MOPY_PATH, u'taglists')
 IDEA_PATH = os.path.join(ROOT_PATH, u'.idea')
 VSCODE_PATH = os.path.join(ROOT_PATH, u'.vscode')
@@ -79,8 +79,8 @@ VSCODE_PATH = os.path.join(ROOT_PATH, u'.vscode')
 #                          currently running (duh)
 # IDEA_PATH, VSCODE_PATH: Annoying to remove, won't get included anyways and
 #                         can break the 'git stash pop'
-TO_PRESERVE = [NSIS_PATH, REDIST_PATH, TAGLISTS_PATH, TAGINFO,
-               update_taglist.LOGFILE, IDEA_PATH, VSCODE_PATH]
+TO_PRESERVE = [NSIS_PATH, TAGLISTS_PATH, TAGINFO, update_taglist.LOGFILE,
+               IDEA_PATH, VSCODE_PATH]
 
 sys.path.insert(0, MOPY_PATH)
 from bash import bass
@@ -150,6 +150,16 @@ def setup_parser(parser):
         help=u'Forces an update of the bundled taglists.',
     )
     parser.set_defaults(version=nightly_version)
+
+# PyInstaller thinks it's fine to setup logging on import...
+def setup_pyinstaller_logger(logfile):
+    root_logger = logging.getLogger()
+    stupid_handler = root_logger.handlers[0]
+    stupid_formatter = stupid_handler.formatter
+    root_logger.removeHandler(stupid_handler)
+    file_handler = logging.FileHandler(logfile)
+    file_handler.setFormatter(stupid_formatter)
+    logging.getLogger("PyInstaller").addHandler(file_handler)
 
 def get_version_info(version):
     """
@@ -233,21 +243,6 @@ def get_nsis_root(cmd_arg):
         )
     return NSIS_PATH
 
-def download_redists():
-    """Downloads all required MSVC redistributables if they're not already
-    present."""
-    if not os.path.isdir(REDIST_PATH):
-        os.makedirs(REDIST_PATH)
-    msvc_2010_x64 = os.path.join(REDIST_PATH, u'vcredist_2010_x64.exe')
-    if not os.path.isfile(msvc_2010_x64):
-        LOGGER.info(u'MSVC 2010 x64 redistributable not found, downloading')
-        utils.download_file(u'https://download.microsoft.com/download/1/6/5/'
-                            u'165255E7-1014-4D0A-B094-B6A430A6BFFC/'
-                            u'vcredist_x64.exe', msvc_2010_x64)
-        LOGGER.debug(u'MSVC 2010 x64 redistributable downloaded successfully')
-    else:
-        LOGGER.debug(u'MSVC 2010 x64 redistributable found')
-
 def pack_manual(version):
     """ Packages the manual (python source) version. """
     archive_ = os.path.join(DIST_PATH,
@@ -271,34 +266,27 @@ def pack_manual(version):
             rm(path)
 
 @contextmanager
-def build_executable(version, file_version):
+def build_executable():
     """ Builds the executable. """
     LOGGER.info(u'Building executable...')
-    build_folder = os.path.join(MOPY_PATH, u'build')
-    dist_folder = os.path.join(MOPY_PATH, u'dist')
-    setup_orig = os.path.join(WBSA_PATH, u'setup.py')
-    setup_target = os.path.join(MOPY_PATH, u'setup.py')
-    exe_orig = os.path.join(dist_folder, u'Wrye Bash Launcher.exe')
-    exe_target = os.path.join(MOPY_PATH, u'Wrye Bash.exe')
-    cpy(setup_orig, setup_target)
-    try:
-        # Call the setup script
-        utils.run_subprocess(
-            [sys.executable, setup_target, u'py2exe', u'--version', file_version],
-            LOGGER,
-            cwd=MOPY_PATH
-        )
-        # Copy the exe's to the Mopy folder
-        cpy(exe_orig, exe_target)
-    finally:
-        # Clean up py2exe generated files/folders
-        rm(setup_target)
-        rm(build_folder)
-        rm(dist_folder)
+    temp_path = os.path.join(WBSA_PATH, 'temp')
+    dist_path = os.path.join(WBSA_PATH, 'dist')
+    spec_path = os.path.join(WBSA_PATH, 'pyinstaller.spec')
+    orig_exe = os.path.join(dist_path, 'Wrye Bash.exe')
+    dest_exe = os.path.join(MOPY_PATH, 'Wrye Bash.exe')
+    PyInstaller.__main__.run([
+        '--clean',
+        '--noconfirm',
+        f'--distpath={dist_path}',
+        f'--workpath={temp_path}',
+        spec_path,
+    ])
+    # Copy the exe to the Mopy folder
+    cpy(orig_exe, dest_exe)
     try:
         yield
     finally:
-        rm(exe_target)
+        rm(dest_exe)
 
 def pack_standalone(version):
     """ Packages the standalone version. """
@@ -328,7 +316,6 @@ def pack_installer(nsis_path, version, file_version):
         raise OSError(f"Could not find nsis script '{script_path}', aborting "
                       f"installer creation.")
     nsis_root = get_nsis_root(nsis_path)
-    download_redists()
     nsis_path = os.path.join(nsis_root, u'makensis.exe')
     if not os.path.isfile(nsis_path):
         raise OSError(u"Could not find 'makensis.exe', aborting installer creation.")
@@ -465,6 +452,7 @@ def taglists_need_update():
     return False
 
 def main(args):
+    setup_pyinstaller_logger(LOGFILE)
     utils.setup_log(LOGGER, verbosity=args.verbosity, logfile=LOGFILE)
     # check nightly timestamp is different than previous
     if not check_timestamp(args.version):
@@ -490,7 +478,7 @@ def main(args):
                 pack_manual(args.version)
             if not args.standalone and not args.installer:
                 return
-            with build_executable(args.version, version_info):
+            with build_executable():
                 if args.standalone:
                     LOGGER.info(u'Creating standalone distributable...')
                     pack_standalone(args.version)
