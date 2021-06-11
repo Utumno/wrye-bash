@@ -25,7 +25,7 @@ through a list, a dropdown, or even a color picker."""
 
 __author__ = u'nycz, Utumno'
 
-from itertools import izip
+
 
 import wx as _wx
 import wx.adv as _adv
@@ -214,7 +214,7 @@ class ListBox(WithMouseEvents):
         """Selects all items in the ListBox. Pointless if isSingle=True was
         passed to this ListBox."""
         with self.pause_drawing():
-            for i in xrange(self.lb_get_items_count()):
+            for i in range(self.lb_get_items_count()):
                 self.lb_select_index(i)
 
 class CheckListBox(ListBox, WithCharEvents):
@@ -256,7 +256,7 @@ class CheckListBox(ListBox, WithCharEvents):
         """Sets all checkmarks to the specified state - checked if True,
         unchecked if False."""
         with self.pause_drawing():
-            for i in xrange(self.lb_get_items_count()):
+            for i in range(self.lb_get_items_count()):
                 self.lb_check_at_index(i, checked)
 
     def get_checked_strings(self):
@@ -269,7 +269,7 @@ class CheckListBox(ListBox, WithCharEvents):
         discards the current scroll position."""
         with self.pause_drawing():
             self.lb_clear()
-            for i, (k, v) in enumerate(izip(all_keys, all_values)):
+            for i, (k, v) in enumerate(zip(all_keys, all_values)):
                 self.lb_append(k)
                 self.lb_check_at_index(i, v)
 
@@ -284,7 +284,7 @@ class CheckListBox(ListBox, WithCharEvents):
             self.lb_clear()
             return
         with self.pause_drawing():
-            for index, (lab, ch) in enumerate(izip(names, checkmarks)):
+            for index, (lab, ch) in enumerate(zip(names, checkmarks)):
                 if index >= self.lb_get_items_count():
                     self.lb_append(lab)
                 else:
@@ -294,5 +294,5 @@ class CheckListBox(ListBox, WithCharEvents):
                         continue
                     self.lb_set_label_at_index(index, lab)
                 self.lb_check_at_index(index, ch)
-            for index in xrange(self.lb_get_items_count(), len(names), -1):
+            for index in range(self.lb_get_items_count(), len(names), -1):
                 self.lb_delete_at_index(index - 1)

@@ -22,13 +22,13 @@
 # =============================================================================
 """BAIN Converters aka BCFs"""
 
-from __future__ import division
 
-import cPickle as pickle  # PY3
+
+import pickle as pickle  # PY3
 import io
 import re
 import sys
-from itertools import izip
+
 
 from .. import bolt, archives, bass
 from ..archives import defaultExt, readExts, compressionSettings, \
@@ -153,7 +153,7 @@ class ConvertersData(DataDict):
 
     def addConverter(self, converter):
         """Links the new converter to installers"""
-        if isinstance(converter, (unicode, bytes)): ##: investigate
+        if isinstance(converter, (str, bytes)): ##: investigate
             #--Adding a new file
             converter = GPath(converter).tail
         if isinstance(converter, InstallerConverter):
@@ -275,7 +275,7 @@ class InstallerConverter(object):
     def __setstate__(self, values):
         """Used by unpickler to recreate object. Used for Converters.dat"""
         self.__init__()
-        for a, v in izip(self.persistBCF + self.persistDAT +
+        for a, v in zip(self.persistBCF + self.persistDAT +
                          self.addedPersistDAT, values):
             setattr(self, a, v)
 
@@ -306,10 +306,10 @@ class InstallerConverter(object):
                     return re.sub(u'^(bolt|bosh)$', u'' r'bash.\1',
                                   s.decode(u'utf-8'), flags=re.U)
             translator = _Translator(stream)
-            for a, v in izip(self.persistBCF, pickle.load(translator)):
+            for a, v in zip(self.persistBCF, pickle.load(translator)):
                 setattr(self, a, v)
             if fullLoad:
-                for a, v in izip(self._converter_settings + self.volatile +
+                for a, v in zip(self._converter_settings + self.volatile +
                                  self.addedSettings,
                                  pickle.load(translator)):
                     setattr(self, a, v)
@@ -329,8 +329,7 @@ class InstallerConverter(object):
                 _dump(self.persistBCF, f)
                 _dump(self._converter_settings + self.volatile + self.addedSettings, f)
         except Exception as e:
-            raise StateError, (u'Error creating BCF.dat:\nError: %s' % e), \
-                sys.exc_info()[2]
+            raise StateError(u'Error creating BCF.dat:\nError: %s' % e).with_traceback(sys.exc_info()[2])
 
     def apply(self, destArchive, crc_installer, progress=None, embedded=0):
         """Applies the BCF and packages the converted archive"""
@@ -355,7 +354,7 @@ class InstallerConverter(object):
         else:
             srcCRCs = realCRCs = self.srcCRCs
         nextStep = step = 0.4 / len(srcCRCs)
-        for srcCRC, realCRC in izip(srcCRCs, realCRCs):
+        for srcCRC, realCRC in zip(srcCRCs, realCRCs):
             srcInstaller = crc_installer[srcCRC]
             files = bolt.sortFiles([x[0] for x in srcInstaller.fileSizeCrcs])
             if not files: continue
@@ -404,7 +403,7 @@ class InstallerConverter(object):
                 self.convertedFiles):
             srcDir = srcDir_File[0]
             srcFile = srcDir_File[1]
-            if isinstance(srcDir, (Path, (unicode, bytes))): ##: investigate
+            if isinstance(srcDir, (Path, (str, bytes))): ##: investigate
                 #--either 'BCF-Missing', or crc read from 7z l -slt
                 srcDir = u'%s' % srcDir # Path defines __str__()
                 srcFile = tempJoin(srcDir, srcFile)
@@ -582,8 +581,8 @@ class InstallerConverter(object):
             with tempList.open(u'w', encoding=u'utf-8-sig') as out:
                 out.write(u'\n'.join(fileNames))
         except Exception as e:
-            raise StateError, (u'Error creating file list for 7z:\nError: %s'
-                               % e), sys.exc_info()[2]
+            raise StateError(u'Error creating file list for 7z:\nError: %s'
+                               % e).with_traceback(sys.exc_info()[2])
         #--Determine settings for 7z
         installerCRC = srcInstaller.crc
         apath = srcInstaller if isinstance(srcInstaller,

@@ -70,12 +70,12 @@ def setup_locale(cli_lang):
     # it - so check that next
     target_locale = _wx.Locale(target_language)
     target_name = target_locale.GetCanonicalName()
-    trans_path = os.path.join(os.getcwdu(), u'bash', u'l10n')
+    trans_path = os.path.join(os.getcwd(), u'bash', u'l10n')
     if not os.path.exists(trans_path):
         # HACK: the CI has to run tests from the top dir, which causes us to
         # have a non-Mopy working dir here. Real fix is ditching the fake
         # startup and adding a real headless mode to WB (see #568 and #554)
-        trans_path = os.path.join(os.getcwdu(), u'Mopy', u'bash', u'l10n')
+        trans_path = os.path.join(os.getcwd(), u'Mopy', u'bash', u'l10n')
     supported_l10ns = [l[:-3] for l in os.listdir(trans_path)
                        if l[-3:] == u'.po']
     if target_name not in supported_l10ns:
@@ -157,7 +157,7 @@ def setup_locale(cli_lang):
     # Everything has gone smoothly, install the translation and remember what
     # we ended up with as the final locale
     # PY3: drop the unicode=True, gone in py3 (this is always unicode now)
-    trans.install(unicode=True)
+    trans.install(str=True)
     bass.active_locale = target_name
     del _temp_app
     return target_locale
@@ -172,7 +172,7 @@ def _find_all_bash_modules(bash_path=None, cur_dir=None, _files=None):
     :param cur_dir: The directory to look for modules in. Defaults to cwd.
     :param _files: Internal parameter used to collect file recursively."""
     if bash_path is None: bash_path = u''
-    if cur_dir is None: cur_dir = os.getcwdu()
+    if cur_dir is None: cur_dir = os.getcwd()
     if _files is None: _files = []
     _files.extend([os.path.join(bash_path, m) for m in os.listdir(cur_dir)
                    if m.lower().endswith((u'.py', u'.pyw'))]) ##: glob?
@@ -235,7 +235,7 @@ def dump_translator(out_path, lang):
                             old_line.rstrip(b'\r\n'))
                         if encoding_match:
                             # Encoding names are all ASCII, so this is safe
-                            target_enc = unicode(encoding_match.group(1),
+                            target_enc = str(encoding_match.group(1),
                                                  u'ascii')
                     if re_msg_ids_start.match(old_line):
                         break # Break once we hit the first translatable string
@@ -254,7 +254,7 @@ def dump_translator(out_path, lang):
                         continue
                     elif new_line.startswith(b'msgid "'):
                         # Decode the line and retrieve only the msgid contents
-                        stripped_line = unicode(new_line, target_enc)
+                        stripped_line = str(new_line, target_enc)
                         stripped_line = stripped_line.strip(u'\r\n')[7:-1]
                         # Replace escape sequences - Quote, Tab, Backslash
                         stripped_line = stripped_line.replace(u'\\"', u'"')

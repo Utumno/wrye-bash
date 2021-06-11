@@ -102,9 +102,9 @@ class ConditionFunc(_ACondition):
     def __repr__(self):
         fmt_args = []
         for a in self.func_args:
-            if isinstance(a, unicode): # String
+            if isinstance(a, str): # String
                 fmt_a = u'"%s"' % a
-            elif isinstance(a, (int, long)): # Checksum
+            elif isinstance(a, int): # Checksum
                 fmt_a = u'%X' % a
             else: # Comparison
                 fmt_a = u'%r' % a
@@ -268,7 +268,7 @@ def _fn_product_version(file_path, expected_ver, comparison):
         if file_path.cext in (u'.exe', u'.dll'):
             # Read version from executable fields
             actual_ver = LooseVersion(u'.'.join(
-                unicode(s) for s in get_file_version(file_path.s)))
+                str(s) for s in get_file_version(file_path.s)))
         else:
             raise FileError(file_path.s, u'Product version query was '
                                          u'requested, but the file is not an '
@@ -301,7 +301,7 @@ def _fn_version(file_path, expected_ver, comparison):
         elif file_path.cext in (u'.exe', u'.dll'):
             # Read version from executable fields
             actual_ver = LooseVersion(u'.'.join(
-                unicode(s) for s in get_file_version(file_path.s)))
+                str(s) for s in get_file_version(file_path.s)))
         else:
             raise FileError(file_path.s, u'Version query was requested, but '
                                          u'the file is not a plugin or '
@@ -366,7 +366,7 @@ def _process_path(file_path):
             child_components.append(path_component)
     relative_path = bass.dirs[u'mods']
     # Move up by the number of requested parents
-    for x in xrange(parents):
+    for x in range(parents):
         relative_path = relative_path.head
     # If that put us outside the game folder, the path is invalid
     if not os.path.realpath(relative_path.s).startswith(bass.dirs[u'app'].s):

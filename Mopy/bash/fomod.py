@@ -385,7 +385,7 @@ class FomodInstaller(object):
                 required_files_elem, self.file_list, self.installer_root)
         user_files = []
         selected_options = [option.option_object
-                            for options in self._previous_pages.itervalues()
+                            for options in self._previous_pages.values()
                             for option in options]
         for option in selected_options:
             option_files = option.find(u'files')
@@ -415,14 +415,14 @@ class FomodInstaller(object):
             file_dict[fm_info_dest] = fm_info.file_source
             priority_dict[fm_info_dest] = fm_info.file_priority
         # return everything in strings
-        return {a.s: b.s for a, b in file_dict.iteritems()}
+        return {a.s: b.s for a, b in file_dict.items()}
 
     def _fomod_flags(self):
         """Returns a mapping of 'flag name' -> 'flag value'.
         Useful for either debugging or testing flag dependencies."""
         fm_flag_dict = {}
         fm_flags_list = [option.option_object.find(u'conditionFlags')
-                         for options in self._previous_pages.itervalues()
+                         for options in self._previous_pages.values()
                          for option in options]
         for fm_flags in fm_flags_list:
             if fm_flags is None:
@@ -479,7 +479,7 @@ class FomodInstaller(object):
                 if test_func:
                     test_func(self, condition)
             except FailedCondition as e:
-                failed_conditions.extend([a for a in unicode(e).splitlines()])
+                failed_conditions.extend([a for a in str(e).splitlines()])
                 if cond_op == u'And':
                     raise FailedCondition(u'\n'.join(failed_conditions))
         if cond_op == u'Or' and len(failed_conditions) == len(all_conditions):

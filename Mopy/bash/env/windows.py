@@ -28,7 +28,7 @@ import sys
 import datetime
 import struct
 import xml.etree.ElementTree as xml
-import _winreg as winreg  # PY3
+import winreg as winreg  # PY3
 from ctypes import byref, c_wchar_p, c_void_p, POINTER, Structure, windll, \
     wintypes, WINFUNCTYPE, c_uint, c_long, Union, c_ushort, c_int, \
     c_longlong, c_ulong, c_wchar, sizeof, wstring_at, ARRAY
@@ -302,7 +302,7 @@ class _WindowsStoreFinder(object):
                 with winreg.OpenKey(families_key, package_name) as family_key:
                     num_families = winreg.QueryInfoKey(family_key)[0]
                     return [winreg.EnumKey(family_key, i)
-                            for i in xrange(num_families)]
+                            for i in range(num_families)]
         except WindowsError:
             # Windows version without apps, or not installed
             return []
@@ -416,7 +416,7 @@ class _GUID(Structure):
         super(_GUID, self).__init__()
         self.Data1, self.Data2, self.Data3, self.Data4[0], self.Data4[1], \
         rest = uuid_.fields
-        for i in xrange(2, 8):
+        for i in range(2, 8):
             self.Data4[i] = rest>>(8 - i - 1)*8 & 0xff
 
 # http://msdn.microsoft.com/en-us/library/windows/desktop/dd378457.aspx
@@ -836,7 +836,7 @@ def get_local_app_data_path():
 def init_app_links(apps_dir, badIcons, iconList):
     init_params = []
     for path, (target, icon, shortcut_descr) in _get_app_links(
-            apps_dir).iteritems():
+            apps_dir).items():
         # msi shortcuts: dc0c8de
         if target.lower().find(u'' r'installer\{') != -1:
             target = path
@@ -1149,7 +1149,7 @@ class TaskDialog(object):
         if button.value >= _BUTTONID_OFFSET:
             button = self.__custom_buttons[button.value - _BUTTONID_OFFSET][0]
         else:
-            for stock_btn, stock_val in self.stock_button_ids.iteritems():
+            for stock_btn, stock_val in self.stock_button_ids.items():
                 if stock_val == button.value:
                     button = stock_btn
                     break
@@ -1312,7 +1312,7 @@ class TaskDialog(object):
                 button = self.__custom_buttons[wparam - _BUTTONID_OFFSET][0]
                 args.append(button)
             else:
-                for stock_btn, stock_val in self.stock_button_ids.iteritems():
+                for stock_btn, stock_val in self.stock_button_ids.items():
                     if stock_val == wparam:
                         button = stock_btn
                         break

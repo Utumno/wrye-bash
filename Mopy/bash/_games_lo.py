@@ -33,7 +33,7 @@ import errno
 import re
 import time
 from collections import defaultdict, OrderedDict
-from itertools import izip
+
 
 # Local
 from . import bass, bolt, env, exception
@@ -101,7 +101,7 @@ def _parse_plugins_txt_(path, mod_infos, _star):
                 # have a way to double check: modInfos.data
                 for encoding in bolt.encodingOrder:
                     try:
-                        test2 = unicode(modname, encoding)
+                        test2 = str(modname, encoding)
                         mod_gpath_2 = GPath_no_norm(test2)
                         if mod_gpath_2 in mod_infos:
                             mod_g_path = mod_gpath_2
@@ -307,7 +307,7 @@ class Game(object):
                 deleted = prev - new
                 common = prev & new
                 reordered = any(x != y for x, y in
-                                izip((x for x in previous_lord if x in common),
+                                zip((x for x in previous_lord if x in common),
                                     (x for x in lord if x in common)))
                 setting_active = self._must_update_active(deleted, reordered)
             if setting_active: active = list(previous_active) # active was None
@@ -911,7 +911,7 @@ class TimestampGame(Game):
             (self._mtime_mods[mtime] - {mod_name}) & active)
 
     def get_free_time(self, start_time, end_time=None):
-        all_mtimes = {x.mtime for x in self.mod_infos.itervalues()}
+        all_mtimes = {x.mtime for x in self.mod_infos.values()}
         end_time = end_time or (start_time + 1000) # 1000 (seconds) is an arbitrary limit
         while start_time < end_time:
             if not start_time in all_mtimes:
@@ -968,7 +968,7 @@ class TimestampGame(Game):
                 older += 60.0
                 info.setmtime(older)
         restamp = []
-        for ordered, mod in izip(lord, current):
+        for ordered, mod in zip(lord, current):
             if ordered == mod: continue
             restamp.append((ordered, self.mod_infos[mod].mtime))
         for ordered, mtime in restamp:
@@ -978,7 +978,7 @@ class TimestampGame(Game):
 
     def _rebuild_mtimes_cache(self):
         self._mtime_mods.clear()
-        for mod, info in self.mod_infos.iteritems():
+        for mod, info in self.mod_infos.items():
             self._mtime_mods[int(info.mtime)] |= {mod}
 
     def _persist_active_plugins(self, active, lord):
@@ -1114,7 +1114,7 @@ class TextfileGame(Game):
             while active_in_lo:
                 # Use list(), we may modify cached_active_copy and active_in_lo
                 for i, (ordered, current) in list(enumerate(
-                        izip(cached_active_copy, active_in_lo))):
+                        zip(cached_active_copy, active_in_lo))):
                     if ordered != current:
                         if ordered not in lo:
                             # Mod is in plugins.txt, but not in loadorder.txt;
@@ -1128,7 +1128,7 @@ class TextfileGame(Game):
                             to = w[ordered] + 1 + j
                             # make room
                             w = {x: (i if i < to else i + 1) for x, i in
-                                 w.iteritems()}
+                                 w.items()}
                             w[x] = to # bubble them up !
                         active_in_lo.remove(ordered)
                         cached_active_copy = cached_active_copy[i + 1:]

@@ -24,7 +24,7 @@
 now. See #190, its code should be refactored and land in basher and/or gui."""
 
 # Imports ---------------------------------------------------------------------
-from __future__ import division
+
 
 from . import bass # for dirs - try to avoid
 from . import bolt
@@ -289,7 +289,7 @@ def vistaDialog(parent, message, title, checkBoxTxt=None,
     if checkBoxTxt:
         if isinstance(checkBoxTxt, bytes):
             raise RuntimeError(u'Do not pass bytes to vistaDialog!')
-        elif isinstance(checkBoxTxt, unicode):
+        elif isinstance(checkBoxTxt, str):
             dialog.set_check_box(checkBoxTxt,False)
         else:
             dialog.set_check_box(checkBoxTxt[0],checkBoxTxt[1])
@@ -529,7 +529,7 @@ class ListEditor(DialogWindow):
         #--GUI
         super(ListEditor, self).__init__(parent, title, sizes_dict=sizes)
         # PY3: Drop the unicode()
-        self._size_key = unicode(self._listEditorData.__class__.__name__)
+        self._size_key = str(self._listEditorData.__class__.__name__)
         #--List Box
         self.listBox = ListBox(self, choices=self._list_items)
         self.listBox.set_min_size(125, 150)
@@ -549,7 +549,7 @@ class ListEditor(DialogWindow):
             (lid_data.showSave, _(u'Save'), self.DoSave),
             (lid_data.showCancel, _(u'Cancel'), self.DoCancel),
             ]
-        for k, v in (orderedDict or {}).iteritems():
+        for k, v in (orderedDict or {}).items():
             buttonSet.append((True, k, v))
         if sum(bool(x[0]) for x in buttonSet):
             def _btn(btn_label, btn_callback):
@@ -721,10 +721,10 @@ class TabDragMixin(object):
                 else:
                     left,right,step = oldPos+1,newPos+1,-1
                 insert = left+step
-                addPages = [(self.GetPage(x),self.GetPageText(x)) for x in xrange(left,right)]
+                addPages = [(self.GetPage(x),self.GetPageText(x)) for x in range(left,right)]
                 addPages.reverse()
                 num = right - left
-                for i in xrange(num):
+                for i in range(num):
                     self.RemovePage(left)
                 for page,title in addPages:
                     self.InsertPage(insert,page,title)
@@ -1153,7 +1153,7 @@ class UIList(wx.Panel):
     # gList columns autosize---------------------------------------------------
     def autosizeColumns(self):
         if self.autoColWidths:
-            colCount = xrange(self.__gList.lc_get_columns_count())
+            colCount = range(self.__gList.lc_get_columns_count())
             for i in colCount:
                 self.__gList.lc_set_column_width(i, -self.autoColWidths)
 
@@ -2050,7 +2050,7 @@ class TreeCtrl(_AComponent):
                   wx.TR_HIDE_ROOT)
         root = self._native_widget.AddRoot(title)
         self._native_widget.Bind(wx.EVT_MOTION, self.OnMotion)
-        for item, subitems in items_dict.iteritems():
+        for item, subitems in items_dict.items():
             child = self._native_widget.AppendItem(root, item.s)
             for subitem in subitems:
                 self._native_widget.AppendItem(child, subitem.s)

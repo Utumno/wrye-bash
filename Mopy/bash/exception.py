@@ -37,7 +37,7 @@ class BoltError(Exception):
 def raise_bolt_error(msg, exc=BoltError):
     extype, ex, tb = sys.exc_info()
     formatted = traceback.format_exception_only(extype, ex)[-1]
-    raise exc, u'%s caused by %s' % (msg, formatted), tb
+    raise exc(u'%s caused by %s' % (msg, formatted)).with_traceback(tb)
 
 # Code errors -----------------------------------------------------------------
 class AbstractError(BoltError):
@@ -148,7 +148,7 @@ class FileOperationError(OSError):
         # type: (int, unicode) -> None
         self.errno = error_code
         Exception.__init__(self, u'FileOperationError: %s' % (
-                message or unicode(error_code)))
+                message or str(error_code)))
 
 class AccessDeniedError(FileOperationError):
     def __init__(self):

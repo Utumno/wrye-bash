@@ -23,7 +23,7 @@
 
 import io
 import re
-from itertools import izip
+
 
 from . import SaveInfo
 from ._saves import SreNPC, SaveFile
@@ -75,7 +75,7 @@ class PCFaces(object):
                 sValues = list(struct_unpack(f, getattr(self, a)))
                 fValues = list(struct_unpack(f, getattr(fromRace, a)))
                 tValues = list(struct_unpack(f, getattr(toRace, a)))
-                for index, (sValue, fValue, tValue) in list(enumerate(izip(
+                for index, (sValue, fValue, tValue) in list(enumerate(zip(
                         sValues, fValues, tValues))):
                     sValues[index] = sValue + fValue - tValue
                 setattr(self, a, struct_pack(f, *sValues))

@@ -20,7 +20,7 @@
 #  https://github.com/wrye-bash
 #
 # =============================================================================
-from __future__ import division
+
 
 import os
 import subprocess
@@ -73,7 +73,7 @@ class StatusBar_Button(ItemLink):
         self.gButton = None
         self._tip = button_tip or self.__class__._tip
         # PY3: drop the unicode()
-        if uid is None: uid = (unicode(self.__class__.__name__), self._tip)
+        if uid is None: uid = (str(self.__class__.__name__), self._tip)
         self.uid = uid
 
     def IsPresent(self):
@@ -201,7 +201,7 @@ class _App_Button(StatusBar_Button):
         self._app_button_execute()
 
     def _app_button_execute(self):
-        dir_ = os.getcwdu()
+        dir_ = os.getcwd()
         args = u'"%s"' % self.exePath
         args += u' '.join([u'%s' % arg for arg in self.exeArgs])
         try:

@@ -48,7 +48,7 @@ class DocBrowser(WindowFrame):
         self._db_is_editing = bosh.modInfos.table.getColumn(u'docEdit')
         self._doc_is_wtxt = False
         # Clean data
-        for mod_name, doc in list(self._db_doc_paths.iteritems()):
+        for mod_name, doc in list(self._db_doc_paths.items()):
             if not isinstance(doc, bolt.Path):
                 self._db_doc_paths[mod_name] = GPath(doc)
         # Singleton
@@ -293,7 +293,7 @@ class DocBrowser(WindowFrame):
 
 #------------------------------------------------------------------------------
 _BACK, _FORWARD, _MOD_LIST, _CRC, _VERSION, _LOAD_PLUGINS, _COPY_TEXT, \
-_UPDATE = xrange(8)
+_UPDATE = range(8)
 
 def _get_mod_checker_setting(key, default=None):
     return bass.settings.get(u'bash.modChecker.show%s' % key, default)

@@ -24,7 +24,7 @@
 properties about records and either notifies the user or attempts a fix when it
 notices a problem."""
 
-from __future__ import division
+
 
 import random
 import re
@@ -45,7 +45,7 @@ class ContentsCheckerPatcher(Patcher):
     patcher_order = 50
     contType_entryTypes = bush.game.cc_valid_types
     contTypes = set(contType_entryTypes)
-    entryTypes = set(chain.from_iterable(contType_entryTypes.viewvalues()))
+    entryTypes = set(chain.from_iterable(contType_entryTypes.values()))
     _read_sigs = tuple(contTypes | entryTypes)
 
     def __init__(self, p_name, p_file):
@@ -330,7 +330,7 @@ def _find_vanilla_eyes():
             rc_file = bush.game.master_file
         return GPath(rc_file), rc_obj
     ret = {}
-    for race_fid, race_eyes in bush.game.default_eyes.iteritems():
+    for race_fid, race_eyes in bush.game.default_eyes.items():
         new_key = _conv_fid(race_fid)
         new_val = [_conv_fid(eye_fid) for eye_fid in race_eyes]
         ret[new_key] = new_val
