@@ -914,7 +914,7 @@ class ItemStats(_HandleAliases):
         attrs = self.sig_stats_attrs[top_grup_sig]
         eid_or_next = 3 + self._called_from_patcher
         attr_dex = {att: dex for att, dex in
-                    izip(attrs, xrange(eid_or_next, eid_or_next + len(attrs)))}
+                    izip(attrs, range(eid_or_next, eid_or_next + len(attrs)))}
         attr_val = self._update_from_csv(top_grup_sig, csv_fields,
                                          index_dict=attr_dex)
         self.id_stored_data[top_grup_sig][longid].update(attr_val)
@@ -1359,7 +1359,7 @@ class SpellRecords(_UsesEffectsMixin):
             b'SPEL', fields, index_dict=attr_dex)
         if self.detailed:  # and not len(fields) < 7: IndexError
             attr_dex = dict(
-                izip(self.__class__._extra_attrs[:-1], xrange(8, 15)))
+                izip(self.__class__._extra_attrs[:-1], range(8, 15)))
             attr_val = super(_UsesEffectsMixin, self)._update_from_csv(
                 b'SPEL', fields, index_dict=attr_dex)
             attr_val[u'effects'] = self.readEffects(fields[15:])
