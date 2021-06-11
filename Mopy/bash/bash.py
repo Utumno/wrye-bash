@@ -211,9 +211,9 @@ def dump_environment():
         f'{lz4.library_version_string()}',
         f'pyyaml version: {yaml.__version__}',
         # Standalone: stdout will actually be pointing to stderr, which has no
-        # 'encoding' attribute
-        f'Input encoding: {sys.stdin.encoding}; output encoding: '
-        f'{getattr(sys.stdout, u"encoding", None)}',
+        # 'encoding' attribute and stdin will be None
+        f'Input encoding: {sys.stdin.encoding if sys.stdin else None}; '
+        f'output encoding: {getattr(sys.stdout, u"encoding", None)}',
         f'Filesystem encoding: {fse}'
         f'{(u" - using %s" % bolt.Path.sys_fs_enc) if not fse else u""}',
         f'Command line: {sys.argv}',

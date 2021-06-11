@@ -22,10 +22,9 @@
 # =============================================================================
 import os
 import re
-import subprocess
 
 from . import bass
-from .bolt import startupinfo, GPath, deprint
+from .bolt import GPath, deprint, popen_common
 from .exception import StateError
 
 exe7z = u'7z.exe' if os.name == u'nt' else u'7z'
@@ -49,9 +48,7 @@ def compress7z(command, full_dest, rel_dest, srcDir, progress=None):
         progress(0, f'{rel_dest}\n' + _(u'Compressing files...'))
         progress.setFull(1 + length)
     #--Pack the files
-    proc = subprocess.Popen(command, stdout=subprocess.PIPE, bufsize=1,
-                            stdin=subprocess.PIPE, # needed for some commands
-                            startupinfo=startupinfo, encoding=u'utf-8')
+    proc = popen_common(command, bufsize=1, encoding='utf-8')
     #--Error checking and progress feedback
     index, errorLine = 0, u''
     with proc.stdout as out:
@@ -79,9 +76,7 @@ def extract7z(src_archive, extract_dir, progress=None, readExtensions=None,
               recursive=False, filelist_to_extract=None):
     command = _extract_command(src_archive, extract_dir, recursive,
                                filelist_to_extract)
-    proc = subprocess.Popen(command, stdout=subprocess.PIPE, bufsize=1,
-                            stdin=subprocess.PIPE, startupinfo=startupinfo,
-                            encoding=u'utf-8')
+    proc = popen_common(command, bufsize=1, encoding='utf-8')
     # Error checking, progress feedback and subArchives for recursive unpacking
     index, errorLine, subArchives = 0, u'', []
     with proc.stdout as out:
@@ -106,8 +101,7 @@ def extract7z(src_archive, extract_dir, progress=None, readExtensions=None,
 
 def wrapPopenOut(command, wrapper, errorMsg):
     # No encoding, this is *supposed* to return bytes!
-    proc = subprocess.Popen(command, stdout=subprocess.PIPE, bufsize=-1,
-                            stdin=subprocess.PIPE, startupinfo=startupinfo)
+    proc = popen_common(command, bufsize=-1)
     out, unused_err = proc.communicate()
     wrapper(out)
     returncode = proc.returncode
@@ -163,9 +157,7 @@ def list_archive(archive_path, parse_archive_line, __reList=reListArchive):
     """Client is responsible for closing the file ! See uses for
     _parse_archive_line examples."""
     command = f'"{exe7z}" l -slt -sccUTF-8 "{archive_path}"'
-    proc = subprocess.Popen(command, stdout=subprocess.PIPE,
-                            stderr=subprocess.STDOUT, stdin=subprocess.PIPE,
-                            encoding=u'utf-8', startupinfo=startupinfo)
+    proc = popen_common(command, encoding='utf-8')
     ins, _err = proc.communicate()
     for line in ins.splitlines(True): # keepends=True
         maList = __reList.match(line)

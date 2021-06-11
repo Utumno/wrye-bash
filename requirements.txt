@@ -9,5 +9,6 @@ PyMuPDF==1.19.2
 # Compile/Build-time
 pygit2==1.7.2
 pyfiglet==0.8.post1
+pyinstaller==4.7
 pytest==6.2.5
 toml==0.10.2
