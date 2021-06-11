@@ -25,7 +25,7 @@ mods, saves, inis, installers etc"""
 
 __author__ = u'Lojack, Utumno'
 
-import cPickle as pickle  # PY3
+import pickle as pickle  # PY3
 
 import wx as _wx
 from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin
@@ -118,7 +118,7 @@ class _DragListCtrl(_wx.ListCtrl, ListCtrlAutoWidthMixin):
         if not self.fnDndAllow(event): return
         indices = []
         start = stop = -1
-        for index in xrange(self.GetItemCount()):
+        for index in range(self.GetItemCount()):
             if self.GetItemState(index, _wx.LIST_STATE_SELECTED):
                 if stop >= 0 and self.dndOnlyCont:
                     # Only allow moving selections if they are in a

@@ -37,7 +37,7 @@ lo/active from inside Bash.
 delegate to the game_handle.
 """
 
-from __future__ import division
+
 
 __author__ = u'Utumno'
 
@@ -45,7 +45,7 @@ import sys
 import math
 import collections
 import time
-from itertools import izip
+
 # Internal
 from . import bass, bolt, bush, exception
 # Game instance providing load order operations API
@@ -143,9 +143,9 @@ class LoadOrder(object):
                 u'_loadOrder': self.loadOrder}
 
     def __setstate__(self, dct):
-        if not isinstance(next(iter(dct)), unicode):# PY3: TTT accepts bytes keys?
-            dct = {(k if type(k) is unicode else k.decode(u'ascii')): v for
-                   k, v in dct.iteritems()}
+        if not isinstance(next(iter(dct)), str):# PY3: TTT accepts bytes keys?
+            dct = {(k if type(k) is str else k.decode(u'ascii')): v for
+                   k, v in dct.items()}
         self.__dict__.update(dct)   # update attributes # __dict__ prints empty
         self._active = frozenset(self._activeOrdered)
         self.__mod_loIndex = {a: i for i, a in enumerate(self._loadOrder)}
@@ -256,7 +256,7 @@ def find_first_difference(lo_a, acti_a, lo_b, acti_b):
     lindex_b = {p: i for i, p in enumerate(lo_b)}
     # Look for the first difference between the LOs
     low_diff = (None, None)
-    for a, b in izip(lo_a, lo_b):
+    for a, b in zip(lo_a, lo_b):
         if a != b:
             low_diff = (a, b)
             break
@@ -271,7 +271,7 @@ def find_first_difference(lo_a, acti_a, lo_b, acti_b):
     else: low_lo = None # no difference in LO
     # Then do the exact same thing with actives
     low_diff = (None, None)
-    for a, b in izip(acti_a, acti_b):
+    for a, b in zip(acti_a, acti_b):
         if a != b:
             low_diff = (a, b)
             break

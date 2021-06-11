@@ -34,7 +34,7 @@ Creates three different types of distributables:
 Most steps of the build process can be customized, see the options below.
 """
 
-from __future__ import absolute_import, print_function
+
 import argparse
 import datetime
 import glob
@@ -45,7 +45,7 @@ import shutil
 import sys
 import tempfile
 import zipfile
-import _winreg as winreg  # PY3
+import winreg as winreg  # PY3
 from contextlib import contextmanager
 from distutils.version import LooseVersion
 
@@ -160,7 +160,7 @@ def get_version_info(version):
     """
     production_regex = r'\d{3,}(?:\.\d)?$'
     nightly_regex = r'(\d{3,})\.(\d{12})$'
-    version = unicode(version)
+    version = str(version)
     if re.match(production_regex, version) is not None:
         file_version = u'{}.0.0.0'.format(version)
     else:
@@ -268,12 +268,12 @@ def pack_manual(version):
         u'Mopy/bash/tests',
         u'Mopy/redist',
     )
-    for orig, target in files_to_include.iteritems():
+    for orig, target in files_to_include.items():
         cpy(orig, target)
     try:
         pack_7z(archive_, *[u'-xr!' + a for a in ignores])
     finally:
-        for path in files_to_include.itervalues():
+        for path in files_to_include.values():
             rm(path)
 
 @contextmanager
@@ -447,7 +447,7 @@ def check_timestamp(build_version):
         previous_version = previous_version.group(0)
         if nightly_version == previous_version:
             # PY3: raw_input -> input
-            answer = raw_input(
+            answer = input(
                 u'Current timestamp is equal to the previous build. Continue? [y/N]\n> '
             )
             if not answer or answer.lower().startswith(u'n'):
@@ -527,14 +527,14 @@ def hold_files(*files):
     try:
         yield
     finally:
-        for orig, target in file_map.iteritems():
+        for orig, target in file_map.items():
             mv(target, orig)
         rm(tmpdir)
 
 @contextmanager
 def clean_repo():
     repo = pygit2.Repository(ROOT_PATH)
-    if any(v != pygit2.GIT_STATUS_IGNORED for v in repo.status().itervalues()):
+    if any(v != pygit2.GIT_STATUS_IGNORED for v in repo.status().values()):
         print(u'Your repository is dirty (you have uncommitted changes).')
     branch_name = repo.head.shorthand
     if not branch_name.startswith((u'rel-', u'release-', u'nightly')):

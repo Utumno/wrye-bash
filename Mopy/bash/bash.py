@@ -26,7 +26,7 @@ it runs some initialization functions and then starts the main application
 loop."""
 
 # Imports ---------------------------------------------------------------------
-from __future__ import print_function
+
 import atexit
 import codecs
 import io
@@ -35,7 +35,7 @@ import platform
 import shutil
 import sys
 import traceback
-from ConfigParser import ConfigParser
+from configparser import ConfigParser
 # Local
 from . import bass, bolt, exception
 # NO OTHER LOCAL IMPORTS HERE (apart from the ones above) !
@@ -52,10 +52,10 @@ def _early_setup(debug):
     # properly
     if bass.is_standalone:
         pathToProg = os.path.dirname(
-            unicode(sys.executable, bolt.Path.sys_fs_enc))
+            str(sys.executable, bolt.Path.sys_fs_enc))
     else:
         pathToProg = os.path.dirname(
-            unicode(sys.argv[0], bolt.Path.sys_fs_enc))
+            str(sys.argv[0], bolt.Path.sys_fs_enc))
     if pathToProg:
         os.chdir(pathToProg)
     bolt.deprintOn = debug
@@ -70,7 +70,7 @@ def _early_setup(debug):
         #     os.path.join(os.getcwdu(), u'BashBugDump.log'), u'w', buffering=1,
         #     encoding=u'utf-8')
         _bugdump_handle = codecs.getwriter(u'utf-8')(
-            open(os.path.join(os.getcwdu(), u'BashBugDump.log'), u'w',
+            open(os.path.join(os.getcwd(), u'BashBugDump.log'), u'w',
                  buffering=0))
         sys.stdout = _bugdump_handle
         sys.stderr = _bugdump_handle
@@ -542,7 +542,7 @@ def _show_boot_popup(msg, is_critical=True):
         _tkinter_error_dial(msg, but_kwargs)
 
 def _tkinter_error_dial(msg, but_kwargs):
-    import Tkinter as tkinter  # PY3
+    import tkinter as tkinter  # PY3
     root_widget = tkinter.Tk()
     frame = tkinter.Frame(root_widget)
     frame.pack()
@@ -596,7 +596,7 @@ def _select_game_popup(game_infos):
             self._callback = callback
             self._sorted_games = sorted(g.displayName for g in game_infos)
             self._game_to_paths = {g.displayName: ps for g, ps
-                                  in game_infos.iteritems()}
+                                  in game_infos.items()}
             self._game_to_info = {g.displayName: g for g in game_infos}
             self._game_to_bitmap = {
                 g.displayName: _wx.Bitmap(bass.dirs[u'images'].join(

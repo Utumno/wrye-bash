@@ -23,7 +23,7 @@
 """This module contains oblivion multitweak item patcher classes that belong
 to the Names Multitweaker - as well as the tweaker itself."""
 
-from __future__ import division
+
 
 import re
 from collections import defaultdict, OrderedDict
@@ -381,7 +381,7 @@ class NamesTweak_Ingestibles_Fo3(_ANamesTweak_Ingestibles):
     # we just show the equipment type
     _example_item = _(u'Radroach Meat')
     _example_code = u'F'
-    _valid_ingestibles = set(xrange(10, 14))
+    _valid_ingestibles = set(range(10, 14))
 
     def _exec_rename(self, record):
         alch_etyp = record.equipment_type
@@ -522,7 +522,7 @@ class NamesTweak_Weapons_Tes4(_ANamesTweak_Weapons):
     _example_item = _(u'Elven Bow')
     _example_code = u'B'
     _example_stat = 14
-    _valid_weapons = set(xrange(0, 5))
+    _valid_weapons = set(range(0, 5))
     _w_type_attr = u'weaponType'
 
     def _exec_rename(self, record):
@@ -546,7 +546,7 @@ class NamesTweak_Weapons_Fo3(_ANamesTweak_Weapons):
     _example_item = _(u'BB Gun')
     _example_code = u'S'
     _example_stat = 10
-    _valid_weapons = set(xrange(0, 7))
+    _valid_weapons = set(range(0, 7))
     _w_type_attr = u'equipment_type'
 
     def _exec_rename(self, record):
@@ -610,7 +610,7 @@ class NamesTweak_AmmoWeight_Fo3(NamesTweak_AmmoWeight_Fnv, IndexingTweak):
         super(NamesTweak_AmmoWeight_Fo3, self).prepare_for_tweaking(patch_file)
         # Gather weight from FWE FormID Lists
         self._look_up_weight = luw = defaultdict(lambda: 0.0)
-        for flst_rec in self._indexed_records[b'FLST'].itervalues():
+        for flst_rec in self._indexed_records[b'FLST'].values():
             ma_flst = _re_flst_ammo_weight.match(flst_rec.eid)
             if ma_flst:
                 flst_weight = float(u'%s.%s' % (ma_flst.group(1),
@@ -683,7 +683,7 @@ class _ATextReplacer(MultiTweakItem):
         # Convert the match/replace strings to record paths
         self._match_replace_rpaths = {
             rsig: tuple([RecPath(r) for r in rpaths])
-            for rsig, rpaths in self._match_replace_rpaths.iteritems()
+            for rsig, rpaths in self._match_replace_rpaths.items()
         }
 
     def wants_record(self, record):
@@ -703,7 +703,7 @@ class _ATextReplacer(MultiTweakItem):
 
     def tweak_record(self, record):
         record_sig = record._rec_sig
-        for re_to_match, replacement in self._re_mapping.iteritems():
+        for re_to_match, replacement in self._re_mapping.items():
             replacement_sub = re_to_match.sub
             def exec_replacement(rec_val):
                 if rec_val: # or blow up on re.sub
@@ -715,7 +715,7 @@ class _ATextReplacer(MultiTweakItem):
 
     def finish_tweaking(self, patch_file):
         # These GMSTs don't exist in Oblivion.esm, so create them in the BP
-        for extra_eid, extra_val in self._tr_extra_gmsts.iteritems():
+        for extra_eid, extra_val in self._tr_extra_gmsts.items():
             patch_file.new_gmst(extra_eid, extra_val)
 
 #------------------------------------------------------------------------------

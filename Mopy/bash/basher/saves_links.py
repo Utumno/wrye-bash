@@ -24,7 +24,7 @@
 """Menu items for the main and item menus of the saves tab - their window
 attribute points to BashFrame.saveList singleton."""
 
-from __future__ import division
+
 
 import io
 import re
@@ -495,7 +495,7 @@ class Save_EditCreatedData(balt.ListEditorData):
         else:
             self.changed = False #--Allows graceful effort if close fails.
             count = 0
-            for newName,(oldName,records) in self.name_nameRecords.iteritems():
+            for newName,(oldName,records) in self.name_nameRecords.items():
                 if newName == oldName: continue
                 for record in records:
                     record.full = newName
@@ -846,7 +846,7 @@ class Save_Unbloat(OneItemLink):
         message = [_(u'Remove savegame bloating?')]
         if createdCounts:
             for (created_item_rec_type, rec_full), count_ in sorted(
-                    createdCounts.iteritems()):
+                    createdCounts.items()):
                 message.append(u'  %s %s: %u' % (
                     created_item_rec_type, rec_full, count_))
         if nullRefCount:

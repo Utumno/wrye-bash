@@ -29,12 +29,12 @@ that has to be done when reading mods.
 However, not all parsers fit this pattern - some have to read mods twice,
 others barely even fit into the pattern at all (e.g. FidReplacer)."""
 
-from __future__ import division
+
 
 import csv
 import re
 from collections import defaultdict, Counter, OrderedDict
-from itertools import izip
+
 from operator import itemgetter
 
 # Internal
@@ -76,7 +76,7 @@ class _CsvReader(object):
 
     def __iter__(self):
         for row in self.reader:
-            yield [unicode(x, u'utf8') for x in row]
+            yield [str(x, u'utf8') for x in row]
 
     def close(self):
         self.reader = None
@@ -168,7 +168,7 @@ class CsvParser(object):
         modFile = self._load_plugin(modInfo, target_types=self.id_stored_data)
         changed = self._changed_type()
         # We know that the loaded mod only has the tops loaded that we need
-        for top_grup_sig, stored_rec_info in self.id_stored_data.iteritems():
+        for top_grup_sig, stored_rec_info in self.id_stored_data.items():
             rec_block = modFile.tops.get(top_grup_sig, None)
             # Check if this record type makes any sense to patch
             if not stored_rec_info or not rec_block: continue
@@ -461,7 +461,7 @@ class ActorFactions(_AParser):
         return {f.faction: f.rank for f in record.factions}
 
     def _write_record_2(self, record, new_info, cur_info):
-        for faction, rank in set(new_info.iteritems()) - set(cur_info.iteritems()):
+        for faction, rank in set(new_info.items()) - set(cur_info.items()):
             # Check if this an addition or a change
             for entry in record.factions:
                 if entry.faction == faction:
@@ -529,7 +529,7 @@ class ActorLevels(_HandleAliases):
             modFile = ModFile(bosh.modInfos[modName],loadFactory)
             modFile.load(True)
             for rfid, record in modFile.tops[b'NPC_'].iter_present_records():
-                items = izip((u'eid', u'flags.pcLevelOffset', u'level_offset',
+                items = zip((u'eid', u'flags.pcLevelOffset', u'level_offset',
                           u'calcMin', u'calcMax'), (record.eid,
                          bool(record.flags.pcLevelOffset), record.level_offset,
                          record.calcMin, record.calcMax))
@@ -734,7 +734,7 @@ class FactionRelations(_AParser):
         return relations
 
     def _write_record_2(self, record, new_info, cur_info):
-        for rel_fac, rel_attributes in set(new_info.iteritems()) - set(cur_info.iteritems()):
+        for rel_fac, rel_attributes in set(new_info.items()) - set(cur_info.items()):
             # See if this is a new relation or a change to an existing one
             for entry in record.relations:
                 if rel_fac == entry.faction:
@@ -746,7 +746,7 @@ class FactionRelations(_AParser):
                 target_entry = MelObject()
                 record.relations.append(target_entry)
             # Actually write out the attributes from new_info
-            for rel_attr, rel_val in izip(self.cls_rel_attrs,
+            for rel_attr, rel_val in zip(self.cls_rel_attrs,
                                          (rel_fac,) + rel_attributes): ##: Py3: unpack
                 setattr(target_entry, rel_attr, rel_val)
 
@@ -798,11 +798,11 @@ class FidReplacer(_HandleAliases):
         filt_fids.update(newId for newId in self.new_eid
                          if newId[0] in masters_list)
         old_eid_filtered = {oldId: eid for oldId, eid
-                            in self.old_eid.iteritems() if oldId in filt_fids}
+                            in self.old_eid.items() if oldId in filt_fids}
         new_eid_filtered = {newId: eid for newId, eid
-                            in self.new_eid.iteritems() if newId in filt_fids}
+                            in self.new_eid.items() if newId in filt_fids}
         old_new_filtered = {oldId: newId for oldId, newId
-                            in self.old_new.iteritems()
+                            in self.old_new.items()
                             if oldId in filt_fids and newId in filt_fids}
         if not old_new_filtered: return False
         #--Swapper function
@@ -825,7 +825,7 @@ class FidReplacer(_HandleAliases):
         modFile.safeSave()
         entries = [(count, old_eid_filtered[oldId],
                     new_eid_filtered[old_new_filtered[oldId]])
-                   for oldId, count in old_count.iteritems()]
+                   for oldId, count in old_count.items()]
         entries.sort(key=itemgetter(1))
         return u'\n'.join([u'%3d %s >> %s' % entry for entry in entries])
 
@@ -879,7 +879,7 @@ class ItemStats(_HandleAliases):
         super(ItemStats, self).__init__(aliases_, called_from_patcher)
         if self._called_from_patcher:
             self.sig_stats_attrs = {r: tuple(x for x in a if x != u'eid') for
-                                    r, a in bush.game.statsTypes.iteritems()}
+                                    r, a in bush.game.statsTypes.items()}
         else:
             self.sig_stats_attrs = bush.game.statsTypes
         self.id_stored_data = defaultdict(lambda : defaultdict(dict))
@@ -888,13 +888,13 @@ class ItemStats(_HandleAliases):
     def _read_record(self, record, id_data):
         atts = self.sig_stats_attrs[record.rec_sig]
         id_data[record.fid].update(
-            izip(atts, (getattr(record, a) for a in atts)))
+            zip(atts, (getattr(record, a) for a in atts)))
 
     _changed_type = Counter #--changed[modName] = numChanged
     def _write_record(self, record, itemStats, changed):
         """Writes stats to specified mod."""
         change = False
-        for stat_key, n_stat in itemStats.iteritems():
+        for stat_key, n_stat in itemStats.items():
             if change:
                 setattr(record, stat_key, n_stat)
                 continue
@@ -914,7 +914,7 @@ class ItemStats(_HandleAliases):
         attrs = self.sig_stats_attrs[top_grup_sig]
         eid_or_next = 3 + self._called_from_patcher
         attr_dex = {att: dex for att, dex in
-                    izip(attrs, xrange(eid_or_next, eid_or_next + len(attrs)))}
+                    zip(attrs, range(eid_or_next, eid_or_next + len(attrs)))}
         attr_val = self._update_from_csv(top_grup_sig, csv_fields,
                                          index_dict=attr_dex)
         self.id_stored_data[top_grup_sig][longid].update(attr_val)
@@ -934,7 +934,7 @@ class ItemStats(_HandleAliases):
             for longid, attr_value in _key_sort(fid_attr_value,
                     keys_dex=(0, 1), values_key=u'eid'):
                 output = self._row_fmt_str % (top_grup, longid[0], longid[1],
-                    u','.join(ser(attr_value[x]) for x, ser in izip(atts, sers)))
+                    u','.join(ser(attr_value[x]) for x, ser in zip(atts, sers)))
                 out.write(output)
 
 #------------------------------------------------------------------------------
@@ -1039,7 +1039,7 @@ class ScriptText(CsvParser):
         added = []
         if self.makeNew and self.eid_data:
             tes4 = modFile.tes4
-            for eid, (newText, longid) in self.eid_data.iteritems():
+            for eid, (newText, longid) in self.eid_data.items():
                 scriptFid = genFid(tes4.num_masters, tes4.getNextObject())
                 newScript = MreRecord.type_class[b'SCPT'](
                     RecHeader(b'SCPT', 0, 0x40000, scriptFid, 0))
@@ -1088,19 +1088,19 @@ class _UsesEffectsMixin(_HandleAliases):
         _(u'SE school'),_(u'SE visual'),_(u'SE Is Hostile'),_(u'SE Name'))
     recipientTypeNumber_Name = {None:u'NONE',0:u'Self',1:u'Touch',2:u'Target',}
     recipientTypeName_Number = {y.lower(): x for x, y
-                                in recipientTypeNumber_Name.iteritems()
+                                in recipientTypeNumber_Name.items()
                                 if x is not None}
     actorValueNumber_Name = {x: y for x, y
                              in enumerate(bush.game.actor_values)}
     actorValueNumber_Name[None] = u'NONE'
     actorValueName_Number = {y.lower(): x for x, y
-                             in actorValueNumber_Name.iteritems()
+                             in actorValueNumber_Name.items()
                              if x is not None}
     schoolTypeNumber_Name = {None:u'NONE',0:u'Alteration',1:u'Conjuration',
                              2:u'Destruction',3:u'Illusion',4:u'Mysticism',
                              5:u'Restoration',}
     schoolTypeName_Number = {y.lower(): x for x, y
-                             in schoolTypeNumber_Name.iteritems()
+                             in schoolTypeNumber_Name.items()
                              if x is not None}
     _row_fmt_str = u'"%s","0x%06X",%s\n'
 
@@ -1240,7 +1240,7 @@ class _UsesEffectsMixin(_HandleAliases):
                       __attrgetters=attrgetter_cache):
         """Writes stats to specified mod."""
         imported = False
-        for att, val in newStats.iteritems():
+        for att, val in newStats.items():
             old_val = __attrgetters[att](record)
             if att == u'eid': old_eid = old_val
             if old_val != val:
@@ -1255,7 +1255,7 @@ class _UsesEffectsMixin(_HandleAliases):
         stats, row_fmt_str = self.fid_stats, self._row_fmt_str
         for rfid, fstats in _key_sort(stats, values_key=u'eid'): ##: , x[0]) ??
             output = row_fmt_str % (rfid[0], rfid[1], u','.join(ser(fstats[k])
-                for k, ser in self._attr_serializer.iteritems()))
+                for k, ser in self._attr_serializer.items()))
             out.write(output)
 
 #------------------------------------------------------------------------------
@@ -1359,7 +1359,7 @@ class SpellRecords(_UsesEffectsMixin):
             b'SPEL', fields, index_dict=attr_dex)
         if self.detailed:  # and not len(fields) < 7: IndexError
             attr_dex = dict(
-                izip(self.__class__._extra_attrs[:-1], xrange(8, 15)))
+                zip(self.__class__._extra_attrs[:-1], range(8, 15)))
             attr_val = super(_UsesEffectsMixin, self)._update_from_csv(
                 b'SPEL', fields, index_dict=attr_dex)
             attr_val[u'effects'] = self.readEffects(fields[15:])

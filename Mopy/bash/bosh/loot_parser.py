@@ -166,7 +166,7 @@ class LOOTParser(object):
                 _merge_lists(masterlist, _parse_list(userlist_path))
             self._cached_masterlist = masterlist
             self._cached_regexes = [(re.compile(r, re.I | re.U).match, e)
-                                    for r, e in masterlist.iteritems()
+                                    for r, e in masterlist.items()
                                     if is_regex(r)]
             self._cached_merges = {}
         except (re.error, TypeError, yaml.YAMLError):
@@ -236,7 +236,7 @@ def _loot_decode(raw_str): # PY3: drop entirely, pyyaml is fully unicode on py3
     """LOOT masterlists are always encoded in UTF-8, but simply opening the
     file in UTF-8 mode is not enough. PyYAML stores everything it can encode as
     ASCII as bytestrings, and everything else as unicode. No idea why."""
-    return raw_str if isinstance(raw_str, unicode) else raw_str.decode(u'utf-8')
+    return raw_str if isinstance(raw_str, str) else raw_str.decode(u'utf-8')
 
 class _PluginEntry(object):
     """Represents stored information about a plugin's entry in the LOOT
@@ -671,7 +671,7 @@ def _merge_lists(first_list, second_list):
     :type first_list: LowerDict[unicode, _PluginEntry]
     :param second_list: The list to merge information from.
     :type second_list: LowerDict[unicode, _PluginEntry]"""
-    for plugin_name, second_entry in second_list.iteritems():
+    for plugin_name, second_entry in second_list.items():
         try:
             first_list[plugin_name].merge_with(second_entry)
         except KeyError:

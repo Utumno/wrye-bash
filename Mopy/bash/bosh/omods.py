@@ -20,7 +20,7 @@
 #  https://github.com/wrye-bash
 #
 # =============================================================================
-from __future__ import division
+
 import collections
 import re
 import subprocess
@@ -125,14 +125,14 @@ class OmodFile(object):
             cmd7z = [archives.exe7z, u'l', u'-r', u'-sccUTF-8', tempOmod.s]
             with subprocess.Popen(cmd7z, stdout=PIPE, stdin=PIPE, startupinfo=startupinfo).stdout as ins:
                 for line in ins:
-                    line = unicode(line,u'utf8')
+                    line = str(line,u'utf8')
                     maFileSize = reFileSize.match(line)
                     if maFileSize: #also matches the last line with total sizes
                         name_ = maFileSize.group(2).strip().strip(u'\r')
                         filesizes[name_] = int(maFileSize.group(1))
         # drop the last line entry
         del filesizes[list(filesizes)[-1]]
-        return filesizes, sum(filesizes.itervalues())
+        return filesizes, sum(filesizes.values())
 
     def extractToProject(self,outDir,progress=None):
         """Extract the contents of the omod to a project, with omod conversion data"""
@@ -172,7 +172,7 @@ class OmodFile(object):
             cmd7z = [archives.exe7z, u'e', u'-r', u'-sccUTF-8', tempOmod.s, u'-o%s' % extractDir, u'-bb1']
             with subprocess.Popen(cmd7z, stdout=PIPE, stdin=PIPE, startupinfo=startupinfo).stdout as ins:
                 for line in ins:
-                    line = unicode(line,'utf8')
+                    line = str(line,'utf8')
                     maExtracting = reExtracting.match(line)
                     if maExtracting:
                         name_ = maExtracting.group(1).strip().strip(u'\r')
@@ -280,7 +280,7 @@ class OmodFile(object):
                 subprogress(5)
 
                 # Next 8 bytes are the size of the data stream
-                for i in xrange(8):
+                for i in range(8):
                     out = totalSize >> (i*8)
                     pack_byte(output, out & 0xFF)
                     done += 1
