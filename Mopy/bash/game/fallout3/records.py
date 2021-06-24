@@ -98,6 +98,22 @@ def fnv_only(fnv_obj):
     explicitly when using it."""
     return if_fnv(fo3_version=None, fnv_version=fnv_obj)
 
+# Common Flags
+aiService = Flags(0, Flags.getNames(
+    (0,'weapons'),
+    (1,'armor'),
+    (2,'clothing'),
+    (3,'books'),
+    (4,'foods'),
+    (5,'chems'),
+    (6,'stimpacks'),
+    (7,'lights'),
+    (10,'miscItems'),
+    (13,'potions'),
+    (14,'training'),
+    (16,'recharge'),
+    (17,'repair')))
+
 #------------------------------------------------------------------------------
 # Record Elements    ----------------------------------------------------------
 #------------------------------------------------------------------------------
@@ -828,20 +844,6 @@ class MreClas(MelRecord):
         u'class_playable',
         u'class_guard',
     ), unknown_is_unused=True)
-    aiService = Flags(0, Flags.getNames(
-        (0,'weapons'),
-        (1,'armor'),
-        (2,'clothing'),
-        (3,'books'),
-        (4,'foods'),
-        (5,'chems'),
-        (6,'stimpacks'),
-        (7,'lights'),
-        (10,'miscItems'),
-        (13,'potions'),
-        (14,'training'),
-        (16,'recharge'),
-        (17,'repair')))
 
     melSet = MelSet(
         MelEdid(),
@@ -960,20 +962,6 @@ class MreCrea(MreActor):
         (29,'isGhost'),
         (30,'noRotatingHeadTrack'),
         (31,'invulnerable')))
-    aiService = Flags(0, Flags.getNames(
-        (0,'weapons'),
-        (1,'armor'),
-        (2,'clothing'),
-        (3,'books'),
-        (4,'foods'),
-        (5,'chems'),
-        (6,'stimpacks'),
-        (7,'lights'),
-        (10,'miscItems'),
-        (13,'potions'),
-        (14,'training'),
-        (16,'recharge'),
-        (17,'repair')))
     aggroflags = Flags(0, Flags.getNames('aggroRadiusBehavior',))
 
     melSet = MelSet(
@@ -2071,20 +2059,6 @@ class MreNpc(MreActor):
         (26,'noKnockDown'),
         (27,'notPushable'),
         (30,'noRotatingHeadTrack')))
-    aiService = Flags(0, Flags.getNames(
-        (0,'weapons'),
-        (1,'armor'),
-        (2,'clothing'),
-        (3,'books'),
-        (4,'foods'),
-        (5,'chems'),
-        (6,'stimpacks'),
-        (7,'lights'),
-        (10,'miscItems'),
-        (13,'potions'),
-        (14,'training'),
-        (16,'recharge'),
-        (17,'repair')))
     aggroflags = Flags(0, Flags.getNames('aggroRadiusBehavior',))
 
     class MelNpcDnam(MelLists):

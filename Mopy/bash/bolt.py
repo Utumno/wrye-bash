@@ -1063,13 +1063,6 @@ class Flags(object):
     def __index__(self):
         """Same as __int__, needed for packing in python3."""
         return self._field
-    def __getstate__(self): ##: do we even use this?
-        """Return values for pickling."""
-        return self._field, self._names
-    def __setstate__(self,fields):
-        """Used by unpickler."""
-        self._field = fields[0]
-        self._names = fields[1]
 
     #--As list
     def __getitem__(self, index):

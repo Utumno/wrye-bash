@@ -89,6 +89,23 @@ class MelConditions(MelGroups):
             }, decider=_CtdaDecider()),
         )
 
+# Common Flags
+aiService = Flags(0, Flags.getNames(
+    (0,'weapons'),
+    (1,'armor'),
+    (2,'clothing'),
+    (3,'books'),
+    (4,'ingredients'),
+    (7,'lights'),
+    (8,'apparatus'),
+    (10,'miscItems'),
+    (11,'spells'),
+    (12,'magicItems'),
+    (13,'potions'),
+    (14,'training'),
+    (16,'recharge'),
+    (17,'repair'),))
+
 #------------------------------------------------------------------------------
 # A distributor config for use with MelEffects, since MelEffects also contains
 # a FULL subrecord
@@ -682,21 +699,6 @@ class MreClas(MelRecord):
         u'class_playable',
         u'class_guard',
     ))
-    aiService = Flags(0, Flags.getNames(
-        (0,'weapons'),
-        (1,'armor'),
-        (2,'clothing'),
-        (3,'books'),
-        (4,'ingredients'),
-        (7,'lights'),
-        (8,'apparatus'),
-        (10,'miscItems'),
-        (11,'spells'),
-        (12,'magicItems'),
-        (13,'potions'),
-        (14,'training'),
-        (16,'recharge'),
-        (17,'repair'),))
 
     melSet = MelSet(
         MelEdid(),
@@ -793,21 +795,6 @@ class MreCrea(MreActorBase):
         (19,'noShadow'),
         (20,'noCorpseCheck'),
         ))
-    aiService = Flags(0, Flags.getNames(
-        (0,'weapons'),
-        (1,'armor'),
-        (2,'clothing'),
-        (3,'books'),
-        (4,'ingredients'),
-        (7,'lights'),
-        (8,'apparatus'),
-        (10,'miscItems'),
-        (11,'spells'),
-        (12,'magicItems'),
-        (13,'potions'),
-        (14,'training'),
-        (16,'recharge'),
-        (17,'repair'),))
 
     melSet = MelSet(
         MelEdid(),
@@ -1342,22 +1329,6 @@ class MreNpc(MreActorBase):
         (14,'summonable'),
         (15,'noPersuasion'),
         (20,'canCorpseCheck'),))
-
-    aiService = Flags(0, Flags.getNames(
-        (0,'weapons'),
-        (1,'armor'),
-        (2,'clothing'),
-        (3,'books'),
-        (4,'ingredients'),
-        (7,'lights'),
-        (8,'apparatus'),
-        (10,'miscItems'),
-        (11,'spells'),
-        (12,'magicItems'),
-        (13,'potions'),
-        (14,'training'),
-        (16,'recharge'),
-        (17,'repair'),))
 
     class MelNpcData(MelLists):
         """Convert npc stats into skills, health, attributes."""
