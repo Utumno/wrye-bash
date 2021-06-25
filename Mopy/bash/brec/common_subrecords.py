@@ -39,7 +39,7 @@ from ..exception import ModError, ModSizeError
 #------------------------------------------------------------------------------
 class MelActionFlags(MelUInt32Flags):
     """XACT (Action Flags) subrecord for REFR records."""
-    _act_flags = Flags(0, Flags.getNames(u'act_use_default', u'act_activate',
+    _act_flags = Flags(Flags.getNames(u'act_use_default', u'act_activate',
         u'act_open', u'act_open_by_default'))
 
     def __init__(self):
@@ -56,7 +56,7 @@ class MelActionFlags(MelUInt32Flags):
 #------------------------------------------------------------------------------
 class MelActivateParents(MelGroup):
     """XAPD/XAPR (Activate Parents) subrecords for REFR records."""
-    _ap_flags = Flags(0, Flags.getNames(u'parent_activate_only'),
+    _ap_flags = Flags(Flags.getNames(u'parent_activate_only'),
         unknown_is_unused=True)
 
     def __init__(self):
@@ -87,7 +87,7 @@ class MelCtda(MelUnion):
     # This is technically a lot more complex (the highest three bits also
     # encode the comparison operator), but we only care about use_global, so we
     # can treat the rest as unknown flags and just carry them forward
-    _ctda_type_flags = Flags(0, Flags.getNames(
+    _ctda_type_flags = Flags(Flags.getNames(
         u'do_or', u'use_aliases', u'use_global', u'use_packa_data',
         u'swap_subject_and_target'))
 
@@ -253,7 +253,7 @@ class MelCtdaFo3(MelCtda):
 
 #------------------------------------------------------------------------------
 class MelDecalData(MelOptStruct):
-    _decal_data_flags = Flags(0, Flags.getNames(
+    _decal_data_flags = Flags(Flags.getNames(
         u'parallax',
         u'alphaBlending',
         u'alphaTesting',
@@ -554,7 +554,7 @@ class MelEnableParent(MelOptStruct):
     """Enable Parent struct for a reference record (REFR, ACHR, etc.)."""
     # The pop_in flag doesn't technically exist for all XESP subrecords, but it
     # will just be ignored for those where it doesn't exist, so no problem.
-    _parent_flags = Flags(0, Flags.getNames(u'opposite_parent', u'pop_in'))
+    _parent_flags = Flags(Flags.getNames(u'opposite_parent', u'pop_in'))
 
     def __init__(self):
         super(MelEnableParent, self).__init__(
@@ -566,7 +566,7 @@ class MelMapMarker(MelGroup):
     """Map marker struct for a reference record (REFR, ACHR, etc.). Also
     supports the WMI1 subrecord from FNV."""
     # Same idea as above - show_all_hidden is FO3+, but that's no problem.
-    _marker_flags = Flags(0, Flags.getNames(
+    _marker_flags = Flags(Flags.getNames(
         u'visible', u'can_travel_to', u'show_all_hidden'))
 
     def __init__(self, with_reputation=False):
@@ -810,7 +810,7 @@ class MelLscrLocations(MelSorted):
 #------------------------------------------------------------------------------
 class MelReflectedRefractedBy(MelSorted):
     """Reflected/Refracted By for a reference record (REFR, ACHR, etc.)."""
-    _watertypeFlags = Flags(0, Flags.getNames(u'reflection', u'refraction'))
+    _watertypeFlags = Flags(Flags.getNames(u'reflection', u'refraction'))
 
     def __init__(self):
         super(MelReflectedRefractedBy, self).__init__(

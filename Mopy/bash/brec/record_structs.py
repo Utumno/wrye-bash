@@ -257,7 +257,7 @@ class MelSet(object):
 class MreRecord(object):
     """Generic Record. flags1 are game specific see comments."""
     subtype_attr = {b'EDID': u'eid', b'FULL': u'full', b'MODL': u'model'}
-    flags1_ = bolt.Flags(0, bolt.Flags.getNames(
+    flags1_ = bolt.Flags(bolt.Flags.getNames(
         # {Sky}, {FNV} 0x00000000 ACTI: Collision Geometry (default)
         ( 0,'esm'), # {0x00000001}
         # {Sky}, {FNV} 0x00000004 ARMO: Not playable

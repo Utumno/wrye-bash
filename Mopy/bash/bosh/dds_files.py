@@ -61,12 +61,12 @@ _MAGIC_GRGB = b'GRGB'
 _MAGIC_YUY2 = b'YUY2'
 _MAGIC_BC6H = b'BC6H'
 
-_CAPS_FLAGS = Flags(0, Flags.getNames(
+_CAPS_FLAGS = Flags(Flags.getNames(
     (3,  u'DDSCAPS_COMPLEX'), # 0x8
     (12, u'DDSCAPS_TEXTURE'), # 0x1000
     (22, u'DDSCAPS_MIPMAP'),  # 0x400000
 ))
-_CAPS2_FLAGS = Flags(0, Flags.getNames(
+_CAPS2_FLAGS = Flags(Flags.getNames(
     (9,  u'DDSCAPS2_CUBEMAP'),           # 0x200
     (10, u'DDSCAPS2_CUBEMAP_POSITIVEX'), # 0x400
     (11, u'DDSCAPS2_CUBEMAP_NEGATIVEX'), # 0x800
@@ -76,7 +76,7 @@ _CAPS2_FLAGS = Flags(0, Flags.getNames(
     (15, u'DDSCAPS2_CUBEMAP_NEGATIVEZ'), # 0x8000
     (21, u'DDSCAPS2_VOLUME'),            # 0x200000
 ))
-_DDS_FLAGS = Flags(0, Flags.getNames(
+_DDS_FLAGS = Flags(Flags.getNames(
     (0,  u'DDSD_CAPS'),        # 0x1
     (1,  u'DDSD_HEIGHT'),      # 0x2
     (2,  u'DDSD_WIDTH'),       # 0x4
@@ -85,7 +85,7 @@ _DDS_FLAGS = Flags(0, Flags.getNames(
     (17, u'DDSD_MIPMAPCOUNT'), # 0x20000
     (19, u'DDSD_LINEARSIZE'),  # 0x80000
 ))
-_PF_FLAGS = Flags(0, Flags.getNames(
+_PF_FLAGS = Flags(Flags.getNames(
     (0,  u'DDPF_ALPHAPIXELS'), # 0x1
     (1,  u'DDPF_ALPHA'),       # 0x2
     (2,  u'DDPF_FOURCC'),      # 0x4

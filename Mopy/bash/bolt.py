@@ -1018,7 +1018,7 @@ class Flags(object):
         return namesDict
 
     #--Generation
-    def __init__(self, value=0, names=None, unknown_is_unused=False):
+    def __init__(self, names=None, unknown_is_unused=False, value=0):
         """Initialize. Attrs, if present, is mapping of attribute names to
         indices. unknown_is_unused will discard unknown flags."""
         object.__setattr__(self, u'_names', names or {})
@@ -1029,12 +1029,12 @@ class Flags(object):
     def __call__(self,newValue=None):
         """Returns a clone of self, optionally with new value."""
         if newValue is not None:
-            return Flags(int(newValue), self._names, self._unknown_is_unused)
+            return Flags(self._names, self._unknown_is_unused, int(newValue))
         else:
-            return Flags(self._field, self._names, self._unknown_is_unused)
+            return Flags(self._names, self._unknown_is_unused, self._field)
 
     def __deepcopy__(self, memo):
-        newFlags = Flags(self._field, self._names, self._unknown_is_unused)
+        newFlags = Flags(self._names, self._unknown_is_unused, self._field)
         memo[id(self)] = newFlags ##: huh?
         return newFlags
 

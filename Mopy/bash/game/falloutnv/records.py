@@ -225,7 +225,7 @@ class MreDial(MelRecord):
     """Dialogue."""
     rec_sig = b'DIAL'
 
-    _DialFlags = Flags(0, Flags.getNames('rumors', 'toplevel'))
+    _DialFlags = Flags(Flags.getNames('rumors', 'toplevel'))
 
     melSet = MelSet(
         MelEdid(),
@@ -306,7 +306,7 @@ class MreMset(MelRecord):
     """Media Set."""
     rec_sig = b'MSET'
 
-    _flags = Flags(0, Flags.getNames(
+    _flags = Flags(Flags.getNames(
         ( 0,'dayOuter'),
         ( 1,'dayMiddle'),
         ( 2,'dayInner'),

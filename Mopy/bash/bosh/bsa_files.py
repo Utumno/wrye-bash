@@ -197,7 +197,7 @@ class BsaHeader(_Header):
          u'file_flags')
     formats = [(f, struct_calcsize(f)) for f in [u'I'] * 8]
     header_size = 36
-    _archive_flags = Flags(0, Flags.getNames(
+    _archive_flags = Flags(Flags.getNames(
         u'include_directory_names',
         u'include_file_names',
         u'compressed_archive',

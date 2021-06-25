@@ -99,11 +99,11 @@ def getFormIndices(form_id):
 # sense because it also marks all 32 of its possible flags as known
 class BipedFlags(Flags):
     """Biped flags element. Includes biped flag set by default."""
-    def __init__(self, flag_default=0, new_flag_names=None):
+    def __init__(self, new_flag_names=None):
         from .. import bush
         flag_names = Flags.getNames(*bush.game.Esp.biped_flag_names)
         if new_flag_names: flag_names.update(new_flag_names)
-        super(BipedFlags, self).__init__(flag_default, flag_names)
+        super(BipedFlags, self).__init__(flag_names)
 
 # Sort Keys -------------------------------------------------------------------
 fid_key = attrgetter_cache[u'fid']

@@ -48,7 +48,7 @@ class SreNPC(object):
     __slots__ = (u'form', u'health', u'unused2', u'attributes', u'acbs',
                  u'spells', u'factions', u'full', u'ai', u'skills',
                  u'modifiers')
-    sre_flags = Flags(0, Flags.getNames(
+    sre_flags = Flags(Flags.getNames(
         (0,u'form'),
         (2,u'health'),
         (3,u'attributes'),
@@ -223,7 +223,7 @@ class SreNPC(object):
 # Save File -------------------------------------------------------------------
 class SaveFile(object):
     """Represents a Tes4 Save file."""
-    recordFlags = Flags(0, Flags.getNames(u'form', u'baseid', u'moved',
+    recordFlags = Flags(Flags.getNames(u'form', u'baseid', u'moved',
         u'havocMoved', u'scale', u'allExtra', u'lock', u'owner', u'unk8',
         u'unk9', u'mapMarkerFlags', u'hadHavokMoveFlag', u'unk12', u'unk13',
         u'unk14', u'unk15', u'emptyFlag', u'droppedItem', u'doorDefaultState',
