@@ -394,7 +394,7 @@ _win_store_finder = _WindowsStoreFinder()
 # All code starting from the 'BEGIN MIT-LICENSED PART' comment and until the
 # 'END MIT-LICENSED PART' comment is based on
 # https://gist.github.com/mkropat/7550097 by Michael Kropat
-# Modifications made for py3 compatibility and to conform to our code style
+# Modifications made for python3 compatibility and to conform to our code style
 # BEGIN MIT-LICENSED PART =====================================================
 # http://msdn.microsoft.com/en-us/library/windows/desktop/aa373931.aspx
 class _GUID(Structure):
