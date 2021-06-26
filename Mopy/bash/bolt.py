@@ -1046,7 +1046,7 @@ class Flags(object):
         """Return as integer value for saving."""
         return self._field
     def __index__(self):
-        """Same as __int__, needed for packing in py3."""
+        """Same as __int__, needed for packing in python3."""
         return self._field
     def __getstate__(self): ##: do we even use this?
         """Return values for pickling."""

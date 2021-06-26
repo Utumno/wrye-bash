@@ -41,6 +41,7 @@ except ImportError:
 import wx as _wx
 
 import webbrowser
+from enum import Enum
 from urllib.request import pathname2url
 from urllib.parse import urljoin
 
@@ -65,7 +66,7 @@ def pdf_viewer_available():
     :return: True if we can render PDFs."""
     return bool(_PdfViewer) and _wx.VERSION >= (4, 1)
 
-class ViewerType(object): # PY3: enum
+class ViewerType(Enum):
     """The different types of viewers that DocumentViewer can display."""
     HTML = u'html'
     PDF =  u'pdf'
@@ -248,14 +249,14 @@ class DocumentViewer(_AComponent):
 
         :param viewer_type: One of """
         if web_viewer_available():
-            self._html_ctrl.enabled = viewer_type == ViewerType.HTML
-            self._html_ctrl.visible = viewer_type == ViewerType.HTML
+            self._html_ctrl.enabled = viewer_type is ViewerType.HTML
+            self._html_ctrl.visible = viewer_type is ViewerType.HTML
             self._html_ctrl.update_buttons()
         if pdf_viewer_available():
-            self._pdf_ctrl.enabled = viewer_type == ViewerType.PDF
-            self._pdf_ctrl.visible = viewer_type == ViewerType.PDF
-        self._text_ctrl.enabled = viewer_type == ViewerType.TEXT
-        self._text_ctrl.visible = viewer_type == ViewerType.TEXT
+            self._pdf_ctrl.enabled = viewer_type is ViewerType.PDF
+            self._pdf_ctrl.visible = viewer_type is ViewerType.PDF
+        self._text_ctrl.enabled = viewer_type is ViewerType.TEXT
+        self._text_ctrl.visible = viewer_type is ViewerType.TEXT
 
     @property
     def fallback_text(self):
