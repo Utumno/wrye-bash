@@ -33,7 +33,7 @@ class MreLens(MelRecord):
     """Lens Flare."""
     rec_sig = b'LENS'
 
-    LensFlareFlags = Flags(Flags.getNames('rotates', 'shrinksWhenOccluded'))
+    LensFlareFlags = Flags.from_names('rotates', 'shrinksWhenOccluded')
 
     melSet = MelSet(
         MelEdid(),

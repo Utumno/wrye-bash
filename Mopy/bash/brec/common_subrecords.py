@@ -554,7 +554,7 @@ class MelEnableParent(MelOptStruct):
     """Enable Parent struct for a reference record (REFR, ACHR, etc.)."""
     # The pop_in flag doesn't technically exist for all XESP subrecords, but it
     # will just be ignored for those where it doesn't exist, so no problem.
-    _parent_flags = Flags(Flags.getNames(u'opposite_parent', u'pop_in'))
+    _parent_flags = Flags.from_names(u'opposite_parent', u'pop_in')
 
     def __init__(self):
         super(MelEnableParent, self).__init__(
@@ -810,7 +810,7 @@ class MelLscrLocations(MelSorted):
 #------------------------------------------------------------------------------
 class MelReflectedRefractedBy(MelSorted):
     """Reflected/Refracted By for a reference record (REFR, ACHR, etc.)."""
-    _watertypeFlags = Flags(Flags.getNames(u'reflection', u'refraction'))
+    _watertypeFlags = Flags.from_names(u'reflection', u'refraction')
 
     def __init__(self):
         super(MelReflectedRefractedBy, self).__init__(

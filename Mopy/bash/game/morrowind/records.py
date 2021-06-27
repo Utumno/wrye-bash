@@ -346,7 +346,7 @@ class MreBody(MelRecord):
     """Body Parts."""
     rec_sig = b'BODY'
 
-    _part_flags = Flags(Flags.getNames(u'part_female', u'part_playable'))
+    _part_flags = Flags.from_names(u'part_female', u'part_playable')
 
     melSet = MelSet(
         MelMWId(),
@@ -362,7 +362,7 @@ class MreBook(MelRecord):
     """Book."""
     rec_sig = b'BOOK'
 
-    _scroll_flags = Flags(Flags.getNames(u'is_scroll'))
+    _scroll_flags = Flags.from_names(u'is_scroll')
 
     melSet = MelSet(
         MelMWId(),
@@ -443,7 +443,7 @@ class MreClas(MelRecord):
     """Class."""
     rec_sig = b'CLAS'
 
-    _class_flags = Flags(Flags.getNames(u'class_playable'))
+    _class_flags = Flags.from_names(u'class_playable')
     _ac_flags = Flags(Flags.getNames(
         u'ac_weapon',
         u'ac_armor',
@@ -978,7 +978,7 @@ class MreRace(MelRecord):
     """Race."""
     rec_sig = b'RACE'
 
-    _race_flags = Flags(Flags.getNames(u'playable', u'beast_race'))
+    _race_flags = Flags.from_names(u'playable', u'beast_race')
 
     melSet = MelSet(
         MelMWId(),

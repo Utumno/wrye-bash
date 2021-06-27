@@ -225,7 +225,7 @@ class MreDial(MelRecord):
     """Dialogue."""
     rec_sig = b'DIAL'
 
-    _DialFlags = Flags(Flags.getNames('rumors', 'toplevel'))
+    _DialFlags = Flags.from_names('rumors', 'toplevel')
 
     melSet = MelSet(
         MelEdid(),

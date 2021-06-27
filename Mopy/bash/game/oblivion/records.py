@@ -160,7 +160,7 @@ class MelEffects(MelSequential):
     which is why it's so complex. The challenge is that we basically have to
     redirect every procedure to one of two lists of elements, depending on
     whether an 'OBME' subrecord exists or not."""
-    se_flags = Flags(Flags.getNames(u'hostile'))
+    se_flags = Flags.from_names(u'hostile')
 
     def __init__(self):
         # Vanilla Elements ----------------------------------------------------
@@ -535,7 +535,7 @@ class MreAlch(MelRecord,MreHasEffects):
     """Potion."""
     rec_sig = b'ALCH'
 
-    _flags = Flags(Flags.getNames('autoCalc', 'isFood'))
+    _flags = Flags.from_names('autoCalc', 'isFood')
 
     melSet = MelSet(
         MelEdid(),
@@ -555,7 +555,7 @@ class MreAmmo(MelRecord):
     """Ammunition."""
     rec_sig = b'AMMO'
 
-    _flags = Flags(Flags.getNames('notNormalWeapon'))
+    _flags = Flags.from_names('notNormalWeapon')
 
     melSet = MelSet(
         MelEdid(),
@@ -623,7 +623,7 @@ class MreBook(MelRecord):
     """Book."""
     rec_sig = b'BOOK'
 
-    _flags = Flags(Flags.getNames('isScroll', 'isFixed'))
+    _flags = Flags.from_names('isScroll', 'isFixed')
 
     melSet = MelSet(
         MelEdid(),
@@ -693,7 +693,7 @@ class MreClas(MelRecord):
     """Class."""
     rec_sig = b'CLAS'
 
-    _flags = Flags(Flags.getNames(u'class_playable', u'class_guard'))
+    _flags = Flags.from_names(u'class_playable', u'class_guard')
 
     melSet = MelSet(
         MelEdid(),
@@ -752,7 +752,7 @@ class MreCont(MreWithItems):
     """Container."""
     rec_sig = b'CONT'
 
-    _flags = Flags(Flags.getNames(None,'respawns'))
+    _flags = Flags.from_names(None,'respawns')
 
     melSet = MelSet(
         MelEdid(),
@@ -840,7 +840,7 @@ class MreCsty(MelRecord):
         ( 6,'prefersRanged'),
         ( 7,'meleeAlertOK'),
         ))
-    _flagsB = Flags(Flags.getNames('doNotAcquire'))
+    _flagsB = Flags.from_names('doNotAcquire')
 
     melSet = MelSet(
         MelEdid(),
@@ -953,7 +953,7 @@ class MreEnch(MelRecord,MreHasEffects):
     """Enchantment."""
     rec_sig = b'ENCH'
 
-    _flags = Flags(Flags.getNames('noAutoCalc'))
+    _flags = Flags.from_names('noAutoCalc')
 
     melSet = MelSet(
         MelEdid(),
@@ -970,7 +970,7 @@ class MreEyes(MelRecord):
     """Eyes."""
     rec_sig = b'EYES'
 
-    _flags = Flags(Flags.getNames('playable'))
+    _flags = Flags.from_names('playable')
 
     melSet = MelSet(
         MelEdid(),
@@ -1035,7 +1035,7 @@ class MreGras(MelRecord):
     """Grass."""
     rec_sig = b'GRAS'
 
-    _flags = Flags(Flags.getNames('vLighting','uScaling','fitSlope'))
+    _flags = Flags.from_names('vLighting','uScaling','fitSlope')
 
     melSet = MelSet(
         MelEdid(),
@@ -1051,7 +1051,7 @@ class MreHair(MelRecord):
     """Hair."""
     rec_sig = b'HAIR'
 
-    _flags = Flags(Flags.getNames('playable', 'notMale', 'notFemale', 'fixed'))
+    _flags = Flags.from_names('playable', 'notMale', 'notFemale', 'fixed')
 
     melSet = MelSet(
         MelEdid(),
@@ -1108,7 +1108,7 @@ class MreIngr(MelRecord,MreHasEffects):
     """Ingredient."""
     rec_sig = b'INGR'
 
-    _flags = Flags(Flags.getNames('noAutoCalc', 'isFood'))
+    _flags = Flags.from_names('noAutoCalc', 'isFood')
 
     melSet = MelSet(
         MelEdid(),
@@ -1460,8 +1460,8 @@ class MreQust(MelRecord):
 
     _questFlags = Flags(Flags.getNames('startGameEnabled', None,
                                        'repeatedTopics', 'repeatedStages'))
-    stageFlags = Flags(Flags.getNames('complete'))
-    targetFlags = Flags(Flags.getNames('ignoresLocks'))
+    stageFlags = Flags.from_names('complete')
+    targetFlags = Flags.from_names('ignoresLocks')
 
     melSet = MelSet(
         MelEdid(),
@@ -1501,7 +1501,7 @@ class MreRace(MelRecord):
     """Race."""
     rec_sig = b'RACE'
 
-    _flags = Flags(Flags.getNames(u'playable'))
+    _flags = Flags.from_names(u'playable')
 
     melSet = MelSet(
         MelEdid(),
@@ -1596,7 +1596,7 @@ class MreRefr(MelRecord):
     """Placed Object."""
     rec_sig = b'REFR'
 
-    _lockFlags = Flags(Flags.getNames((2, u'leveledLock')))
+    _lockFlags = Flags.from_names((2, u'leveledLock'))
 
     class MelRefrXloc(MelTruncatedStruct):
         """Skips unused2, in the middle of the struct."""
@@ -1919,7 +1919,7 @@ class MreWatr(MelRecord):
     """Water."""
     rec_sig = b'WATR'
 
-    _flags = Flags(Flags.getNames('causesDmg', 'reflective'))
+    _flags = Flags.from_names('causesDmg', 'reflective')
 
     melSet = MelSet(
         MelEdid(),
@@ -1954,7 +1954,7 @@ class MreWeap(MelRecord):
     """Weapon."""
     rec_sig = b'WEAP'
 
-    _flags = Flags(Flags.getNames('notNormalWeapon'))
+    _flags = Flags.from_names('notNormalWeapon')
 
     melSet = MelSet(
         MelEdid(),
@@ -1973,7 +1973,7 @@ class MreWrld(MelRecord):
     """Worldspace."""
     rec_sig = b'WRLD'
 
-    _flags = Flags(Flags.getNames('smallWorld','noFastTravel','oblivionWorldspace',None,'noLODWater'))
+    _flags = Flags.from_names('smallWorld','noFastTravel','oblivionWorldspace',None,'noLODWater')
 
     melSet = MelSet(
         MelEdid(),
