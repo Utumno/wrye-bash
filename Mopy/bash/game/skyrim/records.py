@@ -2763,11 +2763,11 @@ class MreIngr(MelRecord):
     """Ingredient."""
     rec_sig = b'INGR'
 
-    IngrTypeFlags = Flags( Flags.getNames(
+    IngrTypeFlags = Flags.from_names(
         (0, 'no_auto_calc'),
         (1, 'food_item'),
         (8, 'references_persist'),
-    ))
+    )
 
     melSet = MelSet(
         MelEdid(),
