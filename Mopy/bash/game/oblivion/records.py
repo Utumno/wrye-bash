@@ -90,7 +90,7 @@ class MelConditions(MelGroups):
         )
 
 # Common Flags
-aiService = Flags(Flags.getNames(
+aiService = Flags.from_names(
     (0,'weapons'),
     (1,'armor'),
     (2,'clothing'),
@@ -104,7 +104,8 @@ aiService = Flags(Flags.getNames(
     (13,'potions'),
     (14,'training'),
     (16,'recharge'),
-    (17,'repair'),))
+    (17,'repair')
+)
 
 #------------------------------------------------------------------------------
 # A distributor config for use with MelEffects, since MelEffects also contains
@@ -599,8 +600,8 @@ class MreArmo(MelRecord):
     """Armor."""
     rec_sig = b'ARMO'
 
-    _flags = BipedFlags(Flags.getNames((16, u'hideRings'), (17, u'hideAmulet'),
-        (22, u'notPlayable'), (23, u'heavyArmor')))
+    _flags = BipedFlags.from_names((16, u'hideRings'), (17, u'hideAmulet'),
+                                   (22, u'notPlayable'), (23, u'heavyArmor'))
 
     melSet = MelSet(
         MelEdid(),
@@ -656,7 +657,7 @@ class MreCell(MelRecord):
     """Cell."""
     rec_sig = b'CELL'
 
-    cellFlags = Flags(Flags.getNames(
+    cellFlags = Flags.from_names(
         (0, u'isInterior'),
         (1, u'hasWater'),
         (2, u'invertFastTravel'),
@@ -664,7 +665,7 @@ class MreCell(MelRecord):
         (5, u'publicPlace'),
         (6, u'handChanged'),
         (7, u'behaveLikeExterior')
-    ))
+    )
 
     melSet = MelSet(
         MelEdid(),
@@ -728,8 +729,8 @@ class MreClot(MelRecord):
     """Clothing."""
     rec_sig = b'CLOT'
 
-    _flags = BipedFlags(Flags.getNames((16, u'hideRings'), (17, u'hideAmulet'),
-                                       (22, u'notPlayable')))
+    _flags = BipedFlags.from_names((16, u'hideRings'), (17, u'hideAmulet'),
+                                   (22, u'notPlayable'))
 
     melSet = MelSet(
         MelEdid(),
@@ -770,7 +771,7 @@ class MreCrea(MreActorBase):
     """Creature."""
     rec_sig = b'CREA'
 
-    _flags = Flags(Flags.getNames(
+    _flags = Flags.from_names(
         ( 0,'biped'),
         ( 1,'essential'),
         ( 2,'weaponAndShield'),
@@ -788,7 +789,7 @@ class MreCrea(MreActorBase):
         (18,'noCombatInWater'),
         (19,'noShadow'),
         (20,'noCorpseCheck'),
-        ))
+    )
 
     melSet = MelSet(
         MelEdid(),
@@ -830,7 +831,7 @@ class MreCrea(MreActorBase):
 class MreCsty(MelRecord):
     """Combat Style."""
     rec_sig = b'CSTY'
-    _flagsA = Flags(Flags.getNames(
+    _flagsA = Flags.from_names(
         ( 0,'advanced'),
         ( 1,'useChanceForAttack'),
         ( 2,'ignoreAllies'),
@@ -839,7 +840,7 @@ class MreCsty(MelRecord):
         ( 5,'fleeingDisabled'),
         ( 6,'prefersRanged'),
         ( 7,'meleeAlertOK'),
-        ))
+    )
     _flagsB = Flags.from_names('doNotAcquire')
 
     melSet = MelSet(
@@ -893,8 +894,8 @@ class MreDoor(MelRecord):
     """Door."""
     rec_sig = b'DOOR'
 
-    _flags = Flags(Flags.getNames('oblivionGate', 'automatic', 'hidden',
-                                  'minimalUse'))
+    _flags = Flags.from_names('oblivionGate', 'automatic', 'hidden',
+                              'minimalUse')
 
     melSet = MelSet(
         MelEdid(),
@@ -913,12 +914,12 @@ class MreEfsh(MelRecord):
     """Effect Shader."""
     rec_sig = b'EFSH'
 
-    _flags = Flags(Flags.getNames(
+    _flags = Flags.from_names(
         (0, u'noMemShader'),
         (3, u'noPartShader'),
         (4, u'edgeInverse'),
         (5, u'memSkinOnly'),
-    ))
+    )
 
     melSet = MelSet(
         MelEdid(),
@@ -984,8 +985,8 @@ class MreFact(MelRecord):
     """Faction."""
     rec_sig = b'FACT'
 
-    _general_flags = Flags(Flags.getNames(u'hidden_from_pc', u'evil',
-                                          u'special_combat'))
+    _general_flags = Flags.from_names(u'hidden_from_pc', u'evil',
+                                      u'special_combat')
 
     melSet = MelSet(
         MelEdid(),
@@ -1081,8 +1082,8 @@ class MreInfo(MelRecord):
     """Dialog Response."""
     rec_sig = b'INFO'
 
-    _flags = Flags(Flags.getNames(u'goodbye', u'random', u'sayOnce',
-        u'runImmediately', u'infoRefusal', u'randomEnd', u'runForRumors'))
+    _flags = Flags.from_names(u'goodbye', u'random', u'sayOnce',
+        u'runImmediately', u'infoRefusal', u'randomEnd', u'runForRumors')
 
     melSet = MelSet(
         MelTruncatedStruct(b'DATA', [u'3B'], u'dialType', u'nextSpeaker',
@@ -1142,9 +1143,9 @@ class MreLigh(MelRecord):
     """Light."""
     rec_sig = b'LIGH'
 
-    _flags = Flags(Flags.getNames(
+    _flags = Flags.from_names(
         'dynamic', 'canTake', 'negative', 'flickers', 'unk1', 'offByDefault',
-        'flickerSlow', 'pulse', 'pulseSlow', 'spotLight', 'spotShadow'))
+        'flickerSlow', 'pulse', 'pulseSlow', 'spotLight', 'spotShadow')
 
     melSet = MelSet(
         MelEdid(),
@@ -1178,7 +1179,7 @@ class MreLtex(MelRecord):
     """Landscape Texture."""
     rec_sig = b'LTEX'
 
-    _flags = Flags(Flags.getNames(
+    _flags = Flags.from_names(
         ( 0,'stone'),
         ( 1,'cloth'),
         ( 2,'dirt'),
@@ -1193,7 +1194,8 @@ class MreLtex(MelRecord):
         (11,'heavyMetal'),
         (12,'heavyWood'),
         (13,'chain'),
-        (14,'snow'),))
+        (14,'snow')
+    )
 
     melSet = MelSet(
         MelEdid(),
@@ -1224,17 +1226,17 @@ class MreMgef(MelRecord):
     """Magic Effect."""
     rec_sig = b'MGEF'
 
-    _obme_flag_overrides = Flags(Flags.getNames(
-        (2,  u'ov_param_flag_a'),
-        (3,  u'ov_beneficial'),
+    _obme_flag_overrides = Flags.from_names(
+        ( 2,  u'ov_param_flag_a'),
+        ( 3,  u'ov_beneficial'),
         (16, u'ov_param_flag_b'),
         (17, u'ov_magnitude_is_range'),
         (18, u'ov_atomic_resistance'),
         (19, u'ov_param_flag_c'),
         (20, u'ov_param_flag_d'),
         (30, u'ov_hidden'),
-    ))
-    _flags = Flags(Flags.getNames(
+    )
+    _flags = Flags.from_names(
         ( 0, u'hostile'),
         ( 1, u'recover'),
         ( 2, u'detrimental'),
@@ -1257,7 +1259,8 @@ class MreMgef(MelRecord):
         (24, u'useAV'),
         (25, u'sprayType'),
         (26, u'boltType'),
-        (27, u'noHitEffect'),))
+        (27, u'noHitEffect')
+    )
 
     melSet = MelSet(
         MelEdid(),
@@ -1310,7 +1313,7 @@ class MreNpc(MreActorBase):
     """Non-Player Character."""
     rec_sig = b'NPC_'
 
-    _flags = Flags(Flags.getNames(
+    _flags = Flags.from_names(
         ( 0,'female'),
         ( 1,'essential'),
         ( 3,'respawn'),
@@ -1320,7 +1323,8 @@ class MreNpc(MreActorBase):
         (13,'noRumors'),
         (14,'summonable'),
         (15,'noPersuasion'),
-        (20,'canCorpseCheck'),))
+        (20,'canCorpseCheck')
+    )
 
     class MelNpcData(MelLists):
         """Convert npc stats into skills, health, attributes."""
@@ -1394,14 +1398,14 @@ class MrePack(MelRecord):
     """AI Package."""
     rec_sig = b'PACK'
 
-    _flags = Flags(Flags.getNames(
+    _flags = Flags.from_names(
         'offersServices','mustReachLocation','mustComplete','lockAtStart',
         'lockAtEnd','lockAtLocation','unlockAtStart','unlockAtEnd',
         'unlockAtLocation','continueIfPcNear','oncePerDay',None,
         'skipFallout','alwaysRun',None,None,
         None,'alwaysSneak','allowSwimming','allowFalls',
         'unequipArmor','unequipWeapons','defensiveCombat','useHorse',
-        'noIdleAnims',))
+        'noIdleAnims',)
 
     melSet = MelSet(
         MelEdid(),
@@ -1458,8 +1462,8 @@ class MreQust(MelRecord):
     """Quest."""
     rec_sig = b'QUST'
 
-    _questFlags = Flags(Flags.getNames('startGameEnabled', None,
-                                       'repeatedTopics', 'repeatedStages'))
+    _questFlags = Flags.from_names('startGameEnabled', None, 'repeatedTopics',
+                                   'repeatedStages')
     stageFlags = Flags.from_names('complete')
     targetFlags = Flags.from_names('ignoresLocks')
 
@@ -1651,9 +1655,8 @@ class MreRegn(MelRecord):
     """Region."""
     rec_sig = b'REGN'
 
-    rdatFlags = Flags(Flags.getNames(
-        ( 0,'Override'),))
-    obflags = Flags(Flags.getNames(
+    rdatFlags = Flags.from_names('Override')
+    obflags = Flags.from_names(
         ( 0,'conform'),
         ( 1,'paintVertices'),
         ( 2,'sizeVariance'),
@@ -1661,12 +1664,12 @@ class MreRegn(MelRecord):
         ( 4,'deltaY'),
         ( 5,'deltaZ'),
         ( 6,'Tree'),
-        ( 7,'hugeRock'),))
-    sdflags = Flags(Flags.getNames(
+        ( 7,'hugeRock'),)
+    sdflags = Flags.from_names(
         ( 0,'pleasant'),
         ( 1,'cloudy'),
         ( 2,'rainy'),
-        ( 3,'snowy'),))
+        ( 3,'snowy'),)
 
     melSet = MelSet(
         MelEdid(),
@@ -1797,8 +1800,8 @@ class MreSoun(MelRecord):
     rec_sig = b'SOUN'
     _has_duplicate_attrs = True # SNDD is an older version of SNDX
 
-    _flags = Flags(Flags.getNames('randomFrequencyShift', 'playAtRandom',
-        'environmentIgnored', 'randomLocation', 'loop','menuSound', '2d', '360LFE'))
+    _flags = Flags.from_names('randomFrequencyShift', 'playAtRandom',
+        'environmentIgnored', 'randomLocation', 'loop','menuSound', '2d', '360LFE')
 
     melSet = MelSet(
         MelEdid(),
@@ -1849,9 +1852,9 @@ class MreSpel(MelRecord,MreHasEffects):
             if index == 1:
                 setter(self,3,value)
 
-    _SpellFlags = SpellFlags(Flags.getNames('noAutoCalc','immuneToSilence',
+    _SpellFlags = SpellFlags.from_names('noAutoCalc','immuneToSilence',
         'startSpell', None, 'ignoreLOS', 'scriptEffectAlwaysApplies',
-        'disallowAbsorbReflect', 'touchExplodesWOTarget'))
+        'disallowAbsorbReflect', 'touchExplodesWOTarget')
 
     melSet = MelSet(
         MelEdid(),

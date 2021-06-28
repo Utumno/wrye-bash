@@ -306,14 +306,14 @@ class MreMset(MelRecord):
     """Media Set."""
     rec_sig = b'MSET'
 
-    _flags = Flags(Flags.getNames(
+    _flags = Flags.from_names(
         ( 0,'dayOuter'),
         ( 1,'dayMiddle'),
         ( 2,'dayInner'),
         ( 3,'nightOuter'),
         ( 4,'nightMiddle'),
         ( 5,'nightInner'),
-        ))
+    )
 
     melSet = MelSet(
         MelEdid(),

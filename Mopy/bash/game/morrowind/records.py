@@ -50,7 +50,7 @@ from ...brec import MelModel
 #------------------------------------------------------------------------------
 class MelAIData(MelStruct):
     """Handles the AIDT subrecord shared between CREA and NPC_."""
-    _ai_flags = Flags(Flags.getNames(
+    _ai_flags = Flags.from_names(
         u'ai_weapon',
         u'ai_armor',
         u'ai_clothing',
@@ -69,7 +69,7 @@ class MelAIData(MelStruct):
         u'ai_spellmaking',
         u'ai_enchanting',
         u'ai_repair',
-    ))
+    )
 
     def __init__(self):
         super(MelAIData, self).__init__(b'AIDT',
@@ -228,10 +228,10 @@ class MelScriptId(MelString):
 #------------------------------------------------------------------------------
 class MreLeveledList(MreLeveledListBase):
     """Base class for LEVC and LEVI."""
-    _lvl_flags = Flags(Flags.getNames(
+    _lvl_flags = Flags.from_names(
         u'calcFromAllLevels',
         u'calcForEachItem', # LEVI only, but will be ignored for LEVC so fine
-    ))
+    )
     top_copy_attrs = (u'chanceNone',)
     entry_copy_attrs = (u'listId', u'level') # no count
 
@@ -396,12 +396,12 @@ class MreCell(MelRecord):
     """Cell."""
     rec_sig = b'CELL'
 
-    _cell_flags = Flags(Flags.getNames(
+    _cell_flags = Flags.from_names(
         (0, u'is_interior_cell'),
         (1, u'has_water'),
         (2, u'illegal_to_sleep_here'),
         (7, u'behave_like_exterior'),
-    ))
+    )
 
     melSet = MelSet(
         MelMWId(),
@@ -444,7 +444,7 @@ class MreClas(MelRecord):
     rec_sig = b'CLAS'
 
     _class_flags = Flags.from_names(u'class_playable')
-    _ac_flags = Flags(Flags.getNames(
+    _ac_flags = Flags.from_names(
         u'ac_weapon',
         u'ac_armor',
         u'ac_clothing',
@@ -463,7 +463,7 @@ class MreClas(MelRecord):
         u'ac_spellmaking',
         u'ac_enchanting',
         u'ac_repair',
-    ))
+    )
 
     melSet = MelSet(
         MelMWId(),
@@ -501,11 +501,11 @@ class MreCont(MelRecord):
     """Container."""
     rec_sig = b'CONT'
 
-    _cont_flags = Flags(Flags.getNames(
+    _cont_flags = Flags.from_names(
         u'cont_organic',
         u'cont_respawns',
         u'default_unknown', # always set
-    ))
+    )
 
     melSet = MelSet(
         MelMWId(),
@@ -523,7 +523,7 @@ class MreCrea(MelRecord):
     """Creature."""
     rec_sig = b'CREA'
 
-    _crea_flags = Flags(Flags.getNames(
+    _crea_flags = Flags.from_names(
         u'biped', # names match those of MreCrea._flags in later games
         u'respawn',
         u'weaponAndShield',
@@ -535,7 +535,7 @@ class MreCrea(MelRecord):
         u'essential',
         u'skeleton_blood',
         u'metal_blood',
-    ))
+    )
 
     melSet = MelSet(
         MelMWId(),
@@ -740,11 +740,11 @@ class MreLand(MelRecord):
     """Landscape."""
     rec_sig = b'LAND'
 
-    _data_type_flags = Flags(Flags.getNames( ##: Shouldn't we set/use these?
+    _data_type_flags = Flags.from_names( ##: Shouldn't we set/use these?
         u'include_vnml_vhgt_wnam',
         u'include_vclr',
         u'include_vtex',
-    ))
+    )
 
     ##: No MelMWId, will that be a problem?
     melSet = MelSet(
@@ -776,7 +776,7 @@ class MreLigh(MelRecord):
     """Light."""
     rec_sig = b'LIGH'
 
-    _light_flags = Flags(Flags.getNames(
+    _light_flags = Flags.from_names(
         u'dynamic', # Bad names to match the other games (for tweaks)
         u'canTake',
         u'negative',
@@ -786,7 +786,7 @@ class MreLigh(MelRecord):
         u'flickerSlow',
         u'pulse',
         u'pulseSlow',
-    ))
+    )
 
     melSet = MelSet(
         MelMWId(),
@@ -834,11 +834,11 @@ class MreMgef(MelRecord):
     """Magic Effect."""
     rec_sig = b'MGEF'
 
-    _mgef_flags = Flags(Flags.getNames(
+    _mgef_flags = Flags.from_names(
         (9,  u'spellmaking'),
         (10, u'enchanting'),
         (11, u'negative'),
-    ))
+    )
 
     ##: No MelMWId, will that be a problem?
     ##: This will be a pain. They're hardcoded like in Oblivion, but use an int
@@ -885,7 +885,7 @@ class MreNpc(MelRecord):
     """Non-Player Character."""
     rec_sig = b'NPC_'
 
-    _npc_flags = Flags(Flags.getNames(
+    _npc_flags = Flags.from_names(
         (0, u'female'),
         (1, u'essential'),
         (2, u'respawn'),
@@ -893,7 +893,7 @@ class MreNpc(MelRecord):
         (4, u'autoCalc'), # Bad name to match other games
         (10, u'skeleton_blood'),
         (11, u'metal_blood'),
-    ))
+    )
 
     class MelNpcData(MelLists):
         """Converts attributes and skills into lists."""
@@ -1099,11 +1099,11 @@ class MreSpel(MelRecord):
     """Spell."""
     rec_sig = b'SPEL'
 
-    _spell_flags = Flags(Flags.getNames(
+    _spell_flags = Flags.from_names(
         u'auto_calc',
         u'pc_start',
         u'always_suceeds',
-    ))
+    )
 
     melSet = MelSet(
         MelMWId(),
@@ -1142,8 +1142,8 @@ class MreWeap(MelRecord):
     """Weapon."""
     rec_sig = b'WEAP'
 
-    _weapon_flags = Flags(Flags.getNames(u'ignore_normal_weapon_resistance',
-                                         u'is_silver'))
+    _weapon_flags = Flags.from_names(u'ignore_normal_weapon_resistance',
+                                     u'is_silver')
 
     melSet = MelSet(
         MelMWId(),

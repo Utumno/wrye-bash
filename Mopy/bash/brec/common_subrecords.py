@@ -39,8 +39,8 @@ from ..exception import ModError, ModSizeError
 #------------------------------------------------------------------------------
 class MelActionFlags(MelUInt32Flags):
     """XACT (Action Flags) subrecord for REFR records."""
-    _act_flags = Flags(Flags.getNames(u'act_use_default', u'act_activate',
-        u'act_open', u'act_open_by_default'))
+    _act_flags = Flags.from_names(u'act_use_default', u'act_activate',
+                                  u'act_open', u'act_open_by_default')
 
     def __init__(self):
         super(MelActionFlags, self).__init__(b'XACT', u'action_flags',
@@ -56,8 +56,8 @@ class MelActionFlags(MelUInt32Flags):
 #------------------------------------------------------------------------------
 class MelActivateParents(MelGroup):
     """XAPD/XAPR (Activate Parents) subrecords for REFR records."""
-    _ap_flags = Flags(Flags.getNames(u'parent_activate_only'),
-        unknown_is_unused=True)
+    _ap_flags = Flags.from_names(u'parent_activate_only',
+                                 unknown_is_unused=True)
 
     def __init__(self):
         super(MelActivateParents, self).__init__(u'activate_parents',
@@ -87,9 +87,9 @@ class MelCtda(MelUnion):
     # This is technically a lot more complex (the highest three bits also
     # encode the comparison operator), but we only care about use_global, so we
     # can treat the rest as unknown flags and just carry them forward
-    _ctda_type_flags = Flags(Flags.getNames(
+    _ctda_type_flags = Flags.from_names(
         u'do_or', u'use_aliases', u'use_global', u'use_packa_data',
-        u'swap_subject_and_target'))
+        u'swap_subject_and_target')
 
     def __init__(self, ctda_sub_sig=b'CTDA', suffix_fmt=[],
                  suffix_elements=None, old_suffix_fmts=None):
@@ -253,12 +253,12 @@ class MelCtdaFo3(MelCtda):
 
 #------------------------------------------------------------------------------
 class MelDecalData(MelOptStruct):
-    _decal_data_flags = Flags(Flags.getNames(
+    _decal_data_flags = Flags.from_names(
         u'parallax',
         u'alphaBlending',
         u'alphaTesting',
         u'noSubtextures', # Skyrim+, will just be ignored for earlier games
-    ), unknown_is_unused=True)
+    unknown_is_unused=True)
 
     def __init__(self):
         super(MelDecalData, self).__init__(b'DODT',
@@ -566,8 +566,8 @@ class MelMapMarker(MelGroup):
     """Map marker struct for a reference record (REFR, ACHR, etc.). Also
     supports the WMI1 subrecord from FNV."""
     # Same idea as above - show_all_hidden is FO3+, but that's no problem.
-    _marker_flags = Flags(Flags.getNames(
-        u'visible', u'can_travel_to', u'show_all_hidden'))
+    _marker_flags = Flags.from_names('visible', 'can_travel_to',
+                                     'show_all_hidden')
 
     def __init__(self, with_reputation=False):
         group_elems = [
