@@ -1016,7 +1016,7 @@ class MreFurn(MelRecord):
     """Furniture."""
     rec_sig = b'FURN'
 
-    _flags = Flags() #--Governs type of furniture and which anims are available
+    _flags = Flags #--Governs type of furniture and which anims are available
     #--E.g., whether it's a bed, and which of the bed entry/exit animations
     # are available
 

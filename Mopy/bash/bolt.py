@@ -1001,48 +1001,52 @@ reUnixNewLine = re.compile(r'(?<!\r)\n', re.U)
 #------------------------------------------------------------------------------
 class Flags(object):
     """Represents a flag field."""
-    __slots__ = [u'_names', u'_field', u'_unknown_is_unused']
+    __slots__ = [u'_field']
+    _names = {}
+    _unknown_is_unused = False
 
-    @staticmethod
-    def getNames(*names):
-        """Returns dictionary mapping names to indices.
+    @classmethod
+    def from_names(cls, *names, unknown_is_unused=False):
+        """Return Flag subtype with specified names to index dictionary.
         Indices range may not be contiguous.
         Names are either strings or (index,name) tuples.
-        E.g., Flags.getNames('isQuest','isHidden',None,(4,'isDark'),(7,'hasWater'))"""
+        E.g., Flags.from_names('isQuest', 'isHidden', None, (4, 'isDark'),
+        (7, 'hasWater'))."""
         namesDict = {}
         for index,flg_name in enumerate(names):
             if isinstance(flg_name,tuple):
                 namesDict[flg_name[1]] = flg_name[0]
             elif flg_name: #--skip if "name" is 0 or None
                 namesDict[flg_name] = index
-        return namesDict
+        class __Flags(cls):
+            _names = namesDict
+            _unknown_is_unused = unknown_is_unused
+        return __Flags
 
     #--Generation
-    def __init__(self, names=None, unknown_is_unused=False, value=0):
+    def __init__(self, value=0):
         """Initialize. Attrs, if present, is mapping of attribute names to
         indices. unknown_is_unused will discard unknown flags."""
-        object.__setattr__(self, u'_names', names or {})
         object.__setattr__(self, u'_field', int(value))
-        object.__setattr__(self, u'_unknown_is_unused', unknown_is_unused)
         self._clean_unused_flags()
 
     def __call__(self,newValue=None):
         """Returns a clone of self, optionally with new value."""
         if newValue is not None:
-            return Flags(self._names, self._unknown_is_unused, int(newValue))
+            return self.__class__(int(newValue))
         else:
-            return Flags(self._names, self._unknown_is_unused, self._field)
+            return self.__class__(self._field)
 
     def __deepcopy__(self, memo):
-        newFlags = Flags(self._names, self._unknown_is_unused, self._field)
+        newFlags = Flags(self._field)
         memo[id(self)] = newFlags ##: huh?
         return newFlags
 
     def _clean_unused_flags(self):
         """Removes all unknown flags if that option was set in __init__."""
-        if self._unknown_is_unused:
+        if self.__class__._unknown_is_unused:
             final_flags = 0
-            for flg_name, flg_idx in self._names.items():
+            for flg_name, flg_idx in self.__class__._names.items():
                 if getattr(self, flg_name):
                     final_flags |= 1 << flg_idx
             self._field = final_flags
@@ -1079,7 +1083,7 @@ class Flags(object):
     def __getattr__(self, attr_key):
         """Get value by flag name. E.g. flags.isQuestItem"""
         try:
-            names = object.__getattribute__(self, u'_names')
+            names = self.__class__._names
             index = names[attr_key]
             return (object.__getattribute__(self, u'_field') >> index) & 1 == 1
         except KeyError:
@@ -1087,10 +1091,10 @@ class Flags(object):
 
     def __setattr__(self, attr_key, value):
         """Set value by flag name. E.g., flags.isQuestItem = False"""
-        if attr_key in (u'_field', u'_names'):
+        if attr_key == u'_field':
             object.__setattr__(self, attr_key, value)
         else:
-            self.__setitem__(self._names[attr_key], value)
+            self.__setitem__(self.__class__._names[attr_key], value)
 
     #--Native operations
     def __eq__( self, other):
@@ -1128,8 +1132,8 @@ class Flags(object):
 
     def getTrueAttrs(self):
         """Returns attributes that are true."""
-        trueNames = [flname for flname in self._names if getattr(self, flname)]
-        trueNames.sort(key=lambda xxx: self._names[xxx])
+        trueNames = [flname for flname in self.__class__._names if getattr(self, flname)]
+        trueNames.sort(key=lambda xxx: self.__class__._names[xxx])
         return tuple(trueNames)
 
     def __repr__(self):

@@ -133,7 +133,7 @@ class MreActor(MreActorBase):
 #------------------------------------------------------------------------------
 class MelBipedData(MelStruct):
     """Handles the common BMDT (Biped Data) subrecord."""
-    _biped_flags = BipedFlags()
+    _biped_flags = BipedFlags.from_names()
     _general_flags = Flags.from_names(
         fnv_only((2, u'hasBackpack')),
         fnv_only((3, u'medium_armor')),
@@ -1299,7 +1299,7 @@ class MreFurn(MelRecord):
     """Furniture."""
     rec_sig = b'FURN'
 
-    _flags = Flags() #--Governs type of furniture and which anims are available
+    _flags = Flags #--Governs type of furniture and which anims are available
     #--E.g., whether it's a bed, and which of the bed entry/exit animations are available
 
     melSet = MelSet(
