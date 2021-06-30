@@ -1038,7 +1038,7 @@ class Flags(object):
             return self.__class__(self._field)
 
     def __deepcopy__(self, memo):
-        newFlags = Flags(self._field)
+        newFlags = self.__class__(self._field)
         memo[id(self)] = newFlags ##: huh?
         return newFlags
 
