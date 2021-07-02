@@ -1114,21 +1114,21 @@ class Flags(object):
     def __and__(self,other):
         """Bitwise and."""
         if isinstance(other,Flags): other = other._field
-        return self(self._field & other)
+        return self.__class__(self._field & other)
 
     def __invert__(self):
         """Bitwise inversion."""
-        return self(~self._field)
+        return self.__class__(~self._field)
 
     def __or__(self,other):
         """Bitwise or."""
         if isinstance(other,Flags): other = other._field
-        return self(self._field | other)
+        return self.__class__(self._field | other)
 
     def __xor__(self,other):
         """Bitwise exclusive or."""
         if isinstance(other,Flags): other = other._field
-        return self(self._field ^ other)
+        return self.__class__(self._field ^ other)
 
     def getTrueAttrs(self):
         """Returns attributes that are true."""

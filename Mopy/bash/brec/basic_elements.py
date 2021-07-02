@@ -704,7 +704,7 @@ class _MelFlags(_MelNum):
         self._flag_default = self._flag_type(self.default or 0)
 
     def setDefault(self, record):
-        setattr(record, self.attr, self._flag_default())
+        setattr(record, self.attr, self._flag_type(self.default or 0))
 
     def load_mel(self, record, ins, sub_type, size_, *debug_strs):
         setattr(record, self.attr, self._flag_type(ins.unpack(

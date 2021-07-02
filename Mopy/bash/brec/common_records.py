@@ -305,7 +305,7 @@ class MreLeveledListBase(MelRecord):
         if other.re_records:
             for attr in self.__class__.top_copy_attrs:
                 setattr(self, attr, getattr(other, attr))
-            self.flags = other.flags()
+            self.flags = other.flags() # Flags copy!
         else:
             for attr in self.__class__.top_copy_attrs:
                 otherAttr = getattr(other, attr)
