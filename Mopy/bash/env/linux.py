@@ -37,7 +37,7 @@ from ..exception import EnvError
 
 # API - Constants =============================================================
 try:
-    MAX_PATH = int(subprocess.check_output([u'getconf', u'PATH_MAX', u'/']))
+    MAX_PATH = int(subprocess.check_output([u'getconf', u'PATH_MAX', u'/'])) # 1024 on mac!
 except (ValueError, subprocess.CalledProcessError, OSError):
     _deprint(u'calling getconf failed - error:', traceback=True)
     MAX_PATH = 4096
@@ -231,7 +231,7 @@ class TaskDialog(object):
                  _main_icon=None, _parenthwnd=None, _footer=None):
         raise EnvError(u'TaskDialog')
 
-# Linux is still mostly broken, so raise on import
-raise ImportError(u'Wrye Bash only partially supports Linux at the moment. If '
-                  u"you know what you're doing, edit linux.py to remove this "
-                  u'raise statement.')
+# # Linux is still mostly broken, so raise on import
+# raise ImportError(u'Wrye Bash only partially supports Linux at the moment. If '
+#                   u"you know what you're doing, edit linux.py to remove this "
+#                   u'raise statement.')
