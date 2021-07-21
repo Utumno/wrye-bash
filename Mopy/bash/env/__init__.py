@@ -39,7 +39,7 @@ if platform.system() == u'Windows':
 elif platform.system() == u'Linux':
     from .linux import *
 else:
-    raise ImportError(u'Wrye Bash does not support %s yet' % platform.system())
+    from .linux import * # raise ImportError(u'Wrye Bash does not support %s yet' % platform.system())
 
 # File operations WIP ---------------------------------------------------------
 def __copyOrMove(operation, source, target, renameOnCollision, parent):
