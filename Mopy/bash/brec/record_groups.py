@@ -31,7 +31,7 @@ from operator import itemgetter, attrgetter
 # Wrye Bash imports
 from .mod_io import GrupHeader, ModReader, RecordHeader, TopGrupHeader
 from .utils_constants import group_types, fid_key
-from ..bolt import GPath, pack_int, structs_cache, attrgetter_cache
+from ..bolt import GPath, pack_int, structs_cache, attrgetter_cache, deprint
 from ..exception import AbstractError, ModError, ModFidMismatchError
 
 class MobBase(object):
@@ -1143,7 +1143,13 @@ class MobCells(MobBase):
         bsbCellBlocks = [(x.getBsb(),x) for x in self.cellBlocks]
         # First sort by the CELL FormID, then by the block they belong to
         bsbCellBlocks.sort(key=lambda y: y[1].cell.fid)
-        bsbCellBlocks.sort(key=itemgetter(0))
+        try:
+            bsbCellBlocks.sort(key=itemgetter(0))
+        except TypeError:
+            deprint('Failed to sort BSBs, info follows:')
+            deprint(f'bsbCellBlocks = {repr(bsbCellBlocks)}')
+            deprint(f'self.cellBlocks = {repr(self.cellBlocks)}')
+            raise
         bsb_size = {}
         hsize = RecordHeader.rec_header_size
         totalSize = hsize
