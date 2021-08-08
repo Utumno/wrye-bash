@@ -195,21 +195,36 @@ def exit_cleanup():
 def dump_environment():
     """Dumps information about the environment. Must only be called after
     _import_wx and _import_deps."""
-    import wx as _wx
-    import lz4
-    import yaml
+    # Note that we can't dump pywin32 because it doesn't contain a version
+    # field in its modules
+    import chardet, lz4, yaml
+    try:
+        import fitz
+        pymupdf_ver = (f'{fitz.VersionBind}; bundled MuPDF version: '
+                       f'{fitz.VersionFitz}')
+    except ImportError:
+        pymupdf_ver = 'not found'
+    try:
+        import wx as _wx
+        wx_ver = _wx.version()
+    except ImportError:
+        wx_ver = 'not found'
+    # Now that we have checked all dependencies (including potentially missing
+    # ones), we can build the environment dump
     fse = bolt.Path.sys_fs_enc
     msg = [
         f'Using Wrye Bash Version {bass.AppVersion}'
         f'{u" (Standalone)" if bass.is_standalone else u""}',
         f'OS info: {platform.platform()}, running on '
         f'{platform.processor() or u"<unknown>"}',
-        u'Python version: %s' % sys.version,
-        f'wxPython version: '
-        f'{_wx.version() if _wx is not None else u"wxPython not found"}',
-        f'python-lz4 version: {lz4.version.version}; bundled LZ4 version: '
+        f'Python version: {sys.version}',
+        'Dependency versions:',
+        f' - chardet: {chardet.__version__}',
+        f' - PyMuPDF: {pymupdf_ver}',
+        f' - python-lz4: {lz4.version.version}; bundled LZ4 version: '
         f'{lz4.library_version_string()}',
-        f'pyyaml version: {yaml.__version__}',
+        f' - PyYAML: {yaml.__version__}',
+        f' - wxPython: {wx_ver}',
         # Standalone: stdout will actually be pointing to stderr, which has no
         # 'encoding' attribute and stdin will be None
         f'Input encoding: {sys.stdin.encoding if sys.stdin else None}; '
