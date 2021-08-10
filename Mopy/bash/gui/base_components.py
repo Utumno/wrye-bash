@@ -323,7 +323,10 @@ class _AComponent(object):
     def destroy_component(self):
         """Destroys this component - non-internal usage is a smell, avoid if at
         all possible."""
-        self._native_widget.Destroy()
+        if self._native_widget:
+            self._native_widget.Destroy()
+        else:
+            deprint(f'{type(self)}: {self._native_widget} was deleted')
 
     def wx_id_(self): ##: Avoid, we do not want to program with gui ids
         return self._native_widget.GetId()
