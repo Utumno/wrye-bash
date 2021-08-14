@@ -352,6 +352,9 @@ class Installer(ListInfo):
         if not isinstance(self.dirty_sizeCrc, bolt.LowerDict):
             self.dirty_sizeCrc = bolt.LowerDict(
                 (u'%s' % x, y) for x, y in self.dirty_sizeCrc.items())
+        if not isinstance(self.archive, str):
+            deprint(f'{repr(self.archive)} in Installers.dat')
+            self.archive = self.archive.decode('utf-8')
         if rescan:
             dest_scr = self.refreshBasic(bolt.Progress(),
                                          recalculate_project_crc=False)
@@ -2655,10 +2658,10 @@ class InstallersData(DataStore):
         progress.setFull(len(installer_destinations))
         installer_destinations = dict_sort(installer_destinations,
                                            key_f=lambda k: self[k].order)
-        for index, (archive, destFiles) in enumerate(installer_destinations):
-            progress(index, archive.s)
+        for index, (archive_path, destFiles) in enumerate(installer_destinations):
+            progress(index, archive_path.s)
             if destFiles:
-                installer = self[archive]
+                installer = self[archive_path]
                 self.__installer_install(installer, destFiles, index, progress,
                                          refresh_ui)
 
