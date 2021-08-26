@@ -394,7 +394,7 @@ class MobObjects(MobBase):
         return iter(self.records)
 
     def __repr__(self):
-        return (f'<{self.label.decode("ascii")} GRUP: {len(self.records)} '
+        return (f'<{sig_to_str[self.label]} GRUP: {len(self.records)} '
                 f'record(s)>')
 
 #------------------------------------------------------------------------------

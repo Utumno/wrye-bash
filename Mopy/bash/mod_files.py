@@ -28,7 +28,8 @@ from itertools import chain
 from zlib import decompress as zlib_decompress, error as zlib_error
 
 from . import bolt, bush, env, load_order
-from .bolt import deprint, SubProgress, structs_cache, struct_error, decoder
+from .bolt import deprint, SubProgress, structs_cache, struct_error, decoder, \
+    sig_to_str
 from .brec import MreRecord, ModReader, RecordHeader, RecHeader, null1, \
     TopGrupHeader, MobBase, MobDials, MobICells, MobObjects, MobWorlds, \
     unpack_header, FastModReader, Subrecord
@@ -153,11 +154,9 @@ class LoadFactory(object):
             return MobBase if self.keepAll else None
 
     def __repr__(self):
-        return u'<LoadFactory: load %u types (%s), %s others>' % (
-            len(self.recTypes),
-            u', '.join([r.decode('ascii') for r in self.recTypes]),
-            u'keep' if self.keepAll else u'discard',
-        )
+        return f'<LoadFactory: load {len(self.recTypes)} types ' \
+               f'({", ".join(sig_to_str[r] for r in self.recTypes)}), ' \
+               f'{u"keep" if self.keepAll else u"discard"} others>'
 
 class _RecGroupDict(dict):
     """dict subclass holding ModFile's collection of top groups key'd by sig"""
@@ -521,8 +520,8 @@ class ModHeaderReader(object):
                     # Nothing special to do for non-top GRUPs
                     if not header.is_top_group_header: continue
                     tg_label = header.label
-                    progress(ins_tell() / minf_size, u'%s\n%s' % (
-                        main_progress_msg, tg_label.decode(u'ascii')))
+                    progress(ins_tell() / minf_size,
+                             f'{main_progress_msg}\n{sig_to_str[tg_label]}')
                     records = group_records[tg_label]
                 #     skip_eids = tg_label not in records_with_eids
                 # elif skip_eids:
