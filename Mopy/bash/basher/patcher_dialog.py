@@ -20,10 +20,8 @@
 #  https://github.com/wrye-bash
 #
 # =============================================================================
-
 """Patch dialog"""
 import copy
-import errno
 import io
 import re
 import time
@@ -279,9 +277,7 @@ class PatchDialog(DialogWindow):
                 # shellMove, not sure if ever a Windows or Cancel are raised
                 patchFile.safeSave()
                 return
-            except (CancelError, SkipError, OSError) as werr:
-                if isinstance(werr, OSError) and werr.errno != errno.EACCES:
-                    raise
+            except (CancelError, SkipError, PermissionError):
                 ##: Ugly warts below (see also FIXME above)
                 if balt.askYes(self,
                     (_(u'Bash encountered an error when saving '

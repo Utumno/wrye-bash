@@ -24,7 +24,6 @@
 central import point, always import directly from here to get the right
 implementations for the current OS."""
 
-import errno
 import platform
 import shutil
 
@@ -94,8 +93,7 @@ def __copyOrMove(operation, source, target, renameOnCollision, parent):
             # overwrite as needed
             try:
                 shutil.copy2(fileFrom.s, fileTo.s)
-            except OSError as e: ## TODO FileNotFoundError ??
-                if e.errno != errno.ENOENT: raise
+            except FileNotFoundError:
                 # probably directory path does not exist, create it.
                 fileTo.head.makedirs()
                 shutil.copy2(fileFrom.s, fileTo.s)

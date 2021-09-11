@@ -29,7 +29,6 @@ import pickle
 import collections
 import copy
 import datetime
-import errno
 import io
 import os
 import re
@@ -904,9 +903,7 @@ class Path(object):
                     # (unexpectedly) a directory
                     try:
                         os.remove(self._s)
-                    except OSError as e:
-                        if e.errno != errno.EACCES:
-                            raise
+                    except PermissionError:
                         self.clearRO()
                         os.remove(self._s)
             shutil.move(self.temp._s, self._s)
