@@ -27,13 +27,10 @@ stores. bush.game must be set, to properly instantiate the data stores."""
 
 # Imports ---------------------------------------------------------------------
 #--Python
-
-
-import pickle
 import collections
-import errno
 import io
 import os
+import pickle
 import re
 import sys
 import time
@@ -41,7 +38,6 @@ import traceback
 from collections import OrderedDict
 from functools import wraps, partial
 from typing import Iterable
-
 #--Local
 from ._mergeability import isPBashMergeable, is_esl_capable
 from .loot_parser import LOOTParser, libloot_version
@@ -3028,7 +3024,7 @@ class ModInfos(FileInfos):
                 self[self.masterName].fsize, None)
         else: self.voCurrent = None # just in case
 
-    def _retry(self, old, new):
+    def _retry(self, old, new):  ##: we should check *before* writing the patch
         return balt.askYes(
             self, (_(u'Bash encountered an error when renaming %(old)s to '
                     u'%(new)s.') + u'\n\n' +
@@ -3075,10 +3071,10 @@ class ModInfos(FileInfos):
             try:
                 rename_operation(baseInfo, oldName)
                 break
-            except OSError as werr: # can only occur if SHFileOperation
+            except PermissionError: ##: can only occur if SHFileOperation
                 # isn't called, yak - file operation API badly needed
-                if werr.errno == errno.EACCES and self._retry(
-                        baseInfo.getPath(), self.store_dir.join(oldName)):
+                if self._retry(baseInfo.getPath(),
+                        self.store_dir.join(oldName)):
                     continue
                 raise
             except CancelError:
@@ -3087,9 +3083,8 @@ class ModInfos(FileInfos):
             try:
                 rename_operation(newInfo, self.masterName)
                 break
-            except OSError as werr:
-                if werr.errno == errno.EACCES and self._retry(
-                        newInfo.getPath(), baseInfo.getPath()):
+            except PermissionError as werr:
+                if self._retry(newInfo.getPath(), baseInfo.getPath()):
                     continue
                 #Undo any changes
                 rename_operation(oldName, self.masterName)

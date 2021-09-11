@@ -143,12 +143,12 @@ class ModSigMismatchError(ModError):
         super(ModSigMismatchError, self).__init__(in_name.s, message_form)
 
 # Shell (OS) File Operation exceptions ----------------------------------------
-class FileOperationError(OSError):
+class FileOperationError(OSError):  ##: revisit uses - use builtin exceptions
     def __init__(self, error_code, message=None):
         # type: (int, str) -> None
-        self.errno = error_code
-        Exception.__init__(self, u'FileOperationError: %s' % (
-                message or str(error_code)))
+        self._error_code = error_code ##: unused
+        Exception.__init__(self,
+                           f'FileOperationError: {message or error_code}')
 
 class AccessDeniedError(FileOperationError):
     def __init__(self):
