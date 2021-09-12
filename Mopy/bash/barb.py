@@ -36,8 +36,8 @@ the settings were created with
 the backup
 """
 
-import pickle
 import os
+import pickle
 from os.path import join as jo
 
 from . import archives
@@ -46,7 +46,7 @@ from . import bolt
 from . import initialization
 from .bass import dirs, AppVersion
 from .bolt import GPath, deprint
-from .exception import BoltError, StateError, raise_bolt_error
+from .exception import BoltError, StateError
 
 def _init_settings_files(bak_name, mg_name, root_prefix, mods_folder):
     """Construct a dict mapping directory paths to setting files. Keys are
@@ -345,8 +345,8 @@ class RestoreSettings(object):
                     # version of Bash that created the backup
                     self._settings_saved_with = pickle.load(
                         ins, encoding='bytes')
-            except (OSError, pickle.UnpicklingError, EOFError):
-                raise_bolt_error(u'Failed to read %s' % backup_dat)
+            except (OSError, pickle.UnpicklingError, EOFError) as e:
+                raise BoltError(f'Failed to read {backup_dat}') from e
         return self._saved_settings_version, self._settings_saved_with
 
     def _get_backup_game(self):

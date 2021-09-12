@@ -44,7 +44,7 @@ from ..bolt import decoder, cstrip, unpack_string, unpack_int, unpack_str8, \
     unpack_many, encode, struct_unpack, pack_int, pack_byte, pack_short, \
     pack_float, pack_string, pack_str8, pack_bzstr8, structs_cache, \
     struct_error, remove_newlines
-from ..exception import SaveHeaderError, raise_bolt_error, AbstractError
+from ..exception import SaveHeaderError, AbstractError
 
 # Utilities -------------------------------------------------------------------
 def _pack_c(out, value, __pack=structs_cache[u'=c'].pack):
@@ -77,10 +77,10 @@ class SaveFileHeader(object):
             else:
                 self.load_header(ins, load_image)
         #--Errors
-        except (OSError, struct_error, OverflowError):
-            err_msg = u'Failed to read %s' % self._save_info.abs_path
+        except (OSError, struct_error, OverflowError) as e:
+            err_msg = f'Failed to read {self._save_info.abs_path}'
             bolt.deprint(err_msg, traceback=True)
-            raise_bolt_error(err_msg, SaveHeaderError)
+            raise SaveHeaderError(err_msg) from e
 
     def load_header(self, ins, load_image=False):
         save_magic = unpack_string(ins, len(self.__class__.save_magic))
