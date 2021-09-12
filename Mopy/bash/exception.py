@@ -23,8 +23,6 @@
 """This module contains all custom exceptions for Wrye Bash."""
 
 import platform
-import sys
-import traceback
 # NO LOCAL IMPORTS! This has to be importable from any module/package.
 
 class BoltError(Exception):
@@ -33,11 +31,6 @@ class BoltError(Exception):
         self.message = message
     def __str__(self):
         return self.message
-
-def raise_bolt_error(msg, exc=BoltError):
-    extype, ex, tb = sys.exc_info()
-    formatted = traceback.format_exception_only(extype, ex)[-1]
-    raise exc(u'%s caused by %s' % (msg, formatted)).with_traceback(tb)
 
 # Code errors -----------------------------------------------------------------
 class AbstractError(BoltError):
@@ -91,9 +84,8 @@ class ModError(FileError):
 
 def _join_sigs(debug_str):
     if isinstance(debug_str, (tuple, list)):
-        debug_str = u'.'.join(
-            u'%s' % (s.decode(u'ascii') if type(s) is bytes else s) for s
-            in debug_str)
+        debug_str = u'.'.join( # use iso-8859-1 we don't want decoding to fail
+            s.decode(u'iso-8859-1') if type(s) is bytes else s for s in debug_str)
     return debug_str
 
 class ModReadError(ModError):
