@@ -22,10 +22,10 @@
 # =============================================================================
 """BAIN Converters aka BCFs"""
 
-import pickle
 import io
+import pickle
 import re
-import sys
+
 from .. import bolt, archives, bass
 from ..archives import defaultExt, readExts, compressionSettings, \
     compressCommand
@@ -326,7 +326,7 @@ class InstallerConverter(object):
                 _dump(self.persistBCF, f)
                 _dump(self._converter_settings + self.volatile + self.addedSettings, f)
         except Exception as e:
-            raise StateError(u'Error creating BCF.dat:\nError: %s' % e).with_traceback(sys.exc_info()[2])
+            raise StateError(f'Error creating BCF.dat:\nError: {e}') from e
 
     def apply(self, destArchive, crc_installer, progress=None, embedded=0):
         """Applies the BCF and packages the converted archive"""
@@ -578,8 +578,8 @@ class InstallerConverter(object):
             with tempList.open(u'w', encoding=u'utf-8-sig') as out:
                 out.write(u'\n'.join(fileNames))
         except Exception as e:
-            raise StateError(u'Error creating file list for 7z:\nError: %s'
-                               % e).with_traceback(sys.exc_info()[2])
+            raise StateError(
+                f'Error creating file list for 7z:\nError: {e}') from e
         #--Determine settings for 7z
         installerCRC = srcInstaller.crc
         apath = srcInstaller if isinstance(srcInstaller,

@@ -85,8 +85,8 @@ class SaveFileHeader(object):
     def load_header(self, ins, load_image=False):
         save_magic = unpack_string(ins, len(self.__class__.save_magic))
         if save_magic != self.__class__.save_magic:
-            raise SaveHeaderError(u'Magic wrong: %r (expected %r)' % (
-                save_magic, self.__class__.save_magic))
+            raise SaveHeaderError(f'Magic wrong: {save_magic!r} (expected '
+                                  f'{self.__class__.save_magic!r})')
         for attr, (__pack, _unpack) in self.__class__.unpackers.items():
             setattr(self, attr, _unpack(ins))
         self.load_image_data(ins, load_image)
@@ -287,9 +287,9 @@ class SkyrimSaveHeader(SaveFileHeader):
     def load_image_data(self, ins, load_image=False):
         if self.__is_sse():
             self._compressType = unpack_short(ins)
-        if ins.tell() != self.header_size + 17: raise SaveHeaderError(
-            u'New Save game header size (%s) not as expected (%s).' % (
-                ins.tell() - 17, self.header_size))
+        if (actual := ins.tell() - 17) != self.header_size:
+            raise SaveHeaderError(f'New Save game header size ({actual}) not '
+                                  f'as expected ({self.header_size}).')
         super(SkyrimSaveHeader, self).load_image_data(ins, load_image)
 
     def load_masters(self, ins):
@@ -327,11 +327,10 @@ class SkyrimSaveHeader(SaveFileHeader):
         else:
             self.has_esl_masters = False
         # Check for master's table size
-        if ins.tell() + sse_offset != self._mastersStart + mastersSize + 4:
-            raise SaveHeaderError(
-                u'Save game masters size (%i) not as expected (%i).' % (
-                    ins.tell() + sse_offset - self._mastersStart - 4,
-                    mastersSize))
+        masters_size = ins.tell() + sse_offset - self._mastersStart - 4
+        if masters_size != mastersSize:
+            raise SaveHeaderError(f'Save game masters size ({masters_size}) '
+                                  f'not as expected ({mastersSize}).')
 
     def _sse_compress(self, to_compress):
         """Compresses the specified data using either LZ4 or zlib, depending on
@@ -346,7 +345,7 @@ class SkyrimSaveHeader(SaveFileHeader):
                 # SSE uses zlib level 1
                 return zlib.compress(to_compress.getvalue(), 1)
         except (zlib.error, lz4.block.LZ4BlockError) as e:
-            raise SaveHeaderError(u'Failed to compress header: %r' % e)
+            raise SaveHeaderError(f'Failed to compress header: {e!r}')
 
     def _sse_decompress(self, ins, compressed_size, decompressed_size,
             light_decompression=False):
@@ -366,12 +365,12 @@ class SkyrimSaveHeader(SaveFileHeader):
         try:
             decompressed_data = zlib.decompress(ins.read(compressed_size))
         except zlib.error as e:
-            raise SaveHeaderError(u'zlib error while decompressing '
-                                  u'zlib-compressed header: %r' % e)
+            raise SaveHeaderError(f'zlib error while decompressing '
+                                  f'zlib-compressed header: {e!r}')
         if len(decompressed_data) != decompressed_size:
-            raise SaveHeaderError(u'zlib-decompressed header size incorrect - '
-                                  u'expected %u, but got %u.' % (
-                decompressed_size, len(decompressed_data)))
+            raise SaveHeaderError(
+                f'zlib-decompressed header size incorrect - expected '
+                f'{decompressed_size}, but got {len(decompressed_data)}.')
         return io.BytesIO(decompressed_data)
 
     @staticmethod
@@ -380,12 +379,11 @@ class SkyrimSaveHeader(SaveFileHeader):
             decompressed_data = lz4.block.decompress(
                 ins.read(compressed_size), uncompressed_size=decompressed_size * 2)
         except lz4.block.LZ4BlockError as e:
-            raise SaveHeaderError(u'LZ4 error while decompressing '
-                                  u'lz4-compressed header: %r' % e)
-        if len(decompressed_data) != decompressed_size:
-            raise SaveHeaderError(u'lz4-decompressed header size incorrect - '
-                                  u'expected %u, but got %u.' % (
-                decompressed_size, len(decompressed_data)))
+            raise SaveHeaderError(f'LZ4 error while decompressing '
+                                  f'lz4-compressed header: {e!r}')
+        if (len_data := len(decompressed_data)) != decompressed_size:
+            raise SaveHeaderError(f'lz4-decompressed header size incorrect - '
+                f'expected {decompressed_size}, but got {len_data}.')
         return io.BytesIO(decompressed_data)
 
     @staticmethod
@@ -522,9 +520,9 @@ class Fallout4SaveHeader(SkyrimSaveHeader): # pretty similar to skyrim
         return True
 
     def load_image_data(self, ins, load_image=False):
-        if ins.tell() != self.header_size + 16: raise SaveHeaderError(
-            u'New Save game header size (%s) not as expected (%s).' % (
-                ins.tell() - 16, self.header_size))
+        if (actual := ins.tell() - 16) != self.header_size:
+            raise SaveHeaderError(f'New Save game header size ({actual}) not '
+                                  f'as expected ({self.header_size}).')
         super(SkyrimSaveHeader, self).load_image_data(ins, load_image)
 
     def load_masters(self, ins):
@@ -590,8 +588,8 @@ class FalloutNVSaveHeader(SaveFileHeader):
     def _master_list_size(self, ins):
         formVersion, masterListSize = unpack_many(ins, '=BI')
         if formVersion != self._masters_unknown_byte: raise SaveHeaderError(
-            u'Unknown byte at position %d is %r not 0x%X' % (
-                ins.tell() - 4, formVersion, self._masters_unknown_byte))
+            f'Unknown byte at position {ins.tell() - 4} is {formVersion!r} '
+            f'not 0x{self._masters_unknown_byte:X}')
         return masterListSize
 
     def _write_masters(self, ins, out):
