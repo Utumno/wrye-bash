@@ -30,7 +30,6 @@ import math
 import os
 import subprocess
 import sys
-from contextlib import contextmanager
 from urllib.request import urlopen
 
 # verbosity:
@@ -96,9 +95,8 @@ def download_file(url, fpath):
             file_size_dl += len(buff)
             dl_file.write(buff)
             percentage = file_size_dl * 100.0 / file_size
-            status = u'{0:>20}  -----  [{3:6.2f}%] {1:>10}/{2}'.format(
-                file_name, convert_bytes(file_size_dl), converted_size, percentage
-            )
+            status = f'{file_name:>20}  -----  [{percentage:6.2f}%] ' \
+                     f'{convert_bytes(file_size_dl):>10}/{converted_size}'
             status = status + chr(8) * (len(status) + 1)
             print(status, end=u' ')
     print()
@@ -111,7 +109,7 @@ def run_subprocess(command, logger, **kwargs):
         universal_newlines=True,
         **kwargs
     )
-    logger.debug(u'Running command: %s' % u' '.join(command))
+    logger.debug(f'Running command: {u" ".join(command)}')
     stdout, _stderr = sp.communicate()
     if sp.returncode != 0:
         logger.error(stdout)
@@ -122,13 +120,6 @@ def run_subprocess(command, logger, **kwargs):
 
 def relpath(path):
     return os.path.relpath(path, os.getcwd())
-
-@contextmanager
-def suppress(*exceptions):
-    try:
-        yield
-    except exceptions:
-        pass
 
 # https://stackoverflow.com/questions/600268/mkdir-p-functionality-in-python
 def mkdir(path, exists_ok=True):
