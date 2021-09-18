@@ -443,8 +443,8 @@ class InstallerProject_OmodConfigDialog(WindowFrame):
             caption=True, clip_children=True, tab_traversal=True)
         #--Fields
         self.gName = TextField(self, init_text=config.omod_proj,max_length=100)
-        self.gVersion = TextField(self, u'{:d}.{:02d}'.format(
-            config.vMajor, config.vMinor), max_length=32)
+        self.gVersion = TextField(self, f'{config.vMajor:d}.'
+                                        f'{config.vMinor:02d}', max_length=32)
         self.gWebsite = TextField(self, config.website, max_length=512)
         self.gAuthor = TextField(self, config.omod_author, max_length=512)
         self.gEmail = TextField(self, init_text=config.email, max_length=512)
