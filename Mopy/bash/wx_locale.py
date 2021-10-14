@@ -16,8 +16,6 @@
 # You should have received a copy of the GNU General Public License along
 # with EventGhost. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function
-
 import ctypes
 import locale as _locale
 import sys
@@ -25,16 +23,14 @@ from ctypes.wintypes import DWORD, BOOL
 
 import wx
 
-from ._wx_lang_codes import LNG, _add_languages_to_db, LanguageInfo, \
+from ._wx_lang_codes import LNGINFO, _add_languages_to_db, LanguageInfo, \
     LOCALE_SENGLISHCOUNTRYNAME, LOCALE_IDEFAULTANSICODEPAGE, \
     LOCALE_SNATIVECOUNTRYNAME, LOCALE_SLOCALIZEDCOUNTRYNAME, LC_ALL, CODE_PAGES
-from ._wx_locale_functions import _kernel32, GetLocaleInfoEx, \
-    SetThreadUILanguage, IsValidLocale, GetThreadUILanguage, LocaleNameToLCID, \
-    LANGIDFROMLCID, LOCALE_STHOUSAND, LOCALE_SMONDECIMALSEP, LOCALE_SDECIMAL, \
-    LOCALE_SSHORTDATE, LOCALE_SLONGDATE, LOCALE_STIMEFORMAT
-
-_Locale = wx.Locale
-
+from ._wx_locale_functions import GetLocaleInfoEx, SetThreadUILanguage, \
+    IsValidLocale, GetThreadUILanguage, LocaleNameToLCID, LANGIDFROMLCID, \
+    LOCALE_STHOUSAND, LOCALE_SMONDECIMALSEP, LOCALE_SDECIMAL, \
+    LOCALE_SSHORTDATE, LOCALE_SLONGDATE, LOCALE_STIMEFORMAT, \
+    EnumSystemLocalesEx, SetThreadLocale
 
 def GetLocaleInfo(
     lpLocaleName,
@@ -58,17 +54,13 @@ def GetLocaleInfo(
         date_fmt = GetLocaleInfo(lpLocaleName, wx.LOCALE_SHORT_DATE_FMT)
         if not date_fmt:
             return ''
-
         time_fmt = GetLocaleInfo(lpLocaleName, wx.LOCALE_TIME_FMT)
         if not time_fmt:
             return ''
-
         return date_fmt + ' ' + time_fmt
     else:
         raise RuntimeError('unknown wxLocaleInfo')
-
     value = GetLocaleInfoEx(lpLocaleName, LCType)
-
     if index == wx.LOCALE_TIME_FMT:
         hour_formats = [
             '',
@@ -169,27 +161,24 @@ def GetLocaleInfo(
 
     return value
 
-class Locale(_Locale):
+class Locale(wx.Locale):
     m_pszOldLocale = None
     m_pOldLocale = None
     ms_languagesDB = None
 
     def __init__(self, *args, **kwargs):
-        global _current_locale
         if not args and not kwargs:
             kwargs['iso_code'] = Locale.GetSystemLanguage().replace('-', '_')
         super(Locale, self).__init__()
-
         self.DoCommonInit()
-
         self.m_strShort = ''
         self.m_strLocale = ''
         self.m_language = ''
         self.m_initialized = False
         self.m_translations = None
-
         if args or kwargs:
             if self.Init(*args, **kwargs):
+                global _current_locale
                 _current_locale = self
 
     @staticmethod
@@ -209,14 +198,6 @@ class Locale(_Locale):
         _add_languages_to_db()
 
     @staticmethod
-    def AddCatalog(*args, **kwargs):
-        return _Locale.AddCatalog(*args, **kwargs)
-
-    @staticmethod
-    def AddCatalogLookupPathPrefix(*args, **kwargs):
-        return _Locale.AddCatalogLookupPathPrefix(*args, **kwargs)
-
-    @staticmethod
     def AddLanguage(info):
         Locale.CreateLanguagesDB()
         Locale.ms_languagesDB += [info]
@@ -231,9 +212,6 @@ class Locale(_Locale):
 
     def GetCanonicalName(self):
         return self.m_strShort
-
-    def GetHeaderValue(self, *args, **kwargs):
-        return super(Locale, self).GetHeaderValue(*args, **kwargs)
 
     @staticmethod
     def GetLanguageInfo(lang):
@@ -325,9 +303,6 @@ class Locale(_Locale):
     def GetName(self):
         return self.m_strLocale
 
-    def GetString(self, *args, **kwargs):
-        return super(Locale, self).GetString(*args, **kwargs)
-
     def GetSysName(self):
         return wx.Setlocale(LC_ALL, None)
 
@@ -337,10 +312,8 @@ class Locale(_Locale):
         info = Locale.FindLanguageInfo(locale.GetLanguage())
         iso_code = info.GetFullLocaleName(locale)
         default_ansi_codepage = GetLocaleInfoEx(iso_code, LOCALE_IDEFAULTANSICODEPAGE)
-
         if default_ansi_codepage in list(range(1250, 1259)):
             return wx.FONTENCODING_CP1250 + default_ansi_codepage - 1250
-
         mapping = {
             1361: wx.FONTENCODING_CP1361,
             874: wx.FONTENCODING_CP874,
@@ -352,7 +325,6 @@ class Locale(_Locale):
         }
         if default_ansi_codepage in mapping:
             return mapping[default_ansi_codepage]
-
         return wx.FONTENCODING_SYSTEM
 
     @staticmethod
@@ -421,7 +393,7 @@ class Locale(_Locale):
             if not info:
                 info = self.FindLanguageInfo(iso_code.replace('-', '_'))
             if not info:
-                LNG(wx.LANGUAGE_USER_DEFINED, lang, 0, 0, 0, '')
+                LNGINFO(wx.LANGUAGE_USER_DEFINED, lang, 0, 0, 0, '', Locale)
                 info = self.FindLanguageInfo(lang)
             success = True
             name = info.Description
@@ -436,7 +408,7 @@ class Locale(_Locale):
             if not info:
                 info = self.FindLanguageInfo(lang)
             if not info:
-                LNG(wx.LANGUAGE_USER_DEFINED, lang, 0, 0, 0, '')
+                LNGINFO(wx.LANGUAGE_USER_DEFINED, lang, 0, 0, 0, '', Locale)
                 info = self.FindLanguageInfo(lang)
             success = True
             name = GetLocaleInfoEx(iso_code.replace('_', '-'), LOCALE_SENGLISHCOUNTRYNAME)
@@ -465,9 +437,7 @@ class Locale(_Locale):
                 if info.WinLang != 0:
                     lcid = info.GetLCID()
                     SetThreadLocale(lcid)
-
-                    if wx.GetWinVersion() >= wx.WinVersion_Vista:
-                        SetThreadUILanguage(LANGIDFROMLCID(lcid))
+                    SetThreadUILanguage(LANGIDFROMLCID(lcid))
 
                 success = info.TrySetLocale() is not None
 
@@ -543,9 +513,7 @@ class Locale(_Locale):
             if info.WinLang != 0:
                 lcid = info.GetLCID()
                 SetThreadLocale(lcid)
-
-                if wx.GetWinVersion() >= wx.WinVersion_Vista:
-                    SetThreadUILanguage(LANGIDFROMLCID(lcid))
+                SetThreadUILanguage(LANGIDFROMLCID(lcid))
 
             success = info.TrySetLocale() is not None
             if language == wx.LANGUAGE_DEFAULT:
@@ -629,12 +597,12 @@ class Locale(_Locale):
                 lang = iso_code.split('-')[0]
                 info = Locale.FindLanguageInfo(lang)
                 if info is None:
-                    lang = LNG(wx.LANGUAGE_USER_DEFINED, lang, 0, 0, 0, '')
+                    lang = LNGINFO(wx.LANGUAGE_USER_DEFINED, lang, 0, 0, 0, '', Locale)
                     info = Locale.FindLanguageInfo(lang)
             else:
                 info = Locale.FindLanguageInfo(lang)
                 if info is None:
-                    lang = LNG(wx.LANGUAGE_USER_DEFINED, lang, 0, 0, 0, lang)
+                    lang = LNGINFO(wx.LANGUAGE_USER_DEFINED, lang, 0, 0, 0, lang, Locale)
                     info = Locale.FindLanguageInfo(lang)
 
             iso_code = info.GetFullLocaleName(wx.GetLocale())
@@ -645,9 +613,6 @@ class Locale(_Locale):
             return False
 
         return IsValidLocale(lcid)
-
-    def IsLoaded(self, *args, **kwargs):
-        return super(Locale, self).IsLoaded(*args, **kwargs)
 
     def IsOk(self):
         return self.m_pszOldLocale is not None
@@ -689,8 +654,6 @@ if __name__ == '__main__':
     LCTYPES = (LOCALE_SENGLISHLANGUAGENAME,
                LOCALE_SENGLISHCOUNTRYNAME,
                LOCALE_IDEFAULTANSICODEPAGE)
-
-    EnumSystemLocalesEx = _kernel32.EnumSystemLocalesEx
 
     EnumLocalesProcEx = ctypes.WINFUNCTYPE(BOOL, LPWSTR, DWORD, LPARAM)
 

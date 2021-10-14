@@ -17,6 +17,9 @@
 # with EventGhost. If not, see <http://www.gnu.org/licenses/>.
 
 import locale as _locale
+from functools import partial
+
+import wx
 from ._wx_locale_functions import GetLocaleInfoEx, LocaleNameToLCID
 
 LC_ALL = _locale.LC_ALL
@@ -957,22 +960,21 @@ class LanguageInfo(wx.LanguageInfo):
         iso_code = lang_iso + '-' + locale_iso
         return LocaleNameToLCID(iso_code)
 
-
-def SETWINLANG(info, lang, sublang):
-    info.WinLang = lang,
-    info.WinSublang = sublang
-
-def LNG(wxlang, canonical, winlang, winsublang, layout, desc):
+def LNGINFO(wxlang, canonical, winlang, winsublang, layout, desc, locale_class):
+    """LanguageInfo factory - adds to locale \"db\""""
     info = LanguageInfo()
     info.Language = wxlang
     info.CanonicalName = canonical
     info.LayoutDirection = layout
     info.Description = desc
-    SETWINLANG(info, winlang, winsublang)
-    Locale.AddLanguage(info)
+    # extra attributes of LanguageInfo vs wx.LanguageInfo
+    info.WinLang = winlang,
+    info.WinSublang = winsublang
+    locale_class.AddLanguage(info)
     return info
 
-def _add_languages_to_db():
+def _add_languages_to_db(locale_class):
+    LNG = partial(LNGINFO, locale_class=locale_class)
     LNG(wx.LANGUAGE_ABKHAZIAN, "ab", 0, 0, wx.Layout_LeftToRight, "Abkhazian")
     LNG(wx.LANGUAGE_AFAR, "aa", 0, 0, wx.Layout_LeftToRight, "Afar")
     LNG(wx.LANGUAGE_AFRIKAANS, "af", LANG_AFRIKAANS, SUBLANG_DEFAULT, wx.Layout_LeftToRight, "Afrikaans")
