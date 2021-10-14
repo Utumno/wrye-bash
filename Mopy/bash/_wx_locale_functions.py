@@ -69,21 +69,11 @@ _LocaleNameToLCID = _kernel32.LocaleNameToLCID
 _LocaleNameToLCID.restype = LCID
 
 def LocaleNameToLCID(locale_name):
-    if isinstance(locale_name, str):
-        if PY3:
-            pass
-            # locale_name = locale_name.encode('utf-8')
-        else:
-            # noinspection PyUnresolvedReferences
-            locale_name = unicode(locale_name)
-
     res = _LocaleNameToLCID(
         ctypes.create_string_buffer(locale_name),
         DWORD(0)
     )
-    if res == 0:
-        return None
-    return res
+    return res or None
 
 _LCIDToLocaleName = _kernel32.LCIDToLocaleName
 _LCIDToLocaleName.restype = INT
@@ -91,27 +81,20 @@ _LCIDToLocaleName.restype = INT
 def LCIDToLocaleName(lcid):
     if not isinstance(lcid, LCID):
         lcid = LCID(lcid)
-
     lpName = (ctypes.c_wchar * 0)()
     cchName = INT(0)
     dwFlags = DWORD(0)
-
     cchName = _LCIDToLocaleName(lcid, lpName, cchName, dwFlags)
-
     if not cchName:
         return
-
     lpName = (ctypes.c_wchar * cchName)()
     _LCIDToLocaleName(lcid, lpName, cchName, dwFlags)
-
     output = ''
     for i in range(cchName):
         char = lpName[i]
         if char in ('\x00', 0x0):
             break
-
         output += char
-
     return output
 
 _GetLocaleInfoEx = _kernel32.GetLocaleInfoEx
@@ -120,9 +103,7 @@ _GetLocaleInfoEx.restype = INT
 def GetLocaleInfoEx(lp_locale_name, lc_type):
     if not isinstance(lc_type, LCTYPE):
         lc_type = LCTYPE(lc_type)
-
     lp_lc_data = (ctypes.c_wchar * 0)()
-
     cch_data = _GetLocaleInfoEx(
         LPCWSTR(lp_locale_name),
         lc_type,
@@ -131,7 +112,6 @@ def GetLocaleInfoEx(lp_locale_name, lc_type):
     )
     if cch_data == 0:
         return ''
-
     lp_lc_data = (ctypes.c_wchar * cch_data)()
     res = _GetLocaleInfoEx(
         LPCWSTR(lp_locale_name),
@@ -139,18 +119,14 @@ def GetLocaleInfoEx(lp_locale_name, lc_type):
         lp_lc_data,
         cch_data
     )
-
     if res == 0:
         raise ctypes.WinError()
-
     output = ''
     for i in range(res):
         char = lp_lc_data[i]
         if char in ('\x00', 0x0):
             break
-
         output += char
-
     try:
         return int(output)
     except ValueError:
