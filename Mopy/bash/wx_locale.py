@@ -187,42 +187,50 @@ class Locale(wx.Locale):
             del Locale.ms_languagesDB[:]
             Locale.ms_languagesDB = None
 
-    @staticmethod
-    def CreateLanguagesDB():
-        if Locale.ms_languagesDB is None:
-            Locale.ms_languagesDB = []
-            Locale.InitLanguagesDB()
-
-    @staticmethod
-    def InitLanguagesDB():
-        _add_languages_to_db()
+    @classmethod
+    def _create_language_db(cls):
+        if cls.ms_languagesDB is None:
+            cls.ms_languagesDB = []
+            _add_languages_to_db(cls)
 
     @staticmethod
     def AddLanguage(info):
-        Locale.CreateLanguagesDB()
-        Locale.ms_languagesDB += [info]
+        try:
+            Locale.ms_languagesDB += [info]
+        except TypeError:
+            if Locale.ms_languagesDB is None:
+                Locale._create_language_db()
+                return Locale.AddLanguage(info)
+            raise
 
     @staticmethod
     def FindLanguageInfo(lang):
-        Locale.CreateLanguagesDB()
-
-        for info in Locale.ms_languagesDB:
-            if lang in (info.CanonicalName, info.Language, info.CanonicalName.split('_')[0]):
-                return info
+        try:
+            for info in Locale.ms_languagesDB:
+                if lang in (info.CanonicalName, info.Language, info.CanonicalName.split('_')[0]):
+                    return info
+        except TypeError:
+            if Locale.ms_languagesDB is None:
+                Locale._create_language_db()
+                return Locale.FindLanguageInfo(lang)
+            raise
 
     def GetCanonicalName(self):
         return self.m_strShort
 
     @staticmethod
     def GetLanguageInfo(lang):
-        Locale.CreateLanguagesDB()
-
-        if lang == wx.LANGUAGE_DEFAULT:
-            lang = Locale.GetSystemLanguage()
-
-        for info in Locale.ms_languagesDB:
-            if info.Language == lang:
-                return info
+        try:
+            if lang == wx.LANGUAGE_DEFAULT:
+                lang = Locale.GetSystemLanguage()
+            for info in Locale.ms_languagesDB:
+                if info.Language == lang:
+                    return info
+        except TypeError:
+            if Locale.ms_languagesDB is None:
+                Locale._create_language_db()
+                return Locale.FindLanguageInfo(lang)
+            raise
 
     @staticmethod
     def GetInfo(index, cat=wx.LOCALE_CAT_DEFAULT):
@@ -490,7 +498,6 @@ class Locale(wx.Locale):
 
                 success = wx.Setlocale(LC_ALL, szLocale) is not None
                 name = szLocale
-
         elif 'language' in kwargs:
             language = kwargs.get('language')
             flags = kwargs.get('flags')
@@ -523,7 +530,6 @@ class Locale(wx.Locale):
 
             bLoadDefault = bool(flags & wx.LOCALE_LOAD_DEFAULT)
             szLocale = shortName
-
         else:
             name = kwargs.get('name')
             shortName = kwargs.get('shortName')
@@ -584,12 +590,8 @@ class Locale(wx.Locale):
     def IsAvailable(lang):
         if isinstance(lang, int):
             info = Locale.GetLanguageInfo(lang)
-
-            if info is None:
+            if info is None or not info.WinLang:
                 return False
-            if not info.WinLang:
-                return False
-
             lcid = info.GetLCID()
         else:
             if '-' in lang or '_' in lang:
