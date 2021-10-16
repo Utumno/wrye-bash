@@ -78,6 +78,9 @@ def _import_wx(debug):
     try:
         global _wx
         import wx as _wx
+        # monkey patch locale class in windows
+        if sys.platform.startswith('win'):
+            from . import wx_locale
         # Hacky fix for loading older settings that pickled classes from
         # moved/deleted wx modules
         from wx import _core
@@ -85,8 +88,7 @@ def _import_wx(debug):
         # Hack see: https://discuss.wxpython.org/t/wxpython4-1-1-python3-8-locale-wxassertionerror/35168/3
         class _LocaleApp(_wx.App):
             def InitLocale(self):
-                if sys.platform.startswith('win') and sys.version_info > (3,8):
-                    locale.setlocale(locale.LC_ALL, 'C')
+                pass
             def MainLoop(self, restore_stdio=True):
                 """Not sure what RestoreStdio does so I omit the call in game
                 selection dialog.""" # TODO: check standalone also
