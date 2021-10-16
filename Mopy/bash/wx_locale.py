@@ -164,7 +164,7 @@ def GetLocaleInfo(
 class Locale(wx.Locale):
     m_pszOldLocale = None
     m_pOldLocale = None
-    ms_languagesDB = None
+    _ms_languagesDB = None
 
     def __init__(self, *args, **kwargs):
         if not args and not kwargs:
@@ -356,16 +356,16 @@ class Locale(wx.Locale):
     # Language database overrides and helpers
     @classmethod
     def _create_language_db(cls):
-        if cls.ms_languagesDB is None:
-            cls.ms_languagesDB = []
+        if cls._ms_languagesDB is None:
+            cls._ms_languagesDB = []
             _add_languages_to_db(cls)
 
     @staticmethod
     def AddLanguage(info):
         try:
-            Locale.ms_languagesDB += [info]
+            Locale._ms_languagesDB += [info]
         except TypeError:
-            if Locale.ms_languagesDB is None:
+            if Locale._ms_languagesDB is None:
                 Locale._create_language_db()
                 return Locale.AddLanguage(info)
             raise
@@ -373,11 +373,11 @@ class Locale(wx.Locale):
     @staticmethod
     def FindLanguageInfo(lang):
         try:
-            for info in Locale.ms_languagesDB:
+            for info in Locale._ms_languagesDB:
                 if lang in (info.CanonicalName, info.Language, info.CanonicalName.split('_')[0]):
                     return info
         except TypeError:
-            if Locale.ms_languagesDB is None:
+            if Locale._ms_languagesDB is None:
                 Locale._create_language_db()
                 return Locale.FindLanguageInfo(lang)
             raise
@@ -387,11 +387,11 @@ class Locale(wx.Locale):
         try:
             if lang == wx.LANGUAGE_DEFAULT:
                 lang = Locale.GetSystemLanguage()
-            for info in Locale.ms_languagesDB:
+            for info in Locale._ms_languagesDB:
                 if info.Language == lang:
                     return info
         except TypeError:
-            if Locale.ms_languagesDB is None:
+            if Locale._ms_languagesDB is None:
                 Locale._create_language_db()
                 return Locale.FindLanguageInfo(lang)
             raise
