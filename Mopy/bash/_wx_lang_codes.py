@@ -17,7 +17,6 @@
 # with EventGhost. If not, see <http://www.gnu.org/licenses/>.
 
 import locale as _locale
-from functools import partial
 
 import wx
 from ._wx_locale_functions import GetLocaleInfoEx, LocaleNameToLCID
@@ -819,11 +818,11 @@ class LanguageInfo(wx.LanguageInfo):
         self._Language = value
 
     @property
-    def LanguageDirection(self):
+    def LayoutDirection(self):
         return self._LayoutDirection
 
-    @LanguageDirection.setter
-    def LanguageDirection(self, value):
+    @LayoutDirection.setter
+    def LayoutDirection(self, value):
         self._LayoutDirection = value
 
     @property
@@ -938,19 +937,14 @@ class LanguageInfo(wx.LanguageInfo):
         try:
             iso_code = self.GetFullLocaleName(locale)
             _locale.setlocale(LC_ALL, iso_code)
-
             if wx.Setlocale(LC_ALL, iso_code) != iso_code:
                 raise ValueError
-
             return iso_code
-
         except (ValueError, _locale.Error):
             locale_string = self.GetANSIName(locale)
             _locale.setlocale(LC_ALL, locale_string)
-
             if not wx.Setlocale(LC_ALL, locale_string):
                 raise ValueError
-
             return locale_string
 
     def GetLCID(self):
@@ -960,21 +954,8 @@ class LanguageInfo(wx.LanguageInfo):
         iso_code = lang_iso + '-' + locale_iso
         return LocaleNameToLCID(iso_code)
 
-def LNGINFO(wxlang, canonical, winlang, winsublang, layout, desc, locale_class):
-    """LanguageInfo factory - adds to locale \"db\""""
-    info = LanguageInfo()
-    info.Language = wxlang
-    info.CanonicalName = canonical
-    info.LayoutDirection = layout
-    info.Description = desc
-    # extra attributes of LanguageInfo vs wx.LanguageInfo
-    info.WinLang = winlang,
-    info.WinSublang = winsublang
-    locale_class.AddLanguage(info)
-    return info
-
-def _add_languages_to_db(locale_class):
-    LNG = partial(LNGINFO, locale_class=locale_class)
+def add_languages_to_db(locale_class):
+    LNG = locale_class.add_info_from_params
     LNG(wx.LANGUAGE_ABKHAZIAN, "ab", 0, 0, wx.Layout_LeftToRight, "Abkhazian")
     LNG(wx.LANGUAGE_AFAR, "aa", 0, 0, wx.Layout_LeftToRight, "Afar")
     LNG(wx.LANGUAGE_AFRIKAANS, "af", LANG_AFRIKAANS, SUBLANG_DEFAULT, wx.Layout_LeftToRight, "Afrikaans")

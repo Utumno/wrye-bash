@@ -23,7 +23,7 @@ from ctypes.wintypes import DWORD, BOOL
 
 import wx
 
-from ._wx_lang_codes import LNGINFO, _add_languages_to_db, LanguageInfo, \
+from ._wx_lang_codes import add_languages_to_db, LanguageInfo, \
     LOCALE_SENGLISHCOUNTRYNAME, LOCALE_IDEFAULTANSICODEPAGE, \
     LOCALE_SNATIVECOUNTRYNAME, LOCALE_SLOCALIZEDCOUNTRYNAME, LC_ALL, CODE_PAGES
 from ._wx_locale_functions import GetLocaleInfoEx, SetThreadUILanguage, \
@@ -204,7 +204,7 @@ class Locale(wx.Locale):
                 info = self.FindLanguageInfo(lang)
         if iso_code is not None:
             if not info:
-                LNGINFO(wx.LANGUAGE_USER_DEFINED, lang, 0, 0, 0, '', Locale)
+                self.add_info_from_params(wx.LANGUAGE_USER_DEFINED, lang)
                 info = self.FindLanguageInfo(lang)
             if name is None: # case len(args) == 1
                 name = info.Description
@@ -347,7 +347,7 @@ class Locale(wx.Locale):
     def _create_language_db(cls):
         if cls._ms_languagesDB is None:
             cls._ms_languagesDB = []
-            _add_languages_to_db(cls)
+            add_languages_to_db(cls)
 
     @staticmethod
     def AddLanguage(info):
@@ -358,6 +358,20 @@ class Locale(wx.Locale):
                 Locale._create_language_db()
                 return Locale.AddLanguage(info)
             raise
+
+    @classmethod
+    def add_info_from_params(cls, wxlang, canonical, winlang=0, winsublang=0,
+                             layout=0, desc=''):
+        info = LanguageInfo()
+        info.Language = wxlang
+        info.CanonicalName = canonical
+        info.LayoutDirection = layout
+        info.Description = desc
+        # extra attributes of LanguageInfo vs wx.LanguageInfo
+        info.WinLang = winlang,
+        info.WinSublang = winsublang
+        cls.AddLanguage(info)
+        return info
 
     @staticmethod
     def FindLanguageInfo(lang):
@@ -517,12 +531,14 @@ class Locale(wx.Locale):
                 lang = iso_code.split('-')[0]
                 info = Locale.FindLanguageInfo(lang)
                 if info is None:
-                    lang = LNGINFO(wx.LANGUAGE_USER_DEFINED, lang, 0, 0, 0, '', Locale)
+                    lang = Locale.add_info_from_params(
+                        wx.LANGUAGE_USER_DEFINED, lang)
                     info = Locale.FindLanguageInfo(lang)
             else:
                 info = Locale.FindLanguageInfo(lang)
                 if info is None:
-                    lang = LNGINFO(wx.LANGUAGE_USER_DEFINED, lang, 0, 0, 0, lang, Locale)
+                    lang = Locale.add_info_from_params(
+                        wx.LANGUAGE_USER_DEFINED, lang, desc=lang)
                     info = Locale.FindLanguageInfo(lang)
             iso_code = info.GetFullLocaleName(wx.GetLocale())
             lcid = LocaleNameToLCID(iso_code)
