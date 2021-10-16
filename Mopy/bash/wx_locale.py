@@ -184,45 +184,37 @@ class Locale(wx.Locale):
     # Init override and helpers -----------------------------------------------
     def Init(self, *args, **kwargs):
         args = list(args)
+        iso_code = name = None
         if len(args) == 1:
             iso_code = args.pop(0)
             lang, locale = iso_code.replace('_', '-').split('-', 1)
             info = self.FindLanguageInfo(lang)
             if not info:
                 info = self.FindLanguageInfo(iso_code.replace('-', '_'))
-            if not info:
-                LNGINFO(wx.LANGUAGE_USER_DEFINED, lang, 0, 0, 0, '', Locale)
-                info = self.FindLanguageInfo(lang)
-            name = info.Description
-            shortName = info.CanonicalName
-            bLoadDefault = False
-            self._do_init(name, info.CanonicalName, lang)
-            szLocale = lang + '_' + locale
         elif 'iso_code' in kwargs:
             iso_code = kwargs['iso_code']
             lang, locale = iso_code.replace('_', '-').split('-', 1)
             info = self.FindLanguageInfo(iso_code.replace('-', '_'))
+            name = GetLocaleInfoEx(iso_code.replace('_', '-'), LOCALE_SENGLISHCOUNTRYNAME)
+            shortName = locale
             if not info:
                 info = self.FindLanguageInfo(lang)
+        if iso_code is not None:
             if not info:
                 LNGINFO(wx.LANGUAGE_USER_DEFINED, lang, 0, 0, 0, '', Locale)
                 info = self.FindLanguageInfo(lang)
-            name = GetLocaleInfoEx(iso_code.replace('_', '-'), LOCALE_SENGLISHCOUNTRYNAME)
-            shortName = locale
+            if name is None: # case len(args) == 1
+                name = info.Description
+                shortName = info.CanonicalName
             bLoadDefault = False
             self._do_init(name, shortName, lang)
             szLocale = lang + '_' + locale
         elif args:
             if isinstance(args[0], int):
                 language = args.pop(0)
-                if args:
-                    flags = args.pop(0)
-                else:
-                    flags = kwargs.get('flags')
-                if language == wx.LANGUAGE_DEFAULT:
-                    lang = self.GetSystemLanguage()
-                else:
-                    lang = language
+                lang = self.GetSystemLanguage() \
+                    if language == wx.LANGUAGE_DEFAULT else language
+                flags = args.pop(0) if args else kwargs.get('flags')
                 if lang == wx.LANGUAGE_UNKNOWN:
                     return False
                 info = self.GetLanguageInfo(lang)
@@ -260,11 +252,9 @@ class Locale(wx.Locale):
                 success = wx.Setlocale(LC_ALL, szLocale) is not None # FIXME needed?
         elif 'language' in kwargs:
             language = kwargs.get('language')
+            lang = self.GetSystemLanguage() \
+                if language == wx.LANGUAGE_DEFAULT else language
             flags = kwargs.get('flags')
-            if language == wx.LANGUAGE_DEFAULT:
-                lang = Locale.GetSystemLanguage()
-            else:
-                lang = language
             if lang == wx.LANGUAGE_UNKNOWN:
                 return False
             info = self.GetLanguageInfo(lang)
@@ -292,10 +282,7 @@ class Locale(wx.Locale):
                 szLocale = shortName
             info = self.FindLanguageInfo(szLocale)
             if info.CanonicalName.StartsWith(shortName):
-                if bLoadDefault:
-                    flags = wx.LOCALE_LOAD_DEFAULT
-                else:
-                    flags = 0
+                flags = wx.LOCALE_LOAD_DEFAULT if bLoadDefault else 0
                 return self.Init(info.Language, flags)
             if shortName:
                 strShort = shortName.upper()
@@ -535,22 +522,17 @@ class Locale(wx.Locale):
                 if info is None:
                     lang = LNGINFO(wx.LANGUAGE_USER_DEFINED, lang, 0, 0, 0, lang, Locale)
                     info = Locale.FindLanguageInfo(lang)
-
             iso_code = info.GetFullLocaleName(wx.GetLocale())
-
             lcid = LocaleNameToLCID(iso_code)
-
         if lcid is None:
             return False
-
         return IsValidLocale(lcid)
 
     def IsOk(self):
         return self.m_pszOldLocale is not None
 
+# Monkey patch wx.Locale / LanguageInfo / wx.GetLocale ------------------------
 import wx._core
-
-_get_locale = wx.GetLocale
 
 wx._core.Locale = Locale
 wx.Locale = Locale
@@ -559,15 +541,12 @@ wx.LanguageInfo = LanguageInfo
 sys.modules['wx'].Locale = Locale
 sys.modules['wx'].LanguageInfo = LanguageInfo
 
-
 _current_locale = Locale()
-
 
 def GetLocale():
     return _current_locale
 
 wx.GetLocale = GetLocale
-
 
 if __name__ == '__main__':
     import time
