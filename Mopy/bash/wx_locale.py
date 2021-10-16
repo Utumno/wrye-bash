@@ -181,6 +181,7 @@ class Locale(wx.Locale):
                 global _current_locale
                 _current_locale = self
 
+    # Init override and helpers -----------------------------------------------
     def Init(self, *args, **kwargs):
         args = list(args)
         if len(args) == 1:
@@ -235,27 +236,15 @@ class Locale(wx.Locale):
                     lcid = info.GetLCID()
                     SetThreadLocale(lcid)
                     SetThreadUILanguage(LANGIDFROMLCID(lcid))
-
                 success = info.TrySetLocale() is not None
-
-                if language == wx.LANGUAGE_DEFAULT:
-                    shortName = ''
-                else:
-                    shortName = info.CanonicalName
-
+                shortName = '' if language == wx.LANGUAGE_DEFAULT else \
+                    info.CanonicalName
                 bLoadDefault = bool(flags & wx.LOCALE_LOAD_DEFAULT)
                 szLocale = shortName
             else:
                 name = args.pop(0)
-                if len(args):
-                    shortName = args.pop(0)
-                else:
-                    shortName = kwargs.get('shortName')
-
-                if len(args):
-                    locale = args.pop(0)
-                else:
-                    locale = kwargs.get('locale')
+                shortName = args.pop(0) if args else kwargs.get('shortName')
+                locale = args.pop(0) if args else kwargs.get('locale')
 
                 if len(args):
                     bLoadDefault = args.pop(0)
@@ -363,14 +352,12 @@ class Locale(wx.Locale):
     def _do_common_init(self):
         Locale.m_pszOldLocale = wx.Setlocale(LC_ALL, None)
         Locale.m_pOldLocale = wx.GetLocale()
-
         oldTrans = wx.Translations.Get()
         if (
                 not oldTrans or
                 (Locale.m_pOldLocale and oldTrans == getattr(Locale.m_pOldLocale, 'm_translations', None))
         ):
             wx.Translations.SetNonOwned(self.m_translations)
-
         self.m_language = wx.LANGUAGE_UNKNOWN
         self.m_initialized = False
 
@@ -382,6 +369,7 @@ class Locale(wx.Locale):
                 t.AddStdCatalog()
         return success
 
+    # Language database overrides and helpers
     @classmethod
     def _create_language_db(cls):
         if cls.ms_languagesDB is None:
@@ -410,9 +398,6 @@ class Locale(wx.Locale):
                 return Locale.FindLanguageInfo(lang)
             raise
 
-    def GetCanonicalName(self):
-        return self.m_strShort
-
     @staticmethod
     def GetLanguageInfo(lang):
         try:
@@ -427,49 +412,73 @@ class Locale(wx.Locale):
                 return Locale.FindLanguageInfo(lang)
             raise
 
+    _defaults_dict = {
+        wx.LOCALE_THOUSANDS_SEP: '',
+        wx.LOCALE_DECIMAL_POINT: '.',
+        wx.LOCALE_SHORT_DATE_FMT: '%m/%d/%y',
+        wx.LOCALE_LONG_DATE_FMT: '%A, %B %d, %Y',
+        wx.LOCALE_TIME_FMT: '%H:%M:%S',
+        wx.LOCALE_DATE_TIME_FMT: '%m/%d/%y %H:%M:%S',
+    }
     @staticmethod
     def GetInfo(index, cat=wx.LOCALE_CAT_DEFAULT):
         locale = wx.GetLocale()
-
-        if locale:
-            info = Locale.FindLanguageInfo(locale.GetLanguage())
-        else:
-            info = None
-
-        def get_defaults():
-            if index == wx.LOCALE_THOUSANDS_SEP:
-                return ''
-            if index == wx.LOCALE_DECIMAL_POINT:
-                return '.'
-            if index == wx.LOCALE_SHORT_DATE_FMT:
-                return '%m/%d/%y'
-            if index == wx.LOCALE_LONG_DATE_FMT:
-                return '%A, %B %d, %Y'
-            if index == wx.LOCALE_TIME_FMT:
-                return '%H:%M:%S'
-            if index == wx.LOCALE_DATE_TIME_FMT:
-                return '%m/%d/%y %H:%M:%S'
-
-            raise RuntimeError
-
-        if info is None:
-            return get_defaults()
-
+        if not locale:
+            return Locale._defaults_dict[index]
+        info = Locale.FindLanguageInfo(locale.GetLanguage())
         res = GetLocaleInfo(info.GetFullLocaleName(locale), index, cat)
-
         if not res and index in (
             wx.LOCALE_SHORT_DATE_FMT,
             wx.LOCALE_LONG_DATE_FMT,
             wx.LOCALE_TIME_FMT,
             wx.LOCALE_DATE_TIME_FMT
         ):
-            return get_defaults()
-
+            return Locale._defaults_dict[index]
         return res
 
+    # Property overrides ------------------------------------------------------
     def GetLanguage(self):
         return self.m_language
 
+    def GetLocale(self):
+        return self.m_strShort if self.m_strShort else super(Locale,
+                                                             self).GetLocale()
+
+    def GetName(self):
+        return self.m_strLocale
+
+    def GetSysName(self):
+        return wx.Setlocale(LC_ALL, None)
+
+    def GetCanonicalName(self):
+        return self.m_strShort
+
+    Language = property(fget=GetLanguage)
+    Locale = property(fget=GetLocale)
+    Name = property(fget=GetName)
+    SysName = property(fget=GetSysName)
+    CanonicalName = property(fget=GetCanonicalName)
+
+    # New properties ----------------------------------------------------------
+    @property
+    def NativeDescription(self):
+        info = self.FindLanguageInfo(self.m_language)
+        return GetLocaleInfoEx(info.GetFullLocaleName(self),
+                               LOCALE_SNATIVECOUNTRYNAME)
+
+    @property
+    def Description(self):
+        info = self.FindLanguageInfo(self.m_language)
+        return GetLocaleInfoEx(info.GetFullLocaleName(self),
+                               LOCALE_SENGLISHCOUNTRYNAME)
+
+    @property
+    def LocalizedDescription(self):
+        info = self.FindLanguageInfo(self.m_language)
+        return GetLocaleInfoEx(info.GetFullLocaleName(self),
+                               LOCALE_SLOCALIZEDCOUNTRYNAME)
+
+    # Static methods overrides ------------------------------------------------
     @staticmethod
     def GetLanguageCanonicalName(lang):
         if lang in (wx.LANGUAGE_DEFAULT, wx.LANGUAGE_UNKNOWN):
@@ -496,18 +505,6 @@ class Locale(wx.Locale):
     def GetOSInfo(index, cat):
         raise NotImplementedError # missing defs of GetInfoFromLCID GetThreadLocale
         return GetInfoFromLCID(GetThreadLocale(), index, cat)
-
-    def GetLocale(self):
-        if self.m_strShort:
-            return self.m_strShort
-        else:
-            return super(Locale, self).GetLocale()
-
-    def GetName(self):
-        return self.m_strLocale
-
-    def GetSysName(self):
-        return wx.Setlocale(LC_ALL, None)
 
     @staticmethod
     def GetSystemEncoding():
@@ -550,22 +547,6 @@ class Locale(wx.Locale):
         self.m_strShort = shortName
         self.m_language = language
 
-    @property
-    def LocalizedDescription(self):
-        info = self.FindLanguageInfo(self.m_language)
-        return GetLocaleInfoEx(info.GetFullLocaleName(self),
-                               LOCALE_SLOCALIZEDCOUNTRYNAME)
-
-    @property
-    def NativeDescription(self):
-        info = self.FindLanguageInfo(self.m_language)
-        return GetLocaleInfoEx(info.GetFullLocaleName(self), LOCALE_SNATIVECOUNTRYNAME)
-
-    @property
-    def Description(self):
-        info = self.FindLanguageInfo(self.m_language)
-        return GetLocaleInfoEx(info.GetFullLocaleName(self), LOCALE_SENGLISHCOUNTRYNAME)
-
     @staticmethod
     def IsAvailable(lang):
         if isinstance(lang, int):
@@ -598,12 +579,6 @@ class Locale(wx.Locale):
 
     def IsOk(self):
         return self.m_pszOldLocale is not None
-
-    Language = property(fget=GetLanguage)
-    Locale = property(fget=GetLocale)
-    Name = property(fget=GetName)
-    SysName = property(fget=GetSysName)
-    CanonicalName = property(fget=GetCanonicalName)
 
 import wx._core
 
