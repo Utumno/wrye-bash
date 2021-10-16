@@ -170,7 +170,7 @@ class Locale(wx.Locale):
         if not args and not kwargs:
             kwargs['iso_code'] = Locale.GetSystemLanguage().replace('-', '_')
         super(Locale, self).__init__()
-        self.DoCommonInit()
+        self._do_common_init()
         self.m_strShort = ''
         self.m_strLocale = ''
         self.m_language = ''
@@ -181,11 +181,206 @@ class Locale(wx.Locale):
                 global _current_locale
                 _current_locale = self
 
-    @staticmethod
-    def DestroyLanguagesDB():
-        if Locale.ms_languagesDB is not None:
-            del Locale.ms_languagesDB[:]
-            Locale.ms_languagesDB = None
+    def Init(self, *args, **kwargs):
+        args = list(args)
+        if len(args) == 1:
+            iso_code = args.pop(0)
+            lang, locale = iso_code.replace('_', '-').split('-', 1)
+            info = self.FindLanguageInfo(lang)
+            if not info:
+                info = self.FindLanguageInfo(iso_code.replace('-', '_'))
+            if not info:
+                LNGINFO(wx.LANGUAGE_USER_DEFINED, lang, 0, 0, 0, '', Locale)
+                info = self.FindLanguageInfo(lang)
+            success = True
+            name = info.Description
+            shortName = info.CanonicalName
+            bLoadDefault = False
+            self._do_init(name, info.CanonicalName, lang)
+            szLocale = lang + '_' + locale
+        elif 'iso_code' in kwargs:
+            iso_code = kwargs['iso_code']
+            lang, locale = iso_code.replace('_', '-').split('-', 1)
+            info = self.FindLanguageInfo(iso_code.replace('-', '_'))
+            if not info:
+                info = self.FindLanguageInfo(lang)
+            if not info:
+                LNGINFO(wx.LANGUAGE_USER_DEFINED, lang, 0, 0, 0, '', Locale)
+                info = self.FindLanguageInfo(lang)
+            success = True
+            name = GetLocaleInfoEx(iso_code.replace('_', '-'), LOCALE_SENGLISHCOUNTRYNAME)
+            shortName = locale
+            bLoadDefault = False
+            self._do_init(name, shortName, lang)
+            szLocale = lang + '_' + locale
+        elif args:
+            if isinstance(args[0], int):
+                language = args.pop(0)
+                if args:
+                    flags = args.pop(0)
+                else:
+                    flags = kwargs.get('flags')
+                if language == wx.LANGUAGE_DEFAULT:
+                    lang = self.GetSystemLanguage()
+                else:
+                    lang = language
+                if lang == wx.LANGUAGE_UNKNOWN:
+                    return False
+                info = self.GetLanguageInfo(lang)
+                if not info:
+                    return False
+                name = info.Description
+                self._do_init(name, info.CanonicalName, lang)
+                if info.WinLang != 0:
+                    lcid = info.GetLCID()
+                    SetThreadLocale(lcid)
+                    SetThreadUILanguage(LANGIDFROMLCID(lcid))
+
+                success = info.TrySetLocale() is not None
+
+                if language == wx.LANGUAGE_DEFAULT:
+                    shortName = ''
+                else:
+                    shortName = info.CanonicalName
+
+                bLoadDefault = bool(flags & wx.LOCALE_LOAD_DEFAULT)
+                szLocale = shortName
+            else:
+                name = args.pop(0)
+                if len(args):
+                    shortName = args.pop(0)
+                else:
+                    shortName = kwargs.get('shortName')
+
+                if len(args):
+                    locale = args.pop(0)
+                else:
+                    locale = kwargs.get('locale')
+
+                if len(args):
+                    bLoadDefault = args.pop(0)
+                else:
+                    bLoadDefault = kwargs.get('bLoadDefault')
+
+                if locale:
+                    szLocale = locale
+                else:
+                    szLocale = shortName
+
+                info = self.FindLanguageInfo(szLocale)
+                if info.CanonicalName.StartsWith(shortName):
+                    if bLoadDefault:
+                        flags = wx.LOCALE_LOAD_DEFAULT
+                    else:
+                        flags = 0
+
+                    return self.Init(info.Language, flags)
+
+                if shortName:
+                    strShort = shortName.upper()
+                elif szLocale:
+                    strShort = szLocale[-2:].upper()
+                else:
+                    strShort = ''
+
+                self._do_init(name, strShort, wx.LANGUAGE_UNKNOWN)
+
+                success = wx.Setlocale(LC_ALL, szLocale) is not None
+                name = szLocale
+        elif 'language' in kwargs:
+            language = kwargs.get('language')
+            flags = kwargs.get('flags')
+            if language == wx.LANGUAGE_DEFAULT:
+                lang = Locale.GetSystemLanguage()
+            else:
+                lang = language
+            if lang == wx.LANGUAGE_UNKNOWN:
+                return False
+            info = self.GetLanguageInfo(lang)
+            if not info:
+                return False
+            name = info.Description
+            self._do_init(name, info.CanonicalName, lang)
+            if info.WinLang != 0:
+                lcid = info.GetLCID()
+                SetThreadLocale(lcid)
+                SetThreadUILanguage(LANGIDFROMLCID(lcid))
+            success = info.TrySetLocale() is not None
+            if language == wx.LANGUAGE_DEFAULT:
+                shortName = ''
+            else:
+                shortName = info.CanonicalName
+            bLoadDefault = bool(flags & wx.LOCALE_LOAD_DEFAULT)
+            szLocale = shortName
+        else:
+            name = kwargs.get('name')
+            shortName = kwargs.get('shortName')
+            locale = kwargs.get('locale')
+            bLoadDefault = kwargs.get('bLoadDefault')
+            if locale:
+                szLocale = locale
+            else:
+                szLocale = shortName
+            info = self.FindLanguageInfo(szLocale)
+            if info.CanonicalName.StartsWith(shortName):
+                if bLoadDefault:
+                    flags = wx.LOCALE_LOAD_DEFAULT
+                else:
+                    flags = 0
+                return self.Init(info.Language, flags)
+            if shortName:
+                strShort = shortName.upper()
+            elif szLocale:
+                strShort = szLocale[-2:].upper()
+            else:
+                strShort = ''
+            self._do_init(name, strShort, wx.LANGUAGE_UNKNOWN)
+            success = wx.Setlocale(LC_ALL, szLocale) is not None
+            name = szLocale
+        self._do_common_post_init(success, name, shortName, bLoadDefault)
+        try:
+            szLocale = szLocale.replace('_', '-')
+            _locale.setlocale(LC_ALL, szLocale)
+            szLocale = szLocale.encode('utf-8')
+            if not wx.Setlocale(LC_ALL, szLocale):
+                return False
+        except _locale.Error:
+            try:
+                locale_string = info.GetANSIName(self)
+                _locale.setlocale(LC_ALL, locale_string)
+                if not wx.Setlocale(LC_ALL, locale_string):
+                    return False
+            except _locale.Error:
+                try:
+                    lcid = LocaleNameToLCID(szLocale)
+                    _locale.setlocale(LC_ALL, lcid)
+                    if not wx.Setlocale(LC_ALL, lcid):
+                        raise RuntimeError
+                except _locale.Error:
+                    raise
+        return True
+
+    def _do_common_init(self):
+        Locale.m_pszOldLocale = wx.Setlocale(LC_ALL, None)
+        Locale.m_pOldLocale = wx.GetLocale()
+
+        oldTrans = wx.Translations.Get()
+        if (
+                not oldTrans or
+                (Locale.m_pOldLocale and oldTrans == getattr(Locale.m_pOldLocale, 'm_translations', None))
+        ):
+            wx.Translations.SetNonOwned(self.m_translations)
+
+        self.m_language = wx.LANGUAGE_UNKNOWN
+        self.m_initialized = False
+
+    def _do_common_post_init(self, success, name, shortName, bLoadDefault):
+        t = wx.Translations.Get()
+        if t:
+            t.SetLanguage(shortName)
+            if bLoadDefault:
+                t.AddStdCatalog()
+        return success
 
     @classmethod
     def _create_language_db(cls):
@@ -347,7 +542,7 @@ class Locale(wx.Locale):
     def GetSystemLanguage():
         return GetThreadUILanguage()
 
-    def DoInit(self, name, shortName, language):
+    def _do_init(self, name, shortName, language):
         assert not self.m_initialized, "you can't call wxLocale::Init more than once"
 
         self.m_initialized = True
@@ -355,32 +550,11 @@ class Locale(wx.Locale):
         self.m_strShort = shortName
         self.m_language = language
 
-    def DoCommonInit(self):
-        Locale.m_pszOldLocale = wx.Setlocale(LC_ALL, None)
-        Locale.m_pOldLocale = wx.GetLocale()
-
-        oldTrans = wx.Translations.Get()
-        if (
-            not oldTrans or
-            (Locale.m_pOldLocale and oldTrans == getattr(Locale.m_pOldLocale, 'm_translations', None))
-        ):
-            wx.Translations.SetNonOwned(self.m_translations)
-
-        self.m_language = wx.LANGUAGE_UNKNOWN
-        self.m_initialized = False
-
-    def DoCommonPostInit(self, success, name, shortName, bLoadDefault):
-        t = wx.Translations.Get()
-        if t:
-            t.SetLanguage(shortName)
-            if bLoadDefault:
-                t.AddStdCatalog()
-        return success
-
     @property
     def LocalizedDescription(self):
         info = self.FindLanguageInfo(self.m_language)
-        return GetLocaleInfoEx(info.GetFullLocaleName(self), LOCALE_SLOCALIZEDCOUNTRYNAME)
+        return GetLocaleInfoEx(info.GetFullLocaleName(self),
+                               LOCALE_SLOCALIZEDCOUNTRYNAME)
 
     @property
     def NativeDescription(self):
@@ -391,200 +565,6 @@ class Locale(wx.Locale):
     def Description(self):
         info = self.FindLanguageInfo(self.m_language)
         return GetLocaleInfoEx(info.GetFullLocaleName(self), LOCALE_SENGLISHCOUNTRYNAME)
-
-    def Init(self, *args, **kwargs):
-        args = list(args)
-        if len(args) == 1:
-            iso_code = args.pop(0)
-            lang, locale = iso_code.replace('_', '-').split('-', 1)
-            info = self.FindLanguageInfo(lang)
-            if not info:
-                info = self.FindLanguageInfo(iso_code.replace('-', '_'))
-            if not info:
-                LNGINFO(wx.LANGUAGE_USER_DEFINED, lang, 0, 0, 0, '', Locale)
-                info = self.FindLanguageInfo(lang)
-            success = True
-            name = info.Description
-            shortName = info.CanonicalName
-            bLoadDefault = False
-            self.DoInit(name, info.CanonicalName, lang)
-            szLocale = lang + '_' + locale
-        elif 'iso_code' in kwargs:
-            iso_code = kwargs['iso_code']
-            lang, locale = iso_code.replace('_', '-').split('-', 1)
-            info = self.FindLanguageInfo(iso_code.replace('-', '_'))
-            if not info:
-                info = self.FindLanguageInfo(lang)
-            if not info:
-                LNGINFO(wx.LANGUAGE_USER_DEFINED, lang, 0, 0, 0, '', Locale)
-                info = self.FindLanguageInfo(lang)
-            success = True
-            name = GetLocaleInfoEx(iso_code.replace('_', '-'), LOCALE_SENGLISHCOUNTRYNAME)
-            shortName = locale
-            bLoadDefault = False
-            self.DoInit(name, shortName, lang)
-            szLocale = lang + '_' + locale
-        elif args:
-            if isinstance(args[0], int):
-                language = args.pop(0)
-                if args:
-                    flags = args.pop(0)
-                else:
-                    flags = kwargs.get('flags')
-                if language == wx.LANGUAGE_DEFAULT:
-                    lang = self.GetSystemLanguage()
-                else:
-                    lang = language
-                if lang == wx.LANGUAGE_UNKNOWN:
-                    return False
-                info = self.GetLanguageInfo(lang)
-                if not info:
-                    return False
-                name = info.Description
-                self.DoInit(name, info.CanonicalName, lang)
-                if info.WinLang != 0:
-                    lcid = info.GetLCID()
-                    SetThreadLocale(lcid)
-                    SetThreadUILanguage(LANGIDFROMLCID(lcid))
-
-                success = info.TrySetLocale() is not None
-
-                if language == wx.LANGUAGE_DEFAULT:
-                    shortName = ''
-                else:
-                    shortName = info.CanonicalName
-
-                bLoadDefault = bool(flags & wx.LOCALE_LOAD_DEFAULT)
-                szLocale = shortName
-            else:
-                name = args.pop(0)
-                if len(args):
-                    shortName = args.pop(0)
-                else:
-                    shortName = kwargs.get('shortName')
-
-                if len(args):
-                    locale = args.pop(0)
-                else:
-                    locale = kwargs.get('locale')
-
-                if len(args):
-                    bLoadDefault = args.pop(0)
-                else:
-                    bLoadDefault = kwargs.get('bLoadDefault')
-
-                if locale:
-                    szLocale = locale
-                else:
-                    szLocale = shortName
-
-                info = self.FindLanguageInfo(szLocale)
-                if info.CanonicalName.StartsWith(shortName):
-                    if bLoadDefault:
-                        flags = wx.LOCALE_LOAD_DEFAULT
-                    else:
-                        flags = 0
-
-                    return self.Init(info.Language, flags)
-
-                if shortName:
-                    strShort = shortName.upper()
-                elif szLocale:
-                    strShort = szLocale[-2:].upper()
-                else:
-                    strShort = ''
-
-                self.DoInit(name, strShort, wx.LANGUAGE_UNKNOWN)
-
-                success = wx.Setlocale(LC_ALL, szLocale) is not None
-                name = szLocale
-        elif 'language' in kwargs:
-            language = kwargs.get('language')
-            flags = kwargs.get('flags')
-
-            if language == wx.LANGUAGE_DEFAULT:
-                lang = Locale.GetSystemLanguage()
-            else:
-                lang = language
-
-            if lang == wx.LANGUAGE_UNKNOWN:
-                return False
-
-            info = self.GetLanguageInfo(lang)
-            if not info:
-                return False
-
-            name = info.Description
-            self.DoInit(name, info.CanonicalName, lang)
-
-            if info.WinLang != 0:
-                lcid = info.GetLCID()
-                SetThreadLocale(lcid)
-                SetThreadUILanguage(LANGIDFROMLCID(lcid))
-
-            success = info.TrySetLocale() is not None
-            if language == wx.LANGUAGE_DEFAULT:
-                shortName = ''
-            else:
-                shortName = info.CanonicalName
-
-            bLoadDefault = bool(flags & wx.LOCALE_LOAD_DEFAULT)
-            szLocale = shortName
-        else:
-            name = kwargs.get('name')
-            shortName = kwargs.get('shortName')
-            locale = kwargs.get('locale')
-            bLoadDefault = kwargs.get('bLoadDefault')
-
-            if locale:
-                szLocale = locale
-            else:
-                szLocale = shortName
-
-            info = self.FindLanguageInfo(szLocale)
-            if info.CanonicalName.StartsWith(shortName):
-                if bLoadDefault:
-                    flags = wx.LOCALE_LOAD_DEFAULT
-                else:
-                    flags = 0
-
-                return self.Init(info.Language, flags)
-
-            if shortName:
-                strShort = shortName.upper()
-            elif szLocale:
-                strShort = szLocale[-2:].upper()
-            else:
-                strShort = ''
-
-            self.DoInit(name, strShort, wx.LANGUAGE_UNKNOWN)
-
-            success = wx.Setlocale(LC_ALL, szLocale) is not None
-            name = szLocale
-
-        self.DoCommonPostInit(success, name, shortName, bLoadDefault)
-
-        try:
-            szLocale = szLocale.replace('_', '-')
-            _locale.setlocale(LC_ALL, szLocale)
-            szLocale = szLocale.encode('utf-8')
-            if not wx.Setlocale(LC_ALL, szLocale):
-                return False
-        except _locale.Error:
-            try:
-                locale_string = info.GetANSIName(self)
-                _locale.setlocale(LC_ALL, locale_string)
-                if not wx.Setlocale(LC_ALL, locale_string):
-                    return False
-            except _locale.Error:
-                try:
-                    lcid = LocaleNameToLCID(szLocale)
-                    _locale.setlocale(LC_ALL, lcid)
-                    if not wx.Setlocale(LC_ALL, lcid):
-                        raise RuntimeError
-                except _locale.Error:
-                    raise
-        return True
 
     @staticmethod
     def IsAvailable(lang):
