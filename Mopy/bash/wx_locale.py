@@ -112,7 +112,6 @@ def GetLocaleInfo(
         if suffix_count > 0:
             suffix_format = suffix_formats[suffix_count]
             value = value.replace('t' * suffix_count, suffix_format)
-
     elif index in (wx.LOCALE_SHORT_DATE_FMT, wx.LOCALE_LONG_DATE_FMT):
         items = value.split(' ')
         for i, item in enumerate(items):
@@ -183,6 +182,10 @@ class Locale(wx.Locale):
 
     # Init override and helpers -----------------------------------------------
     def Init(self, *args, **kwargs):
+        """Call:
+        - a single iso_code str argument
+
+        """
         args = list(args)
         iso_code = name = None
         if len(args) == 1:
@@ -332,10 +335,9 @@ class Locale(wx.Locale):
         Locale.m_pszOldLocale = wx.Setlocale(LC_ALL, None)
         Locale.m_pOldLocale = wx.GetLocale()
         oldTrans = wx.Translations.Get()
-        if (
-                not oldTrans or
-                (Locale.m_pOldLocale and oldTrans == getattr(Locale.m_pOldLocale, 'm_translations', None))
-        ):
+        if (not oldTrans or (
+                Locale.m_pOldLocale and oldTrans == getattr(
+            Locale.m_pOldLocale, 'm_translations', None))):
             wx.Translations.SetNonOwned(self.m_translations)
         self.m_language = wx.LANGUAGE_UNKNOWN
         self.m_initialized = False
