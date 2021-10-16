@@ -1748,7 +1748,7 @@ def deprint(*args,**keyargs):
         msg += f'\n{exc_fmt}'
     try:
         # Should work if stdout/stderr is going to wxPython output
-        print(msg)
+        print(msg, flush=True)
     except UnicodeError:
         # Nope, it's going somewhere else
         print(msg.encode(Path.sys_fs_enc))
