@@ -63,7 +63,7 @@ class FileError(BoltError):
         self.in_name = in_name
 
     def __str__(self):
-        return u'{}: {}'.format(self.in_name or u'Unknown File', self.message)
+        return f'{self.in_name or u"Unknown File"}: {self.message}'
 
 class SaveFileError(FileError):
     """Save File Error: File is corrupted."""
