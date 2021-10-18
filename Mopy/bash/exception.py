@@ -65,7 +65,7 @@ class SkipError(CancelError):
 class FileError(BoltError):
     """An error that occurred while handling a file."""
     def __init__(self, in_name, message):
-        ## type: (Union[Path, unicode], unicode) -> None
+        ## type: (Union[Path, str], str) -> None
         super(FileError, self).__init__(message)
         self.in_name = in_name
 
@@ -79,7 +79,7 @@ class SaveFileError(FileError):
 class FileEditError(BoltError): ##: never raised?
     """Unable to edit a file"""
     def __init__(self, file_path, message=None):
-        ## type: (Path, unicode) -> None
+        ## type: (Path, str) -> None
         message = message or (u'Unable to edit file %s.' % file_path)
         super(FileEditError, self).__init__(message)
         self.filePath = file_path
@@ -99,7 +99,7 @@ def _join_sigs(debug_str):
 class ModReadError(ModError):
     """Mod Error: Attempt to read outside of buffer."""
     def __init__(self, in_name, debug_str, try_pos, max_pos):
-        ## type: (Path, unicode|bytes, int, int) -> None
+        ## type: (Path, str|bytes, int, int) -> None
         debug_str = _join_sigs(debug_str)
         if try_pos < 0:
             message = (u'%s: Attempted to read before (%s) beginning of '
@@ -115,7 +115,7 @@ class ModSizeError(ModError):
         """Indicates that a record or subrecord has the wrong size.
 
         :type in_name: bolt.Path
-        :type debug_str: unicode|bytes|tuple[unicode|bytes]
+        :type debug_str: str|bytes|tuple[str|bytes]
         :type expected_sizes: tuple[int]
         :type actual_size: int"""
         debug_str = _join_sigs(debug_str)
@@ -145,7 +145,7 @@ class ModSigMismatchError(ModError):
 # Shell (OS) File Operation exceptions ----------------------------------------
 class FileOperationError(OSError):
     def __init__(self, error_code, message=None):
-        # type: (int, unicode) -> None
+        # type: (int, str) -> None
         self.errno = error_code
         Exception.__init__(self, u'FileOperationError: %s' % (
                 message or str(error_code)))
@@ -155,9 +155,9 @@ class AccessDeniedError(FileOperationError):
         super(AccessDeniedError, self).__init__(5, u'Access Denied')
 
 class InvalidPathsError(FileOperationError):
-    def __init__(self, source, target): # type: (unicode, unicode) -> None
+    def __init__(self, source, target): # type: (str, str) -> None
         super(InvalidPathsError, self).__init__(
-            124, u'Invalid paths:\nsource: %s\ntarget: %s' % (source, target))
+            124, f'Invalid paths:\nsource: {source}\ntarget: {target}')
 
 class DirectoryFileCollisionError(FileOperationError):
     def __init__(self, source, dest):  ## type: (Path, Path) -> None
@@ -174,19 +174,19 @@ class BSAError(FileError): pass
 
 class BSACompressionError(BSAError):
     def __init__(self, in_name, compression_type, orig_error):
-        # type: (unicode, unicode, Exception) -> None
+        # type: (str, str, Exception) -> None
         super(BSACompressionError, self).__init__(
             in_name, u'%s error while compressing record: %s' % (
                 compression_type, repr(orig_error)))
 
 class BSADecodingError(BSAError):
-    def __init__(self, in_name, message): # type: (unicode, unicode) -> None
+    def __init__(self, in_name, message): # type: (str, str) -> None
         super(BSADecodingError, self).__init__(
             in_name, u'Undecodable string %r' % message)
 
 class BSADecompressionError(BSAError):
     def __init__(self, in_name, compression_type, orig_error):
-        # type: (unicode, unicode, Exception) -> None
+        # type: (str, str, Exception) -> None
         super(BSADecompressionError, self).__init__(
             in_name, u'{0} error while decompressing {0}-compressed record: '
                      u'{1}'.format(compression_type, repr(orig_error)))
@@ -200,7 +200,7 @@ class BSADecompressionSizeError(BSAError):
 
 class BSAFlagError(BSAError):
     def __init__(self, in_name, message, flag):
-        # type: (unicode, unicode, int) -> None
+        # type: (str, str, int) -> None
         super(BSAFlagError, self).__init__(
             in_name, u'%s (flag %s) unset' % (message, flag))
 
@@ -228,7 +228,7 @@ class _ALPError(Exception):
     """Abstract base class for lexer and parser errors."""
     def __init__(self, err_msg, target_str=None, start_pos=-1, end_pos=-1,
                  line_num=-1):
-        # type: (unicode, unicode, int, int) -> None
+        # type: (str, str, int, int) -> None
         """Creates a new error with the specified properties. All but err_msg
         are optional, and will simply add more details about where the error
         occurred.

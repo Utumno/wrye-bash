@@ -740,8 +740,7 @@ class Path(object):
         """For directory: Returns list of files."""
         try:
             return [GPath_no_norm(x) for x in os.listdir(self._s)]
-        except OSError as e:
-            if e.errno != errno.ENOENT: raise
+        except FileNotFoundError:
             return []
 
     def walk(self,topdown=True,onerror=None,relative=False):

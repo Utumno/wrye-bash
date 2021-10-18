@@ -2133,26 +2133,25 @@ class InstallersData(DataStore):
                 else: rpFile = os.path.join(rsDir, sFile)
                 asFile = os.path.join(asDir, sFile)
                 # below calls may now raise even if "werr.winerror = 123"
+                oSize, oCrc, oDate = oldGet(rpFile, (0, 0, 0.0))
+                if top_level_espm: # modInfos MUST BE UPDATED
+                    try:
+                        modInfo = modInfos[GPath(rpFile)]
+                        new_sizeCrcDate[rpFile] = (modInfo.fsize,
+                           modInfo.cached_mod_crc(), modInfo.mtime, asFile)
+                        continue
+                    except KeyError:
+                        pass # corrupted/missing, let os.lstat decide
                 try:
-                    oSize, oCrc, oDate = oldGet(rpFile, (0, 0, 0.0))
-                    if top_level_espm: # modInfos MUST BE UPDATED
-                        try:
-                            modInfo = modInfos[GPath(rpFile)]
-                            new_sizeCrcDate[rpFile] = (modInfo.fsize,
-                               modInfo.cached_mod_crc(), modInfo.mtime, asFile)
-                            continue
-                        except KeyError:
-                            pass # corrupted/missing, let os.lstat decide
                     lstat = os.lstat(asFile)
-                    size, date = lstat.st_size, lstat.st_mtime
-                    if size != oSize or date != oDate:
-                        pending[rpFile] = (size, oCrc, date, asFile)
-                        pending_size += size
-                    else:
-                        new_sizeCrcDate[rpFile] = (oSize, oCrc, oDate, asFile)
-                except OSError as e:
-                    if e.errno == errno.ENOENT: continue # file does not exist
-                    raise
+                except FileNotFoundError:
+                    continue # file does not exist
+                size, date = lstat.st_size, lstat.st_mtime
+                if size != oSize or date != oDate:
+                    pending[rpFile] = (size, oCrc, date, asFile)
+                    pending_size += size
+                else:
+                    new_sizeCrcDate[rpFile] = (oSize, oCrc, oDate, asFile)
         return new_sizeCrcDate, pending, pending_size
 
     def reset_refresh_flag_on_projects(self):
