@@ -607,7 +607,7 @@ class EditorIds(_HandleAliases):
         """Changes scripts in modfile according to changed."""
         changed = []
         if not old_new: return changed
-        reWord = re.compile(u'' r'\w+')
+        reWord = re.compile(r'\w+')
         def subWord(match):
             word = match.group(0)
             newWord = old_new.get(word.lower())

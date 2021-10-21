@@ -34,13 +34,13 @@ readExts = {u'.rar', u'.001'}
 readExts.update(writeExts)
 omod_exts = {u'.omod', u'.fomod'}
 noSolidExts = {u'.zip'}
-reSolid = re.compile(u'' r'[-/]ms=[^\s]+', re.IGNORECASE)
-regCompressMatch = re.compile(u'' r'Compressing\s+(.+)', re.U).match
+reSolid = re.compile(r'[-/]ms=[^\s]+', re.IGNORECASE)
+regCompressMatch = re.compile(r'Compressing\s+(.+)', re.U).match
 regExtractMatch = re.compile(u'- (.+)', re.U).match
 regErrMatch = re.compile(u'^(Error:.+|.+ {5}Data Error?|Sub items Errors:.+)',
     re.U).match
 reListArchive = re.compile(
-    u'' r'(Solid|Path|Size|CRC|Attributes|Method) = (.*?)(?:\r\n|\n)')
+    r'(Solid|Path|Size|CRC|Attributes|Method) = (.*?)(?:\r\n|\n)')
 
 def compress7z(command, full_dest, rel_dest, srcDir, progress=None):
     if progress is not None: #--Used solely for the progress bar

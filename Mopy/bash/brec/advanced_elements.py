@@ -43,7 +43,7 @@ class _MelDistributor(MelNull):
     See the wiki page '[dev] Plugin Format: Distributors' for a detailed
     overview of this class and the semi-DSL it implements.
 
-    :type _attr_to_loader: dict[unicode, MelBase]
+    :type _attr_to_loader: dict[str, MelBase]
     :type _sig_to_loader: dict[bytes, MelBase]
     :type _target_sigs: set[bytes]"""
     def __init__(self, distributor_config): # type: (dict) -> None
@@ -162,7 +162,7 @@ class _MelDistributor(MelNull):
                     mappings_to_iterate.append(resolved_entry[1])
                 elif re_type == list:
                     # If the signature maps to a list, record the signatures of
-                    # each entry (bytes or tuple[bytes, unicode])
+                    # each entry (bytes or tuple[bytes, str])
                     self._target_sigs.update([t[0] if isinstance(t, tuple) else t
                                               for t in resolved_entry])
                 # If it's not a dict, list or tuple, then this is a leaf node,
@@ -245,7 +245,7 @@ class _MelDistributor(MelNull):
             record._seq_index = 1 # we'll load the first element right now
             self._distribute_load(mapped_el[0], record, ins, size_,
                                   *debug_strs)
-        else: # el_type == unicode, verified in _pre_process
+        else: # el_type == str, verified in _pre_process
             # Targets -----------------------------------------------------
             # A target - don't add the signature to the load state and
             # distribute the load by attribute name.
@@ -318,7 +318,7 @@ class MelArray(MelBase):
         """Creates a new MelArray with the specified attribute and element.
 
         :param array_attr: The attribute name to give the entire array.
-        :type array_attr: unicode
+        :type array_attr: str
         :param element: The element that each entry in this array will be
             loaded and dumped by.
         :type element: MelBase
@@ -490,7 +490,7 @@ class MelLists(MelStruct):
     """Convenience subclass to collect unpacked attributes to lists.
     'actions' is discarded"""
     # map attribute names to slices/indexes of the tuple of unpacked elements
-    _attr_indexes = OrderedDict() # type: OrderedDict[unicode, slice | int]
+    _attr_indexes = OrderedDict() # type: OrderedDict[str, slice | int]
 
     def __init__(self, mel_sig, struct_formats, *elements):
         if len(struct_formats) != len(elements):
@@ -574,7 +574,7 @@ class FidNotNullDecider(ACommonDecider):
         """Creates a new FidNotNullDecider with the specified attribute.
 
         :param target_attr: The name of the attribute to check.
-        :type target_attr: unicode"""
+        :type target_attr: str"""
         self._target_attr = target_attr
 
     def _decide_common(self, record):
@@ -597,7 +597,7 @@ class AttrValDecider(ACommonDecider):
 
         :param target_attr: The name of the attribute to return the value
             for.
-        :type target_attr: unicode
+        :type target_attr: str
         :param transformer: A function that takes a single argument, the value
             read from target_attr, and returns some other value. Can be used to
             e.g. return only the first character of an eid.
@@ -959,7 +959,7 @@ class MelCounter(_MelWrapper):
         :param counter_mel: The element that stores the counter's value.
         :type counter_mel: _MelField
         :param counts: The attribute name that this counter counts.
-        :type counts: unicode"""
+        :type counts: str"""
         super(MelCounter, self).__init__(counter_mel)
         self.counted_attr = counts
 
@@ -980,9 +980,9 @@ class MelPartialCounter(MelCounter):
         :param counter_mel: The element that stores the counter's value.
         :type counter_mel: MelStruct
         :param counter: The attribute name of the counter.
-        :type counter: unicode
+        :type counter: str
         :param counts: The attribute name that this counter counts.
-        :type counts: unicode"""
+        :type counts: str"""
         super(MelPartialCounter, self).__init__(counter_mel, counts)
         self.counter_attr = counter
 

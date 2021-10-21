@@ -431,8 +431,7 @@ class _AVmadComponent(object):
     after or before 'processors' has been evaluated, just be sure to call
     super(...).{dump,load}_data(...) when appropriate.
 
-    :type processors: OrderedDict[unicode, tuple[callable, callable, int] |
-        unicode]"""
+    :type processors: OrderedDict[str, tuple[callable, callable, int] | str]"""
     processors = OrderedDict()
 
     def dump_frag(self, record):

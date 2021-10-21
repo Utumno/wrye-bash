@@ -163,13 +163,13 @@ class _AComponent(object):
             raise RuntimeError(f"Failed to resolve object '{obj!r}' to wx "
                                f"object.")
 
-    def get_component_name(self): # type: () -> unicode
+    def get_component_name(self): # type: () -> str
         """Returns the name of this component.
 
         :return: This component's name."""
         return self._native_widget.GetName()
 
-    def set_component_name(self, new_ctrl_name): # type: (unicode) -> None
+    def set_component_name(self, new_ctrl_name): # type: (str) -> None
         """Sets the name of this component to the specified name.
 
         :param new_ctrl_name: The string to change this component's name to."""

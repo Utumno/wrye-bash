@@ -113,7 +113,7 @@ class DocBrowser(WindowFrame):
     @staticmethod
     def _get_is_wtxt(doc_path):
         """Determines whether specified path is a wtxt file."""
-        rx = re.compile(u'' r'^=.+=#\s*$', re.U)
+        rx = re.compile(r'^=.+=#\s*$', re.U)
         try:
             with doc_path.open(u'r', encoding=u'utf-8-sig') as text_file:
                 match_text = rx.match(text_file.readline())
@@ -370,7 +370,7 @@ class PluginChecker(WindowFrame):
     def OnCopyText(self):
         """Copies text of report to clipboard."""
         text_ = u'[spoiler]\n' + self.check_mods_text + u'[/spoiler]'
-        text_ = re.sub(u'' r'\[\[.+?\|\s*(.+?)\]\]', u'' r'\1', text_, re.U)
+        text_ = re.sub(r'\[\[.+?\|\s*(.+?)\]\]', r'\1', text_, re.U)
         text_ = re.sub(u'(__|\*\*|~~)', u'', text_, re.U)
         text_ = re.sub(u'&bull; &bull;', u'**', text_, re.U)
         text_ = re.sub(u'<[^>]+>', u'', text_, re.U)
@@ -482,7 +482,7 @@ class InstallerProject_OmodConfigDialog(WindowFrame):
         config.email = self.gEmail.text_content.strip()
         config.abstract = self.gAbstract.text_content.strip()
         #--Version
-        maVersion = re.match(u'' r'(\d+)\.(\d+)',
+        maVersion = re.match(r'(\d+)\.(\d+)',
                              self.gVersion.text_content.strip(), flags=re.U)
         if maVersion:
             config.vMajor,config.vMinor = (int(g) for g in maVersion.groups())

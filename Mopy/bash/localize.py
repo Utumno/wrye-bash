@@ -218,8 +218,8 @@ def dump_translator(out_path, lang):
     try:
         re_msg_ids_start = re.compile(u'#:')
         re_encoding = re.compile(
-            u'' r'"Content-Type:\s*text/plain;\s*charset=(.*?)\\n"$', re.I)
-        re_non_escaped_quote = re.compile(u'' r'([^\\])"')
+            r'"Content-Type:\s*text/plain;\s*charset=(.*?)\\n"$', re.I)
+        re_non_escaped_quote = re.compile(r'([^\\])"')
         def sub_quote(regex_match):
             return regex_match.group(1) + r'\"'
         target_enc = None
@@ -304,7 +304,7 @@ def dump_translator(out_path, lang):
 
 #------------------------------------------------------------------------------
 # Formatting
-def format_date(secs): # type: (float) -> unicode
+def format_date(secs): # type: (float) -> str
     """Convert time to string formatted to to locale's default date/time.
 
     :param secs: Formats the specified number of seconds into a string."""
@@ -320,7 +320,7 @@ def unformat_date(date_str):
     """Basically a wrapper around time.strptime. Exists to get around bug in
     strptime for Japanese locale.
 
-    :type date_str: unicode"""
+    :type date_str: str"""
     try:
         return time.strptime(date_str, u'%c')
     except ValueError:

@@ -217,7 +217,7 @@ class MorphFactionsPatcher(_ExSpecialList):
             log(u'* %s: %d' % (mod, changed[mod]))
 
     def _parse_line(self, csv_fields):
-        # type: # (list[unicode]) -> tuple[object] | None
+        # type: # (list[str]) -> tuple[object] | None
         mod, objectIndex = csv_fields[0], csv_fields[1]
         morphName = csv_fields[4].strip()
         if not morphName:

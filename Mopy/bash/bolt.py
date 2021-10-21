@@ -214,12 +214,12 @@ def encode_complex_string(string_val, max_size=None, min_size=None,
         string_val += b'\x00' * (min_size - len(string_val))
     return string_val
 
-def to_unix_newlines(s): # type: (unicode) -> unicode
+def to_unix_newlines(s): # type: (str) -> str
     """Replaces non-UNIX newlines in the specified string with Unix newlines.
     Handles both CR-LF (Windows) and pure CR (macOS)."""
     return s.replace(u'\r\n', u'\n').replace(u'\r', u'\n')
 
-def remove_newlines(s): # type: (unicode) -> unicode
+def remove_newlines(s): # type: (str) -> str
     """Removes all newlines (whether they are in LF, CR-LF or CR form) from the
     specified string."""
     return to_unix_newlines(s).replace(u'\n', u'')
@@ -487,11 +487,11 @@ class Path(object):
 
     #--Class Vars/Methods -------------------------------------------
     sys_fs_enc = sys.getfilesystemencoding() or u'mbcs'
-    invalid_chars_re = re.compile(u'' r'(.*)([/\\:*?"<>|]+)(.*)', re.I | re.U)
+    invalid_chars_re = re.compile(r'(.*)([/\\:*?"<>|]+)(.*)', re.I | re.U)
 
     @staticmethod
     def getNorm(str_or_path):
-        # type: (unicode|bytes|Path) -> unicode
+        # type: (str|bytes|Path) -> str
         """Return the normpath for specified basename/Path object."""
         if isinstance(str_or_path, Path): return str_or_path._s
         elif not str_or_path: return u'' # and not maybe b''
@@ -519,7 +519,7 @@ class Path(object):
                  u'_cext', u'_sbody')
 
     def __init__(self, norm_str):
-        # type: (unicode) -> None
+        # type: (str) -> None
         """Initialize with unicode - call only in GPath."""
         self._s = norm_str # path must be normalized
         self._cs = norm_str.lower()
@@ -925,7 +925,7 @@ class Path(object):
                     pass
 
     #--Hash/Compare, based on the _cs attribute so case insensitive. NB: Paths
-    # directly compare to unicode|bytes|Path|None and will blow for anything
+    # directly compare to str|bytes|Path|None and will blow for anything
     # else
     def __hash__(self):
         return hash(self._cs)
@@ -969,7 +969,7 @@ def popen_common(popen_cmd, **kwargs):
 
 def clearReadOnly(dirPath):
     """Recursively (/S) clear ReadOnly flag if set - include folders (/D)."""
-    cmd = u'' r'attrib -R "%s\*" /S /D' % dirPath
+    cmd = r'attrib -R "%s\*" /S /D' % dirPath
     subprocess.call(cmd, startupinfo=startupinfo)
 
 # TMP functions to deprecate Paths functionality for simple filenames - SLOW!
@@ -980,7 +980,7 @@ def body_(string_val):
 
 # Util Constants --------------------------------------------------------------
 #--Unix new lines
-reUnixNewLine = re.compile(u'' r'(?<!\r)\n', re.U)
+reUnixNewLine = re.compile(r'(?<!\r)\n', re.U)
 
 # Util Classes ----------------------------------------------------------------
 #------------------------------------------------------------------------------
@@ -1256,8 +1256,8 @@ class MainFunctions(object):
         #--Separate out keywords args
         keywords = {}
         argDex = 0
-        reKeyArg  = re.compile(u'' r'^-(\D\w+)', re.U)
-        reKeyBool = re.compile(u'' r'^\+(\D\w+)', re.U)
+        reKeyArg  = re.compile(r'^-(\D\w+)', re.U)
+        reKeyBool = re.compile(r'^\+(\D\w+)', re.U)
         while argDex < len(args):
             arg = args[argDex]
             if reKeyArg.match(arg):
@@ -2026,9 +2026,9 @@ class StringTable(dict):
             return
 
 #------------------------------------------------------------------------------
-_esub_component = re.compile(u'' r'\$(\d+)\(([^)]+)\)')
-_rsub_component = re.compile(u'' r'\\(\d+)')
-_plain_component = re.compile(u'' r'[^\\\$]+', re.U)
+_esub_component = re.compile(r'\$(\d+)\(([^)]+)\)')
+_rsub_component = re.compile(r'\\(\d+)')
+_plain_component = re.compile(r'[^\\\$]+', re.U)
 
 def build_esub(esub_str):
     """Builds an esub (enhanced substitution) callable and returns it. These
@@ -2088,14 +2088,14 @@ def build_esub(esub_str):
 
 #------------------------------------------------------------------------------
 # no re.U, we want our record attrs to be ASCII
-_valid_rpath_attr = re.compile(u'' r'^[^\d\W]\w*\Z')
+_valid_rpath_attr = re.compile(r'^[^\d\W]\w*\Z')
 
 class _ARP_Subpath(object):
     """Abstract base class for all subpaths of a larger record path."""
     __slots__ = (u'_subpath_attr', u'_next_subpath',)
 
     def __init__(self, sub_rpath, rest_rpath):
-        # type: (unicode, unicode) -> None
+        # type: (str, str) -> None
         if not _valid_rpath_attr.match(sub_rpath):
             raise SyntaxError(u"'%s' is not a valid subpath. Your record path "
                               u'likely contains a typo.' % sub_rpath)
@@ -2214,7 +2214,7 @@ class RecPath(object):
     overview of syntax and usage."""
     __slots__ = (u'_root_subpath',)
 
-    def __init__(self, rpath_str): # type: (unicode) -> None
+    def __init__(self, rpath_str): # type: (str) -> None
         self._root_subpath = _parse_rpath(rpath_str)
 
     def rp_eval(self, record):
@@ -2236,7 +2236,7 @@ class RecPath(object):
     def __repr__(self):
         return repr(self._root_subpath)
 
-def _parse_rpath(rpath_str): # type: (unicode) -> _ARP_Subpath
+def _parse_rpath(rpath_str): # type: (str) -> _ARP_Subpath
     """Parses the given unicode string as an RPath subpath."""
     if not rpath_str: return None
     sub_rpath, rest_rpath = (rpath_str.split(u'.', 1) if u'.' in rpath_str
@@ -2390,12 +2390,12 @@ class WryeText(object):
         #--List
         reWryeList = re.compile(u'( *)([-x!?.+*o])(.*)',re.U)
         #--Code
-        reCode = re.compile(u'' r'\[code\](.*?)\[/code\]', re.I | re.U)
-        reCodeStart = re.compile(u'' r'(.*?)\[code\](.*?)$', re.I | re.U)
-        reCodeEnd = re.compile(u'' r'(.*?)\[/code\](.*?)$', re.I | re.U)
-        reCodeBoxStart = re.compile(u'' r'\s*\[codebox\](.*?)', re.I | re.U)
-        reCodeBoxEnd = re.compile(u'' r'(.*?)\[/codebox\]\s*', re.I | re.U)
-        reCodeBox = re.compile(u'' r'\s*\[codebox\](.*?)\[/codebox\]\s*', re.I | re.U)
+        reCode = re.compile(r'\[code\](.*?)\[/code\]', re.I | re.U)
+        reCodeStart = re.compile(r'(.*?)\[code\](.*?)$', re.I | re.U)
+        reCodeEnd = re.compile(r'(.*?)\[/code\](.*?)$', re.I | re.U)
+        reCodeBoxStart = re.compile(r'\s*\[codebox\](.*?)', re.I | re.U)
+        reCodeBoxEnd = re.compile(r'(.*?)\[/codebox\]\s*', re.I | re.U)
+        reCodeBox = re.compile(r'\s*\[codebox\](.*?)\[/codebox\]\s*', re.I | re.U)
         codeLines = None
         codeboxLines = None
         def subCode(match):
@@ -2405,7 +2405,7 @@ class WryeText(object):
                 return match(1)
         #--Misc. text
         reHr = re.compile(u'^------+$',re.U)
-        reEmpty = re.compile(u'' r'\s+$', re.U)
+        reEmpty = re.compile(r'\s+$', re.U)
         reMDash = re.compile(u' -- ',re.U)
         rePreBegin = re.compile(u'<pre',re.I|re.U)
         rePreEnd = re.compile(u'</pre>',re.I|re.U)
@@ -2414,7 +2414,7 @@ class WryeText(object):
             text = match.group(1)
             anchor = quote(reWd.sub(u'', text))
             count = 0
-            if re.match(u'' r'\d', anchor):
+            if re.match(r'\d', anchor):
                 anchor = u'_' + anchor
             while anchor in anchorlist and count < 10:
                 count += 1
@@ -2427,7 +2427,7 @@ class WryeText(object):
         #--Bold, Italic, BoldItalic
         reBold = re.compile(u'__',re.U)
         reItalic = re.compile(u'~~',re.U)
-        reBoldItalic = re.compile(u'' r'\*\*',re.U)
+        reBoldItalic = re.compile(r'\*\*',re.U)
         states = {u'bold':False,u'italic':False,u'boldItalic':False,u'code':0}
         def subBold(match):
             state = states[u'bold'] = not states[u'bold']
@@ -2440,14 +2440,14 @@ class WryeText(object):
             return u'<i><b>' if state else u'</b></i>'
         #--Preformatting
         #--Links
-        reLink = re.compile(u'' r'\[\[(.*?)\]\]', re.U)
+        reLink = re.compile(r'\[\[(.*?)\]\]', re.U)
         reHttp = re.compile(u' (http://[_~a-zA-Z0-9./%-]+)',re.U)
-        reWww = re.compile(u'' r' (www\.[_~a-zA-Z0-9./%-]+)', re.U)
-        reWd = re.compile(u'' r'(<[^>]+>|\[\[[^\]]+\]\]|\s+|[%s]+)' % re.escape(string.punctuation.replace(u'_',u'')), re.U)
-        rePar = re.compile(u'' r'^(\s*[a-zA-Z(;]|\*\*|~~|__|\s*<i|\s*<a)', re.U)
-        reFullLink = re.compile(u'' r'(:|#|\.[a-zA-Z0-9]{2,4}$)', re.U)
-        reColor = re.compile(u'' r'\[\s*color\s*=[\s\"\']*(.+?)[\s\"\']*\](.*?)\[\s*/\s*color\s*\]', re.I | re.U)
-        reBGColor = re.compile(u'' r'\[\s*bg\s*=[\s\"\']*(.+?)[\s\"\']*\](.*?)\[\s*/\s*bg\s*\]', re.I | re.U)
+        reWww = re.compile(r' (www\.[_~a-zA-Z0-9./%-]+)', re.U)
+        reWd = re.compile(r'(<[^>]+>|\[\[[^\]]+\]\]|\s+|[%s]+)' % re.escape(string.punctuation.replace(u'_',u'')), re.U)
+        rePar = re.compile(r'^(\s*[a-zA-Z(;]|\*\*|~~|__|\s*<i|\s*<a)', re.U)
+        reFullLink = re.compile(r'(:|#|\.[a-zA-Z0-9]{2,4}$)', re.U)
+        reColor = re.compile(r'\[\s*color\s*=[\s\"\']*(.+?)[\s\"\']*\](.*?)\[\s*/\s*color\s*\]', re.I | re.U)
+        reBGColor = re.compile(r'\[\s*bg\s*=[\s\"\']*(.+?)[\s\"\']*\](.*?)\[\s*/\s*bg\s*\]', re.I | re.U)
         def subColor(match):
             return u'<span style="color:%s;">%s</span>' % (match.group(1),match.group(2))
         def subBGColor(match):
@@ -2470,9 +2470,9 @@ class WryeText(object):
             return u'<a href="%s"%s>%s</a>' % (address,newWindow,text)
         #--Tags
         reAnchorTag = re.compile(u'{{A:(.+?)}}',re.U)
-        reContentsTag = re.compile(u'' r'\s*{{CONTENTS=?(\d+)}}\s*$', re.U)
-        reAnchorHeadersTag = re.compile(u'' r'\s*{{ANCHORHEADERS=(\d+)}}\s*$', re.U)
-        reCssTag = re.compile(u'' r'\s*{{CSS:(.+?)}}\s*$',re.U)
+        reContentsTag = re.compile(r'\s*{{CONTENTS=?(\d+)}}\s*$', re.U)
+        reAnchorHeadersTag = re.compile(r'\s*{{ANCHORHEADERS=(\d+)}}\s*$',re.U)
+        reCssTag = re.compile(r'\s*{{CSS:(.+?)}}\s*$',re.U)
         #--Defaults ----------------------------------------------------------
         title = u''
         spaces = u''
@@ -2579,7 +2579,7 @@ class WryeText(object):
                 anchor = quote(reWd.sub(u'', text))
                 level_ = len(lead)
                 if anchorHeaders:
-                    if re.match(u'' r'\d', anchor):
+                    if re.match(r'\d', anchor):
                         anchor = u'_' + anchor
                     count = 0
                     while anchor in anchorlist and count < 10:
@@ -2622,8 +2622,8 @@ class WryeText(object):
             line = reAnchorTag.sub(subAnchor,line)
             #--Hyperlinks
             line = reLink.sub(subLink,line)
-            line = reHttp.sub(u'' r' <a href="\1">\1</a>', line)
-            line = reWww.sub(u'' r' <a href="http://\1">\1</a>', line)
+            line = reHttp.sub(r' <a href="\1">\1</a>', line)
+            line = reWww.sub(r' <a href="http://\1">\1</a>', line)
             #--Save line ------------------
             #print line,
             outLines.append(line)

@@ -482,7 +482,7 @@ class ModHeaderReader(object):
         record with that signature. Note that the flags are not processed
         either - if you need that, manually call MreRecord.flags1_() on them.
 
-        :rtype: defaultdict[bytes, defaultdict[int, tuple[RecHeader, unicode]]]"""
+        :rtype: defaultdict[bytes, defaultdict[int, tuple[RecHeader, str]]]"""
         # This method is *heavily* optimized for performance. Inlines and other
         # ugly code ahead
         progress = progress or bolt.Progress()

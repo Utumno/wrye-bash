@@ -40,7 +40,7 @@ class APreserver(ImportPatcher):
     """Fairly mature base class for preservers. Some parts could (read should)
     be moved to ImportPatcher and used to eliminate duplication with _AMerger.
 
-    :type rec_attrs: dict[bytes, tuple] | dict[bytes, dict[unicode, tuple]]"""
+    :type rec_attrs: dict[bytes, tuple] | dict[bytes, dict[str, tuple]]"""
     rec_attrs = {}
     # Record attributes that are FormIDs. These will be checked to see if their
     # FormID is valid before being imported
@@ -376,7 +376,7 @@ class ImportCellsPatcher(ImportPatcher):
     def __init__(self, p_name, p_file, p_sources):
         super(ImportCellsPatcher, self).__init__(p_name, p_file, p_sources)
         self.cellData = defaultdict(dict)
-        self.recAttrs = bush.game.cellRecAttrs # dict[unicode, tuple[unicode]]
+        self.recAttrs = bush.game.cellRecAttrs # dict[str, tuple[str]]
         self.loadFactory = self._patcher_read_fact()
 
     def initData(self, progress, __attrgetters=attrgetter_cache):

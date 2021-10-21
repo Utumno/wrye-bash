@@ -86,7 +86,7 @@ class LayoutOptions(object):
 
     def __init__(self, border=None, expand=None, weight=None,
                  h_align=None, v_align=None, col_span=None, row_span=None):
-        # type: (int, bool, int, unicode, unicode, int, int) -> None
+        # type: (int, bool, int, str, str, int, int) -> None
         self.border = border
         self.expand = expand
         self.weight = weight

@@ -452,7 +452,7 @@ class Ba2TexChunk(object):
 
 # Bsa content abstraction -----------------------------------------------------
 class BSAFolder(object):
-    """:type folder_assets: collections.OrderedDict[unicode, BSAFileRecord]"""
+    """:type folder_assets: collections.OrderedDict[str, BSAFileRecord]"""
 
     def __init__(self, folder_record):
         self.folder_record = folder_record
@@ -465,7 +465,7 @@ class Ba2Folder(object):
 
 # Files -----------------------------------------------------------------------
 class ABsa(AFile):
-    """:type bsa_folders: collections.OrderedDict[unicode, BSAFolder]"""
+    """:type bsa_folders: collections.OrderedDict[str, BSAFolder]"""
     _header_type = BsaHeader
     _assets = None # type: frozenset
     _compression_type = _Bsa_zlib # type: _BsaCompressionType
@@ -605,7 +605,7 @@ class ABsa(AFile):
     @property
     def assets(self):
         """Set of full paths in the bsa in lowercase.
-        :rtype: frozenset[unicode]
+        :rtype: frozenset[str]
         """
         wanted_assets = self._assets
         if wanted_assets is None:

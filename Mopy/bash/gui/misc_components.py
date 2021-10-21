@@ -163,7 +163,7 @@ class Table(WithCharEvents):
             object or a component.
         :param table_data: The data to show in the table. Maps column names to
             the data displayed in the column.
-        :type table_data: dict[unicode, list[unicode]]
+        :type table_data: dict[str, list[str]]
         :param editable: True if the user may edit the contents of the
             table."""
         super(Table, self).__init__(parent)
@@ -263,7 +263,7 @@ class Table(WithCharEvents):
                 clip_text.append(curr_line)
             return u'\n'.join(l.rstrip() for l in clip_text)
 
-    _complex_start = re.compile(u'' r' +\|')
+    _complex_start = re.compile(r' +\|')
     def _parse_clipboard_contents(self, clipboard_contents):
         """Parses the specified clipboard contents into a dictionary
         containing instructions for how to edit the table."""

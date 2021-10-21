@@ -356,9 +356,9 @@ class TestPath(object):
         # paths and unicode
         p = GPath(u'c:/random/path.txt')
         assert u'c:/random/path.txt' == p
-        assert u'' r'c:\random\path.txt' == p
+        assert r'c:\random\path.txt' == p
         assert GPath(u'c:/random/path.txt') == p
-        assert GPath(u'' r'c:\random\path.txt') == p
+        assert GPath(r'c:\random\path.txt') == p
         # paths and bytes
         assert b'c:/random/path.txt' == p
         with pytest.raises(SyntaxError):
@@ -395,9 +395,9 @@ class TestPath(object):
         # paths and unicode
         p = GPath(u'c:/random/path.txt')
         assert u'c:/random/path.txt' <= p
-        assert u'' r'c:\random\path.txt' <= p
+        assert r'c:\random\path.txt' <= p
         assert GPath(u'c:/random/path.txt') <= p
-        assert GPath(u'' r'c:\random\path.txt') <= p
+        assert GPath(r'c:\random\path.txt') <= p
         # paths and bytes
         assert b'c:/random/path.txt' <= p
         with pytest.raises(SyntaxError):
@@ -425,12 +425,12 @@ class TestPath(object):
     def test_dict_keys(self):
         d = {GPath(u'c:/random/path.txt'): 1}
         assert not (u'c:/random/path.txt' in d) ## oops
-        assert u'' r'c:\random\path.txt' in d
+        assert r'c:\random\path.txt' in d
         assert GPath(u'c:/random/path.txt') in d
-        assert GPath(u'' r'c:\random\path.txt') in d
+        assert GPath(r'c:\random\path.txt') in d
         dd = {u'c:/random/path.txt': 1}
         assert not GPath(u'c:/random/path.txt') in dd
-        assert not GPath(u'' r'c:\random\path.txt') in dd
+        assert not GPath(r'c:\random\path.txt') in dd
 
 class TestRounder(object):
 

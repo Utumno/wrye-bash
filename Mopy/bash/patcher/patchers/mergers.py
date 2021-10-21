@@ -652,7 +652,7 @@ class _AListsMerger(ListPatcher):
         strings, e.g. u'Delev'), defaulting to an empty set.
 
         :type remove_empty: bool
-        :type tag_choices: defaultdict[bolt.Path, set[unicode]]"""
+        :type tag_choices: defaultdict[bolt.Path, set[str]]"""
         super(_AListsMerger, self).__init__(p_name, p_file, p_sources)
         self.isActive |= bool(p_file.loadSet) # Can do meaningful work even without sources
         self.type_list = {rsig: {} for rsig in self._read_sigs}

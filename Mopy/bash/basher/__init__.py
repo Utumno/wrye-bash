@@ -1277,7 +1277,7 @@ class _DetailsMixin(object):
     # Details panel API
     def SetFile(self, fileName=u'SAME'):
         """Set file to be viewed. Leave fileName empty to reset.
-        :type fileName: unicode | bolt.Path | None"""
+        :type fileName: str | bolt.Path | None"""
         #--Reset?
         if fileName == u'SAME':
             if self.displayed_item not in self.file_infos:
@@ -1881,7 +1881,7 @@ class INIDetailsPanel(_DetailsMixin, SashPanel):
     @property
     def target_inis(self):
         """Return settings[u'bash.ini.choices'], set in IniInfos#__init__.
-        :rtype: OrderedDict[unicode, bolt.Path]"""
+        :rtype: OrderedDict[str, bolt.Path]"""
         return settings[u'bash.ini.choices']
 
     @property

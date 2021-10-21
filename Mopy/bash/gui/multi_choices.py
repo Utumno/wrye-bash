@@ -121,7 +121,7 @@ class ListBox(WithMouseEvents):
     """A list of options, of which one or more can be selected.
 
     Events:
-      - on_list_box(lb_dex: int, item_text: unicode): Posted when user selects
+      - on_list_box(lb_dex: int, item_text: str): Posted when user selects
       an item from list. The default arg processor extracts the index of the
       event and the list item label
       - Mouse events - see gui.base_components.WithMouseEvents"""

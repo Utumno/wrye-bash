@@ -64,7 +64,7 @@ BTN_NO                          = 5104
 GOOD_EXITS                      = (BTN_OK, BTN_YES)
 
 # Internals ===================================================================
-_re_env = re.compile(u'' r'%(\w+)%', re.U)
+_re_env = re.compile(r'%(\w+)%', re.U)
 
 def _subEnv(match):
     env_var = match.group(1).upper()
@@ -832,7 +832,7 @@ def init_app_links(apps_dir, badIcons, iconList):
     for path, (target, icon, shortcut_descr) in _get_app_links(
             apps_dir).items():
         # msi shortcuts: dc0c8de
-        if target.lower().find(u'' r'installer\{') != -1:
+        if target.lower().find(r'installer\{') != -1:
             target = path
         else:
             target = GPath(target)

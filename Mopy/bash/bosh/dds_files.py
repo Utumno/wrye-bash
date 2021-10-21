@@ -226,7 +226,7 @@ class _DXGIFormat(object): # PY3: enums sorely missed...
         properties. Automatically aquires a a
 
         :param fmt_name: The standardized name of this format.
-        :type fmt_name: unicode
+        :type fmt_name: str
         :param fmt_ddspf: The pixel format to use with this DXGI format.
         :type fmt_ddspf: _DDSPixelFormat
         :param fmt_bpp: The bits per pixel.
