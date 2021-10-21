@@ -225,8 +225,8 @@ class UIListCtrl(WithMouseEvents, WithCharEvents):
                 lambda event: [event.IsEditCancelled(), event.GetLabel(),
                     event.GetIndex(), self.FindItemAt(event.GetIndex())])
         #--Item/Id mapping
-        self._item_itemId = {} # :type: dict[bolt.Path | unicode | int, int]
-        self._itemId_item = {} # :type: dict[int, bolt.Path | unicode | int]
+        self._item_itemId = {} # :type: dict[bolt.Path | str | int, int]
+        self._itemId_item = {} # :type: dict[int, bolt.Path | str | int]
 
     # API (beta) -------------------------------------------------------------
     # Internal id <-> item mappings used in wx._controls.ListCtrl.SortItems

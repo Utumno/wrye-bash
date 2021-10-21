@@ -34,7 +34,7 @@ from ..gui import Button, CheckBox, HBoxedLayout, Label, LayoutOptions, \
     CheckListBox, DeselectAllButton, SelectAllButton, FileOpenMultiple
 from ..patcher import patch_files, patches_set, base
 
-reCsvExt = re.compile(u'' r'\.csv$', re.I | re.U)
+reCsvExt = re.compile(r'\.csv$', re.I | re.U)
 
 class _PatcherPanel(object):
     """Basic patcher panel with no options."""
@@ -44,7 +44,7 @@ class _PatcherPanel(object):
     # The key that will be used to read and write entries for BP configs
     # These are sometimes quite ugly - backwards compat leftover from when
     # those were the class names and got written directly into the configs
-    _config_key = None # type: unicode
+    _config_key = None # type: str
     patcher_type = None # type: base.Abstract_Patcher
     # CONFIG DEFAULTS
     default_isEnabled = False # is the patcher enabled on a new bashed patch ?
@@ -63,7 +63,7 @@ class _PatcherPanel(object):
     def patcher_tip(self):
         # Remove everything but the first sentence from the first line of the
         # patcher description
-        return re.sub(u'' r'\..*', u'.', self.patcher_desc.split(u'\n')[0],
+        return re.sub(r'\..*', u'.', self.patcher_desc.split(u'\n')[0],
                       flags=re.U)
 
     def SetIsFirstLoad(self,isFirstLoad):

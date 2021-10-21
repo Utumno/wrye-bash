@@ -299,7 +299,7 @@ class InstallerConverter(object):
                     return self._translate(self._stream.readline())
                 @staticmethod
                 def _translate(s):
-                    return re.sub(u'^(bolt|bosh)$', u'' r'bash.\1',
+                    return re.sub('^(bolt|bosh)$', r'bash.\1',
                                   s.decode(u'utf-8'), flags=re.U)
             translator = _Translator(stream)
             for a, v in zip(self.persistBCF, pickle.load(

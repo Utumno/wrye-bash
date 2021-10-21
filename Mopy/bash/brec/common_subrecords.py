@@ -104,7 +104,7 @@ class MelCtda(MelUnion):
         :param old_suffix_fmts: A set of old versions to pass to
             MelTruncatedStruct. Must conform to the same syntax as suffix_fmt.
             May be empty.
-        :type old_suffix_fmts: set[unicode]"""
+        :type old_suffix_fmts: set[str]"""
         if old_suffix_fmts is None: old_suffix_fmts = set()
         if suffix_elements is None: suffix_elements = []
         from .. import bush
@@ -474,7 +474,7 @@ class MelRaceParts(MelNull):
         :param indx_to_attr: A mapping from the INDX values to the final
             record attributes that will be used for the subsequent
             subrecords.
-        :type indx_to_attr: dict[int, unicode]
+        :type indx_to_attr: dict[int, str]
         :param group_loaders: A callable that takes the INDX value and
             returns an iterable with one or more MelBase-derived subrecord
             loaders. These will be loaded and dumped directly after each

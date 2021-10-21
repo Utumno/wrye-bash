@@ -56,7 +56,7 @@ from ..ini_files import IniFile, OBSEIniFile, DefaultIniFile, GameIni, \
 from ..mod_files import ModFile, ModHeaderReader
 
 # Singletons, Constants -------------------------------------------------------
-reOblivion = re.compile(u'' r'^(Oblivion|Nehrim)(|_SI|_1.1|_1.1b|_1.5.0.8|'
+reOblivion = re.compile(r'^(Oblivion|Nehrim)(|_SI|_1.1|_1.1b|_1.5.0.8|'
                         r'_GOTY non-SI|_GBR SI)\.esm$', re.U)
 
 undefinedPath = GPath(u'C:\\not\\a\\valid\\path.exe')
@@ -76,15 +76,15 @@ lootDb = None # type: LOOTParser
 
 #--Header tags
 reVersion = re.compile(
-  u'' r'^(version[:.]*|ver[:.]*|rev[:.]*|r[:.\s]+|v[:.\s]+) *([-0-9a-zA-Z.]*\+?)',
+  r'^(version[:.]*|ver[:.]*|rev[:.]*|r[:.\s]+|v[:.\s]+) *([-0-9a-zA-Z.]*\+?)',
   re.M | re.I | re.U)
 
 #--Mod Extensions
 __exts = r'((\.(' + u'|'.join(ext[1:] for ext in readExts) + u'))|)$'
-reTesNexus = re.compile(u'' r'(.*?)-(\d{1,7})(?:-\w*){0,3}(?:-\d{1,16})?'
-                        + __exts, re.I | re.U)
-reTESA = re.compile(u'' r'(.*?)(?:-(\d{1,6})(?:\.tessource)?(?:-bain)?)?'
-    + __exts, re.I | re.U)
+reTesNexus = re.compile(r'(.*?)-(\d{1,7})(?:-\w*){0,3}(?:-\d{1,16})?' + __exts,
+                        re.I | re.U)
+reTESA = re.compile(r'(.*?)(?:-(\d{1,6})(?:\.tessource)?(?:-bain)?)?' + __exts,
+                    re.I | re.U)
 del __exts
 imageExts = {u'.gif', u'.jpg', u'.png', u'.jpeg', u'.bmp', u'.tif'}
 
@@ -106,7 +106,7 @@ class ListInfo(object):
         a tuple - if the second element is None validation failed and the first
         element is the message to show - if not the meaning varies per override
 
-        :type name_str: unicode"""
+        :type name_str: str"""
         if not name_str:
             return _(u'Empty name !'), None
         char = cls._is_filename and bolt.Path.has_invalid_chars(name_str)
@@ -128,11 +128,11 @@ class ListInfo(object):
     @classmethod
     def _name_re(cls, allowed_exts):
         exts_re = cls._valid_exts_re if not allowed_exts else \
-            u'' r'(\.(?:' + u'|'.join(ext[1:] for ext in allowed_exts) + u'))'
+            r'(\.(?:' + u'|'.join(ext[1:] for ext in allowed_exts) + u'))'
         # The reason we do the regex like this is to support names like
         # foo.ess.ess.ess etc.
-        final_regex = u'^%s(.*?)' % (u'' r'(?=.+\.)' if exts_re else u'')
-        if cls._has_digits: final_regex += u'' r'(\d*)'
+        final_regex = '^%s(.*?)' % (r'(?=.+\.)' if exts_re else '')
+        if cls._has_digits: final_regex += r'(\d*)'
         final_regex += exts_re + u'$'
         return re.compile(final_regex, re.I | re.U)
 
@@ -461,8 +461,8 @@ reBashTags = re.compile(u'{{ *BASH *:[^}]*}}\\s*\\n?',re.U)
 class ModInfo(FileInfo):
     """A plugin file. Currently, these are .esp, .esm, .esl and .esu files."""
     _has_esm_flag = _is_esl = False # Cached, since we need it so often
-    _valid_exts_re = u'' r'(\.(?:' + u'|'.join(
-        x[1:] for x in bush.game.espm_extensions) + u'))'
+    _valid_exts_re = r'(\.(?:' + u'|'.join(
+        x[1:] for x in bush.game.espm_extensions) + '))'
 
     def __init__(self, fullpath, load_cache=False):
         self.isGhost = endsInGhost = (fullpath.cs[-6:] == u'.ghost')
@@ -835,7 +835,7 @@ class ModInfo(FileInfo):
         return GPath_no_norm(self._file_key.s[:-3] + u'ini') # ignore .ghost
 
     def _string_files_paths(self, lang):
-        # type: (unicode) -> Iterable[unicode]
+        # type: (str) -> Iterable[str]
         str_f_body = self.ci_key.sbody
         str_f_ext = self.get_extension()
         for str_format in bush.game.Esp.stringsFiles:
@@ -1251,9 +1251,8 @@ from . import cosaves
 class SaveInfo(FileInfo):
     cosave_types = () # cosave types for this game - set once in SaveInfos
     _cosave_ui_string = {PluggyCosave: u'XP', xSECosave: u'XO'} # ui strings
-    _valid_exts_re = u'' r'(\.(?:' + u'|'.join([bush.game.Ess.ext[1:],
-                                                bush.game.Ess.ext[1:-1] + u'r',
-                                                u'bak']) + u'))'
+    _valid_exts_re = r'(\.(?:' + '|'.join(
+        [bush.game.Ess.ext[1:], bush.game.Ess.ext[1:-1] + 'r', 'bak']) + '))'
 
     def __init__(self, fullpath, load_cache=False):
         # Dict of cosaves that may come with this save file. Need to get this
@@ -1444,8 +1443,7 @@ class SaveInfo(FileInfo):
 class ScreenInfo(FileInfo):
     """Cached screenshot, stores a bitmap and refreshes it when its cache is
     invalidated."""
-    _valid_exts_re = (u'' r'(\.(?:' + u'|'.join(ext[1:] for ext in imageExts)
-                      + u'))')
+    _valid_exts_re = r'(\.(?:' + u'|'.join(ext[1:] for ext in imageExts) + '))'
     _has_digits = True
 
     def __init__(self, fullpath, load_cache=False):
@@ -1572,7 +1570,7 @@ class TableFileInfos(DataStore):
     def rightFileType(cls, fileName):
         """Check if the filetype (extension) is correct for subclass.
 
-        :type fileName: bolt.Path | unicode | bytes
+        :type fileName: bolt.Path | str
         :rtype: _sre.SRE_Match | None"""
         ##: This shouldn't take bytes, ensure it doesn't (especially wrt. to
         # pickle-related usages)
@@ -1782,7 +1780,7 @@ def ini_info_factory(fullpath, load_cache=u'Ignored'):
 class INIInfos(TableFileInfos):
     """:type _ini: IniFile
     :type data: dict[bolt.Path, IniInfo]"""
-    file_pattern = re.compile(u'' r'\.ini$', re.I | re.U)
+    file_pattern = re.compile(r'\.ini$', re.I | re.U)
 
     def __init__(self):
         INIInfos._default_tweaks = {
@@ -2032,9 +2030,9 @@ class ModInfos(FileInfos):
     """Collection of modinfos. Represents mods in the Data directory."""
 
     def __init__(self):
-        self.__class__.file_pattern = re.compile(u'(' + u'|'.join(
-                [re.escape(e) for e in bush.game.espm_extensions]) +
-            u'' r')(\.ghost)?$', re.I | re.U)
+        self.__class__.file_pattern = re.compile('(' + '|'.join(
+            [re.escape(e) for e in
+             bush.game.espm_extensions]) + r')(\.ghost)?$', re.I | re.U)
         FileInfos.__init__(self, dirs[u'mods'], factory=ModInfo)
         #--Info lists/sets
         self.mergeScanned = [] #--Files that have been scanned for mergeability.
@@ -3000,7 +2998,7 @@ class ModInfos(FileInfos):
     def getVersionFloat(self,fileName):
         """Extracts and returns version number for fileName from header.hedr.description."""
         version = self.getVersion(fileName)
-        maVersion = re.search(u'' r'(\d+\.?\d*)', version, flags=re.U)
+        maVersion = re.search(r'(\d+\.?\d*)', version, flags=re.U)
         if maVersion:
             return float(maVersion.group(1))
         else:
@@ -3158,9 +3156,8 @@ class SaveInfos(FileInfos):
     """SaveInfo collection. Represents save directory and related info."""
     _bain_notify = False
     # Enabled and disabled saves, no .bak files ##: needed?
-    file_pattern = re.compile(u'(%s)(f?)$' % u'|'.join(
-        u'' r'\.%s' % s for s in [bush.game.Ess.ext[1:],
-                                  bush.game.Ess.ext[1:-1] + u'r']),re.I | re.U)
+    file_pattern = re.compile('(%s)(f?)$' % '|'.join(r'\.%s' % s for s in
+        [bush.game.Ess.ext[1:], bush.game.Ess.ext[1:-1] + 'r']), re.I | re.U)
 
     def _setLocalSaveFromIni(self):
         """Read the current save profile from the oblivion.ini file and set
@@ -3328,8 +3325,7 @@ class BSAInfos(FileInfos):
         _bsa_type = bsa_files.get_bsa_type(bush.game.fsName)
 
         class BSAInfo(FileInfo, _bsa_type):
-            _valid_exts_re = (u'' r'(\.' + bush.game.Bsa.bsa_extension[1:]
-                              + u')')
+            _valid_exts_re = r'(\.' + bush.game.Bsa.bsa_extension[1:] + ')'
             def __init__(self, fullpath, load_cache=False):
                 try:  # Never load_cache for memory reasons - let it be
                     # loaded as needed

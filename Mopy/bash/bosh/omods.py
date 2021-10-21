@@ -119,7 +119,7 @@ class OmodFile(object):
         """Return a list of the files and their uncompressed sizes, and the total uncompressed size of an archive"""
         # Get contents of archive
         filesizes = collections.OrderedDict()
-        reFileSize = re.compile(u'' r'[0-9]{4}-[0-9]{2}-[0-9]{2}\s+[0-9]{2}:[0-9]{2}:[0-9]{2}.{6}\s+([0-9]+)\s+[0-9]*\s+(.+?)$', re.U)
+        reFileSize = re.compile(r'[0-9]{4}-[0-9]{2}-[0-9]{2}\s+[0-9]{2}:[0-9]{2}:[0-9]{2}.{6}\s+([0-9]+)\s+[0-9]*\s+(.+?)$', re.U)
         with self.omod_path.unicodeSafe() as tempOmod:
             cmd7z = [archives.exe7z, u'l', u'-r', u'-sccUTF-8', tempOmod.s]
             with popen_common(cmd7z, encoding='utf-8').stdout as ins:

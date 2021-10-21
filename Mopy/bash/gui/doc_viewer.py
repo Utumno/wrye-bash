@@ -115,7 +115,7 @@ class WebViewer(_AComponent):
         self.update_buttons()
 
     @staticmethod
-    def _handle_new_window_opened(new_url): # type: (unicode) -> None
+    def _handle_new_window_opened(new_url): # type: (str) -> None
         """Internal method used as a callback when attempting to open a link
         in a new tab or window. We don't support that, so we just open it in
         the user's browser instead.
@@ -157,14 +157,14 @@ class WebViewer(_AComponent):
         # do this just in case CanGoForward() is false and we're out of sync
         self.update_buttons()
 
-    def open_file(self, file_path): # type: (unicode) -> None
+    def open_file(self, file_path): # type: (str) -> None
         """Opens the specified file by turning it into a 'file:' URL.
 
         :param file_path: The path to the file to open."""
         file_url = urljoin(u'file:', pathname2url(file_path))
         self.open_url(file_url)
 
-    def open_url(self, url): # type: (unicode) -> None
+    def open_url(self, url): # type: (str) -> None
         """Opens the specified URL.
 
         :param url: The URL to open."""
@@ -203,7 +203,7 @@ class PDFViewer(_AComponent):
         super(PDFViewer, self).__init__(parent, nid=-1, pos=(-1, -1),
             size=(-1, -1), style=0) # has no defaults, so need to specify them
 
-    def open_file(self, file_path): # type: (unicode) -> None
+    def open_file(self, file_path): # type: (str) -> None
         """Opens the specified PDF file.
 
         :param file_path: The path to the file to open."""

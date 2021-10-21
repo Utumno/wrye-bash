@@ -1574,7 +1574,7 @@ class Mod_FlipMasters(OneItemLink, _Esm_Esl_Flip):
     def _already_flagged(self): return not self.toEsm
 
     def _initData(self, window, selection,
-            __reEspExt=re.compile(u'' r'\.esp(.ghost)?$', re.I | re.U)):
+            __reEspExt=re.compile(r'\.esp(.ghost)?$', re.I | re.U)):
         present_mods = window.data_store
         modinfo_masters = present_mods[selection[0]].masterNames
         if len(selection) == 1 and len(modinfo_masters) > 1:

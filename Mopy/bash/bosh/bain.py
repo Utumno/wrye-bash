@@ -75,7 +75,7 @@ class Installer(ListInfo):
                u'.mht', u'.pdf', u'.css', u'.xls', u'.xlsx', u'.ods', u'.odp',
                u'.ppt', u'.pptx'}
     reReadMe = re.compile(
-        u'' r'^.*?([^\\]*)(read[ _]?me|lisez[ _]?moi)([^\\]*)'
+        r'^.*?([^\\]*)(read[ _]?me|lisez[ _]?moi)([^\\]*)'
         u'(' + u'|'.join(docExts) + u')$', re.I | re.U)
     skipExts = {u'.exe', u'.py', u'.pyc', u'.7z', u'.zip', u'.rar', u'.db',
                 u'.ace', u'.tgz', u'.tar', u'.gz', u'.bz2', u'.omod',
@@ -1309,8 +1309,8 @@ class InstallerArchive(Installer):
     """Represents an archive installer entry."""
     __slots__ = tuple() #--No new slots
     type_string = _(u'Archive')
-    _valid_exts_re = u'' r'(\.(?:' + u'|'.join(
-        ext[1:] for ext in archives.readExts) + u'))'
+    _valid_exts_re = r'(\.(?:' + '|'.join(
+        ext[1:] for ext in archives.readExts) + '))'
 
     @classmethod
     def is_archive(cls): return True
@@ -2196,7 +2196,7 @@ class InstallersData(DataStore):
         """Update data_SizeCrcDate with info on given paths.
         :param progress: must be zeroed - message is used in _process_data_dir
         :param dest_paths: set of paths relative to Data/ - may not exist.
-        :type dest_paths: set[unicode]"""
+        :type dest_paths: set[str]"""
         root_files = []
         norm_ghost = Installer.getGhosted()
         for data_path in dest_paths:

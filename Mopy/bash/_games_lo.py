@@ -730,9 +730,9 @@ class INIGame(Game):
         absent section gracefully.
 
         :type cached_ini: bosh.ini_files.IniFile
-        :type ini_key: tuple[unicode, unicode, unicode]
+        :type ini_key: tuple[str, str, str]
         :rtype: list[bolt.Path]"""
-        # Returned format is dict[CIstr, tuple[unicode, int]], we want the
+        # Returned format is dict[CIstr, tuple[str, int]], we want the
         # unicode (i.e. the mod names)
         section_mapping = cached_ini.get_setting_values(ini_key[1], {})
         # Sort by line number, then convert the values to paths and return
@@ -744,7 +744,7 @@ class INIGame(Game):
         """Writes out the specified INI using the specified key and mod list.
 
         :type cached_ini: bosh.ini_files.IniFile
-        :type ini_key: tuple[unicode, unicode, unicode]
+        :type ini_key: tuple[str, str, str]
         :type mod_list: list[bolt.Path]"""
         # Remove any existing section - also prevents duplicate sections with
         # different case

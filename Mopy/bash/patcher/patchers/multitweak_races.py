@@ -297,8 +297,8 @@ class _ARFBGGTweak(_ARaceTweak):
                      (_(u'Invert'), u'invert_gender'),]
     # Variables based on whether or not we're targeting the female graph
     # (0 = male, 1 = female)
-    _graph_defaults = (u'' r'Actors\Character\DefaultMale.hkx',
-                       u'' r'Actors\Character\DefaultFemale.hkx')
+    _graph_defaults = (r'Actors\Character\DefaultMale.hkx',
+                       r'Actors\Character\DefaultFemale.hkx')
     _graph_defaults_lower = tuple(g.lower() for g in reversed(_graph_defaults))
     _graph_attrs = (u'male_behavior_graph', u'female_behavior_graph')
     # Whether to target the male or female behavior graph

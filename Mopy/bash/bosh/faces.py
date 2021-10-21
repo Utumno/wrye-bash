@@ -467,8 +467,8 @@ class PCFaces(object):
         masterMap = MasterMap(face.face_masters, modFile.augmented_masters())
         #--Eid
         npcEids = {record.eid for record in modFile.tops[b'NPC_'].records}
-        eidForm = u''.join((u'sg', bush.game.raceShortNames.get(face.race, u'Unk'),
-            (face.gender and u'a' or u'u'), re.sub(u'' r'\W', u'', face.pcName), u'%02d'))
+        eidForm = u''.join(('sg', bush.game.raceShortNames.get(face.race, 'Unk'),
+            (face.gender and 'a' or 'u'), re.sub(r'\W', '', face.pcName), '%02d'))
         count,eid = 0, eidForm % 0
         while eid in npcEids:
             count += 1

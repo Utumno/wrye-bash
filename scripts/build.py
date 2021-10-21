@@ -406,7 +406,7 @@ def check_timestamp(build_version):
     """Checks whether the current nightly timestamp is the same as the previous
     nightly build. Returns False if it's the same, True otherwise. Happens when
     a build is triggered too quickly after the previous one."""
-    nightly_re = re.compile(u'' r'\d{3,}\.\d{12}')
+    nightly_re = re.compile(r'\d{3,}\.\d{12}')
     # check whether we're building a nightly
     nightly_version = nightly_re.match(build_version)
     try:

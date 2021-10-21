@@ -22,6 +22,7 @@
 # =============================================================================
 """Houses basic building blocks for creating record definitions. Somewhat
 higher-level building blocks can be found in common_subrecords.py."""
+from typing import BinaryIO
 
 from .utils_constants import FID, null1, _make_hashable, FixedString, \
     _int_unpacker, get_structs
@@ -368,7 +369,7 @@ class MelReadOnly(MelSequential):
 class MelGroup(MelSequential):
     """Represents a group record."""
     def __init__(self,attr,*elements):
-        """:type attr: unicode"""
+        """:type attr: str"""
         super(MelGroup, self).__init__(*elements)
         self.attr, self.loaders = attr, {}
 
@@ -472,7 +473,7 @@ class MelString(MelBase):
         setattr(record, self.attr, ins.readString(size_, *debug_strs))
 
     def packSub(self, out, string_val):
-        # type: (file, unicode) -> None
+        # type: (BinaryIO, str) -> None
         """Writes out a string subrecord, properly encoding it beforehand and
         respecting max_size, min_size and preferred_encoding if they are
         set."""
@@ -533,7 +534,7 @@ class MelStruct(MelBase):
 
     def __init__(self, mel_sig, struct_formats, *elements):
         """:type mel_sig: bytes
-        :type struct_formats: list[unicode]"""
+        :type struct_formats: list[str]"""
         if not isinstance(struct_formats, list):
             raise SyntaxError(u'Expected a list got "%s"' % struct_formats)
         # Sometimes subrecords have to preserve non-aligned sizes, check that
@@ -608,7 +609,7 @@ class MelStruct(MelBase):
         parseElements('level', 'unused1', (FID, 'listId', None),
                       ('count', 1), 'unused2')
 
-        :type elements: (list[None|unicode|tuple])"""
+        :type elements: (list[None|str|tuple])"""
         formAttrs = set()
         lenEls = len(elements)
         attrs, defaults, actions = [0] * lenEls, [0] * lenEls, [0] * lenEls

@@ -71,9 +71,9 @@ def get_ini_type_and_encoding(abs_ini_path):
 class IniFile(AFile):
     """Any old ini file."""
     reComment = re.compile(u';.*',re.U)
-    reDeletedSetting = re.compile(u'' r';-\s*(\w.*?)\s*(;.*$|=.*$|$)', re.U)
-    reSection = re.compile(u'' r'^\[\s*(.+?)\s*\]$', re.U)
-    reSetting = re.compile(u'' r'(.+?)\s*=(.*)', re.U)
+    reDeletedSetting = re.compile(r';-\s*(\w.*?)\s*(;.*$|=.*$|$)', re.U)
+    reSection = re.compile(r'^\[\s*(.+?)\s*\]$', re.U)
+    reSetting = re.compile(r'(.+?)\s*=(.*)', re.U)
     formatRes = (reSetting, reSection)
     out_encoding = 'cp1252' # when opening a file for writing force cp1252
     __empty_settings = LowerDict()
@@ -194,7 +194,7 @@ class IniFile(AFile):
         """Return a list of the decoded lines in the ini file, if as_unicode
         is True, or the raw bytes in the ini file, if as_unicode is False.
         Note we strip line endings at the end of the line in unicode mode.
-        :rtype: list[unicode]|bytes"""
+        :rtype: list[str]|bytes"""
         try:
             with self.abs_path.open(u'rb') as f:
                 content = f.read()
@@ -366,7 +366,7 @@ class IniFile(AFile):
         self.saveSettings(ini_settings,deleted_settings)
         return True
 
-    def remove_section(self, target_section): # type: (unicode) -> None
+    def remove_section(self, target_section): # type: (str) -> None
         """Removes a section and all its contents from the INI file. Note that
         this will only remove the first matching section. If you want to remove
         multiple, you will have to call this in a loop and check if the section
@@ -442,10 +442,10 @@ class DefaultIniFile(IniFile):
 class OBSEIniFile(IniFile):
     """OBSE Configuration ini file.  Minimal support provided, only can
     handle 'set', 'setGS', and 'SetNumericGameSetting' statements."""
-    reDeleted = re.compile(u'' r';-(\w.*?)$', re.U)
-    reSet     = re.compile(u'' r'\s*set\s+(.+?)\s+to\s+(.*)', re.I | re.U)
-    reSetGS   = re.compile(u'' r'\s*setGS\s+(.+?)\s+(.*)', re.I | re.U)
-    reSetNGS  = re.compile(u'' r'\s*SetNumericGameSetting\s+(.+?)\s+(.*)', re.I | re.U)
+    reDeleted = re.compile(r';-(\w.*?)$', re.U)
+    reSet     = re.compile(r'\s*set\s+(.+?)\s+to\s+(.*)', re.I | re.U)
+    reSetGS   = re.compile(r'\s*setGS\s+(.+?)\s+(.*)', re.I | re.U)
+    reSetNGS  = re.compile(r'\s*SetNumericGameSetting\s+(.+?)\s+(.*)', re.I | re.U)
     out_encoding = 'utf-8' # FIXME: ask
     formatRes = (reSet, reSetGS, reSetNGS)
     defaultSection = u'' # Change the default section to something that
@@ -607,7 +607,7 @@ class OBSEIniFile(IniFile):
         return True
 
     def remove_section(self, target_section, do_backup=False):
-        # type: (unicode, bool) -> None
+        # type: (str, bool) -> None
         re_comment = self.reComment
         re_section = self.reSection
         # Tri-State: If None, we haven't hit the section yet. If True, then

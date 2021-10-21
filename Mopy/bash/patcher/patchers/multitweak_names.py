@@ -394,7 +394,7 @@ class NamesTweak_Ingestibles_Fo3(_ANamesTweak_Ingestibles):
         return self.chosen_format % etyp_label + record.full
 
 #------------------------------------------------------------------------------
-_re_old_magic_label = re.compile(u'' r'^(\([ACDIMR]\d\)|\w{3,6}:) ', re.U)
+_re_old_magic_label = re.compile(r'^(\([ACDIMR]\d\)|\w{3,6}:) ', re.U)
 
 class NamesTweak_Scrolls(_AMgefNamesTweak, IndexingTweak):
     """Names tweaker for scrolls."""
@@ -557,8 +557,8 @@ class NamesTweak_Weapons_Fo3(_ANamesTweak_Weapons):
         return self.chosen_format % format_subs + record.full
 
 #------------------------------------------------------------------------------
-_re_old_ammo_label = re.compile(u'' r'^(.*)( \(WG \d+\.\d+\))$')
-_re_flst_ammo_weight = re.compile(u'' r'^AmmoWeight(\d)(\d{2})List$')
+_re_old_ammo_label = re.compile(r'^(.*)( \(WG \d+\.\d+\))$')
+_re_flst_ammo_weight = re.compile(r'^AmmoWeight(\d)(\d{2})List$')
 
 class _ANamesTweak_AmmoWeight(_ANamesTweak):
     """Appends ammunition weight to the end of the ammunition's name."""
@@ -724,7 +724,7 @@ class NamesTweak_DwarvenToDwemer(_ATextReplacer):
                   u'with "dwemer" to better follow lore.')
     tweak_key = u'Dwemer'
     tweak_choices = [(u'Lore Friendly Text: Dwarven -> Dwemer', u'Dwemer')]
-    _tr_replacements = [(u'' r'\b(d|D)(?:warven|warf)\b', u'' r'\1wemer')]
+    _tr_replacements = [(r'\b(d|D)(?:warven|warf)\b', r'\1wemer')]
 
 #------------------------------------------------------------------------------
 class NamesTweak_DwarfsToDwarves(_ATextReplacer):
@@ -734,7 +734,7 @@ class NamesTweak_DwarfsToDwarves(_ATextReplacer):
                   u'"dwarves" to better follow proper English.')
     tweak_key = u'Dwarfs'
     tweak_choices = [(u'Proper English Text: Dwarfs -> Dwarves', u'Dwarves')]
-    _tr_replacements = [(u'' r'\b(d|D)warfs\b', u'' r'\1warves')]
+    _tr_replacements = [(r'\b(d|D)warfs\b', r'\1warves')]
 
 #------------------------------------------------------------------------------
 class NamesTweak_StaffsToStaves(_ATextReplacer):
@@ -744,7 +744,7 @@ class NamesTweak_StaffsToStaves(_ATextReplacer):
                   u'"staves" to better follow proper English.')
     tweak_key = u'Staffs'
     tweak_choices = [(u'Proper English Text: Staffs -> Staves', u'Staves')]
-    _tr_replacements = [(u'' r'\b(s|S)taffs\b', u'' r'\1taves')]
+    _tr_replacements = [(r'\b(s|S)taffs\b', r'\1taves')]
 
 #------------------------------------------------------------------------------
 class NamesTweak_FatigueToStamina(_ATextReplacer):
@@ -754,12 +754,12 @@ class NamesTweak_FatigueToStamina(_ATextReplacer):
                   u'"stamina", similar to Skyrim.')
     tweak_key = u'FatigueToStamina'
     tweak_choices = [(u'1.0', u'1.0')]
-    _tr_replacements = [(u'' r'\b(f|F)atigue\b', build_esub(u'$1(s)tamina'))]
+    _tr_replacements = [(r'\b(f|F)atigue\b', build_esub(u'$1(s)tamina'))]
     _tr_extra_gmsts = {u'sDerivedAttributeNameFatigue': u'Stamina'}
 
 #------------------------------------------------------------------------------
 def _mta_esub(first_suffix): # small helper to deduplicate that nonsense
-    return build_esub(u'' r'\1%s $2(a)rcher' % first_suffix)
+    return build_esub(r'\1%s $2(a)rcher' % first_suffix)
 
 class NamesTweak_MarksmanToArchery(_ATextReplacer):
     """Replaces 'marksman' with 'archery', similar to Skyrim."""
@@ -769,14 +769,14 @@ class NamesTweak_MarksmanToArchery(_ATextReplacer):
     tweak_key = u'MarksmanToArchery'
     tweak_choices = [(u'1.0', u'1.0')]
     _tr_replacements = [
-        (u'' r'\b(t|T)he (m|M)arksman\b', _mta_esub(u'he')),
-        (u'' r'\b(a|A) (m|M)arksman\b', _mta_esub(u'n')),
+        (r'\b(t|T)he (m|M)arksman\b', _mta_esub(u'he')),
+        (r'\b(a|A) (m|M)arksman\b', _mta_esub(u'n')),
         # These four work around vanilla Oblivion records, ugh...
-        (u'' r'\b(a|A)pprentice (m|M)arksman\b', _mta_esub(u'pprentice')),
-        (u'' r'\b(j|J)ourneyman (m|M)arksman\b', _mta_esub(u'ourneyman')),
-        (u'' r'\b(e|E)xpert (m|M)arksman\b', _mta_esub(u'xpert')),
-        (u'' r'\b(m|M)aster (m|M)arksman\b', _mta_esub(u'aster')),
-        (u'' r'\b(m|M)arksman\b', build_esub(u'$1(a)rchery')),
+        (r'\b(a|A)pprentice (m|M)arksman\b', _mta_esub(u'pprentice')),
+        (r'\b(j|J)ourneyman (m|M)arksman\b', _mta_esub(u'ourneyman')),
+        (r'\b(e|E)xpert (m|M)arksman\b', _mta_esub(u'xpert')),
+        (r'\b(m|M)aster (m|M)arksman\b', _mta_esub(u'aster')),
+        (r'\b(m|M)arksman\b', build_esub(u'$1(a)rchery')),
     ]
     _tr_extra_gmsts = {u'sSkillNameMarksman': u'Archery',
                        u'sSkillDescMarksman': u'Archery Description'}
@@ -792,7 +792,7 @@ class NamesTweak_SecurityToLockpicking(_ATextReplacer):
     tweak_key = u'SecurityToLockpicking'
     tweak_choices = [(u'1.0', u'1.0')]
     _tr_replacements = [
-        (u'' r'\b(s|S)ecurity\b', build_esub(u'$1(l)ockpicking'))
+        (r'\b(s|S)ecurity\b', build_esub(u'$1(l)ockpicking'))
     ]
     _tr_extra_gmsts = {u'sSkillNameSecurity': u'Lockpicking',
                        u'sSkillDescSecurity': u'Lockpicking Description'}

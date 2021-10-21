@@ -208,13 +208,12 @@ class AssortedTweak_DarnBooks(MultiTweakItem):
     tweak_choices = [(u'default', u'default')]
     tweak_log_msg = _(u'Books DarNified: %(total_changed)d')
     _align_text = {u'^^': u'center', u'<<': u'left', u'>>': u'right'}
-    _re_align = re.compile(u'' r'^(<<|\^\^|>>)', re.M)
-    _re_bold = re.compile(u'' r'(__|\*\*|~~)')
+    _re_align = re.compile(r'^(<<|\^\^|>>)', re.M)
+    _re_bold = re.compile(r'(__|\*\*|~~)')
     _re_color = re.compile(u'<font color="?([a-fA-F0-9]+)"?>', re.I + re.M)
     _re_div = re.compile(u'<div', re.I + re.M)
-    _re_head_2 = re.compile(u'' r'^(<<|\^\^|>>|)==\s*(\w[^=]+?)==\s*\r\n',
-                            re.M)
-    _re_head_3 = re.compile(u'' r'^(<<|\^\^|>>|)===\s*(\w[^=]+?)\r\n', re.M)
+    _re_head_2 = re.compile(r'^(<<|\^\^|>>|)==\s*(\w[^=]+?)==\s*\r\n', re.M)
+    _re_head_3 = re.compile(r'^(<<|\^\^|>>|)===\s*(\w[^=]+?)\r\n', re.M)
     _re_font = re.compile(u'<font', re.I + re.M)
     _re_font_1 = re.compile(u'(<?<font face=1( ?color=[0-9a-zA]+)?>)+',
                             re.I | re.M)
@@ -237,14 +236,14 @@ class AssortedTweak_DarnBooks(MultiTweakItem):
         rec_text = record.book_text.replace(u'\u201d', u'')
         if self._re_head_2.match(rec_text):
             rec_text = self._re_head_2.sub(
-                u'' r'\1<font face=1 color=220000>\2<font face=3 '
-                u'' r'color=444444>\r\n', rec_text)
+                r'\1<font face=1 color=220000>\2<font face=3 '
+                r'color=444444>\r\n', rec_text)
             rec_text = self._re_head_3.sub(
-                u'' r'\1<font face=3 color=220000>\2<font face=3 '
-                u'' r'color=444444>\r\n', rec_text)
+                r'\1<font face=3 color=220000>\2<font face=3 '
+                r'color=444444>\r\n', rec_text)
             rec_text = self._re_align.sub(self._replace_align, rec_text)
             rec_text = self._re_bold.sub(self._replace_bold, rec_text)
-            rec_text = re.sub(u'' r'\r\n', u'' r'<br>\r\n', rec_text)
+            rec_text = re.sub(r'\r\n', r'<br>\r\n', rec_text)
         else:
             ma_color = self._re_color.search(rec_text)
             if ma_color:
@@ -254,7 +253,7 @@ class AssortedTweak_DarnBooks(MultiTweakItem):
             else:
                 color = u'444444'
             font_face = u'<font face=3 color='+color+u'>'
-            rec_text = self._re_tag_in_word.sub(u'' r'\1', rec_text)
+            rec_text = self._re_tag_in_word.sub(r'\1', rec_text)
             if (self._re_div.search(rec_text) and
                     not self._re_font.search(rec_text)):
                 rec_text = font_face + rec_text

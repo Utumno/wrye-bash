@@ -130,7 +130,7 @@ class LOOTParser(object):
             to handle them manually. Intended for unit tests.
         :return: A tuple containing two sets, one with added and one with
             removed tags.
-        :rtype: tuple[set[unicode], set[unicode]]"""
+        :rtype: tuple[set[str], set[str]]"""
         def get_resolved_tags(res_entry):
             # We may have to evaluate conditions now
             try:
@@ -292,7 +292,7 @@ class _ConditionalTag(object):
     """Represents a tag that may or may not be applied to a mod right now,
     depending on whether or not its condition evaluates to True.
 
-    :type tag_condition: unicode | _ACondition"""
+    :type tag_condition: str | _ACondition"""
     __slots__ = (u'tag_name', u'tag_condition')
 
     def __init__(self, tag_name, tag_condition):
@@ -300,11 +300,11 @@ class _ConditionalTag(object):
         condition.
 
         :param tag_name: The name of the tag.
-        :type tag_name: unicode
+        :type tag_name: str
         :param tag_condition: A condition string that determines whether or not
             this tag will be applied. See the links at the top of this file for
             more information.
-        :type tag_condition: unicode"""
+        :type tag_condition: str"""
         self.tag_name = tag_name
         self.tag_condition = tag_condition
 
@@ -330,10 +330,10 @@ class _ConditionalTag(object):
         and return only the names of those tags that will actually apply.
 
         :param tag_set: The set of tags to resolve.
-        :type tag_set: set[unicode|_ConditionalTag]
+        :type tag_set: set[str|_ConditionalTag]
         :return: A set of strings, containing only unconditional tags and
             conditional tags whose conditions evaluated to True.
-        :rtype: set[unicode]"""
+        :rtype: set[str]"""
         resulting_tags = set()
         for tag in tag_set:
             # Most tags are unconditional, so avoid try-except
@@ -352,7 +352,7 @@ def _process_condition_string(condition_string):
     tokens, resulting in an _ACondition-derived object.
 
     :param condition_string: The condition string to process.
-    :type condition_string: unicode
+    :type condition_string: str
     :return: The resulting condition object.
     :rtype: _ACondition"""
     return _parse_condition(_lex_condition_string(condition_string))
@@ -367,15 +367,15 @@ class _Token(object):
 
         :param token_tag: The tag to assign to this token. This can be used to
             handle different 'types' of tokens (e.g. strings, keywords, etc.).
-        :type token_tag: unicode
+        :type token_tag: str
         :param token_text: The text that this matched this token's regex.
-        :type token_text: unicode
+        :type token_text: str
         :param line_offset: The offset inside the condition string at which
             this token was created. Used when printing errors.
         :type line_offset: int
         :param condition_str: The entire condition string that this token was
             in. Used when printing errors.
-        :type condition_str: unicode"""
+        :type condition_str: str"""
         self.token_tag = token_tag
         self.token_text = token_text
         self.line_offset = line_offset
@@ -442,7 +442,7 @@ def _lex_condition_string(condition_string):
     condition substring, an error is raised.
 
     :param condition_string: The string to lex.
-    :type condition_string: unicode
+    :type condition_string: str
     :return: A deque containing each stored token.
     :rtype: deque[_Token]"""
     tokens = deque()
@@ -599,7 +599,7 @@ def _parse_argument(tokens):
     :param tokens: The deque of tokens that should be parsed.
     :type tokens: deque[_Token]
     :return: The parsed function call.
-    :rtype: unicode|int|Comparison"""
+    :rtype: str|int|Comparison"""
     token = _pop_token(tokens)
     ttag = token.token_tag
     # Ordered by frequency - for performance
@@ -639,7 +639,7 @@ def _pop_token(tokens, expected_tag=None):
     :param expected_tag: The tag that we expect to pop. If set to a truthy
         value and the popped token's tag does not match this, an error will be
         raised.
-    :type expected_tag: unicode
+    :type expected_tag: str
     :return: The popped token."""
     if not tokens:
         raise ParserError(
@@ -661,9 +661,9 @@ def _merge_lists(first_list, second_list):
     entries are simply copied over instead of merged.
 
     :param first_list: The list to merge information into.
-    :type first_list: LowerDict[unicode, _PluginEntry]
+    :type first_list: LowerDict[str, _PluginEntry]
     :param second_list: The list to merge information from.
-    :type second_list: LowerDict[unicode, _PluginEntry]"""
+    :type second_list: LowerDict[str, _PluginEntry]"""
     for plugin_name, second_entry in second_list.items():
         try:
             first_list[plugin_name].merge_with(second_entry)
@@ -679,7 +679,7 @@ def _parse_list(list_path):
     :param list_path: The path to the list that should be parsed.
     :type list_path: Path
     :return: A LowerDict representing the list's contents.
-    :rtype: LowerDict[unicode, _PluginEntry]"""
+    :rtype: LowerDict[str, _PluginEntry]"""
     with list_path.open(u'r', encoding=u'utf-8') as ins:
         list_contents = yaml.load(ins, Loader=SafeLoader)
     # The list contents may be None if the list file exists, but is an entirely

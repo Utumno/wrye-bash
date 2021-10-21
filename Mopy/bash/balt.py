@@ -1374,7 +1374,7 @@ class UIList(wx.Panel):
     #--Item/Index Translation -------------------------------------------------
     def GetItem(self,index):
         """Return item (key in self.data_store) for specified list index.
-        :rtype: bolt.Path | unicode | int
+        :rtype: bolt.Path | str | int
         """
         return self.__gList.FindItemAt(index)
 
@@ -1630,7 +1630,7 @@ class Link(object):
         the column clicked on or the first column. Set in Links.popup_menu().
         :type window: UIList | wx.Panel | gui.buttons.Button | DnDStatusBar |
             gui.misc_components.CheckListBox
-        :type selection: list[Path | unicode | int] | int | None
+        :type selection: list[Path | str | int] | int | None
         """
         self.window = window
         self.selected = selection

@@ -107,7 +107,7 @@ class MultiChoicePopup(_TransientPopup):
             object or a component.
         :param all_choices: A dict mapping item names to booleans indicating
             whether or not that item is currently checked.
-        :type all_choices: dict[unicode, bool]
+        :type all_choices: dict[str, bool]
         :param help_text: A static help text to show at the top of the popup
             (optional).
         :param aa_btn_tooltip: A tooltip to show when hovering over the 'Add
@@ -164,7 +164,7 @@ class MultiChoicePopup(_TransientPopup):
         self.on_item_checked(choice_name, choice_checked)
 
     def on_item_checked(self, choice_name, choice_checked):
-        # type: (unicode, bool) -> None
+        # type: (str, bool) -> None
         """Called when a single item has been checked or unchecked."""
         raise AbstractError(u'on_item_checked not implemented')
 
