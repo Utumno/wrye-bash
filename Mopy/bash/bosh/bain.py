@@ -96,7 +96,7 @@ class Installer(ListInfo):
     _re_top_extensions = re.compile(u'(?:' + u'|'.join(
         re.escape(ext) for ext in _top_files_extensions) + u')$', re.I)
     # Extensions of strings files - automatically built from game constants
-    _strings_extensions = {os.path.splitext(x[1].lower())[1]
+    _strings_extensions = {os.path.splitext(x[1])[1].lower()
                            for x in bush.game.Esp.stringsFiles}
     # InstallersData singleton - consider this tmp
     instData = None # type: InstallersData
@@ -308,7 +308,7 @@ class Installer(ListInfo):
 
     def __reduce__(self):
         """Used by pickler to save object state."""
-        raise AbstractError(u'%s must define __reduce__' % type(self))
+        raise AbstractError(f'{type(self)} must define __reduce__')
 
     def _fixme_drop__fomod_backwards_compat(self):
         # Keys and values in the fomod dict got inverted, name changed to
@@ -687,7 +687,7 @@ class Installer(ListInfo):
         #--Scan over fileSizeCrcs
         root_path = self.extras_dict.get(u'root_path', u'')
         rootIdex = len(root_path)
-        # For backwards compatibility - drop on VDATA3
+        ##: [backwards compat] - drop?
         self._fixme_drop__fomod_backwards_compat()
         fm_active = self.extras_dict.get(u'fomod_active', False)
         fm_dict = self.extras_dict.get(u'fomod_dict', {})
@@ -1363,26 +1363,26 @@ class InstallerArchive(Installer):
         #--Get fileSizeCrcs
         fileSizeCrcs = self.fileSizeCrcs = []
         self.isSolid = False
-        filepath = listed_size = listed_crc = isdir = cumCRC = 0
+        filepath = listed_size = listed_crc = isdir_ = cumCRC = 0
         def _parse_archive_line(key, value):
-            nonlocal filepath, listed_size, listed_crc, isdir, cumCRC
+            nonlocal filepath, listed_size, listed_crc, isdir_, cumCRC
             if   key == u'Solid': self.isSolid = (value[0] == u'+')
             elif key == u'Path': filepath = value
             elif key == u'Size': listed_size = int(value)
-            elif key == u'Attributes': isdir = value and (u'D' in value)
+            elif key == u'Attributes': isdir_ = value and (u'D' in value)
             elif key == u'CRC' and value: listed_crc = int(value,16)
             elif key == u'Method':
-                if filepath and not isdir and filepath != \
+                if filepath and not isdir_ and filepath != \
                         tempArch.s:
                     fileSizeCrcs.append((filepath, listed_size, listed_crc))
                     cumCRC += listed_crc
-                filepath = listed_size = listed_crc = isdir = 0
+                filepath = listed_size = listed_crc = isdir_ = 0
         with self.abs_path.unicodeSafe() as tempArch:
             try:
                 list_archive(tempArch, _parse_archive_line)
                 self.crc = cumCRC & 0xFFFFFFFF
             except:
-                archive_msg = u"Unable to read archive '%s'." % self.abs_path
+                archive_msg = f"Unable to read archive '{self.abs_path}'."
                 deprint(archive_msg, traceback=True)
                 raise InstallerArchiveError(archive_msg)
 
@@ -1470,9 +1470,9 @@ class InstallerArchive(Installer):
             list_archive(tempArch, _parse_archive_line)
         list_text.sort()
         #--Output
-        for node, isdir in list_text:
+        for node, is_dir in list_text:
             log(u'  ' * node.count(os.sep) + os.path.split(node)[1] + (
-                os.sep if isdir else u''))
+                os.sep if is_dir else u''))
 
     def _open_txt_file(self, rel_path):
         with gui.BusyCursor():
@@ -2213,11 +2213,11 @@ class InstallersData(DataStore):
         :param dest_paths: set of paths relative to Data/ - may not exist.
         :type dest_paths: set[str]"""
         root_files = []
-        norm_ghost = Installer.getGhosted()
+        norm_ghost_get = Installer.getGhosted().get
         for data_path in dest_paths:
             sp = data_path.rsplit(os.sep, 1) # split into ['rel_path, 'file']
             if len(sp) == 1: # top level file
-                data_path = norm_ghost.get(data_path, data_path)
+                data_path = norm_ghost_get(data_path, data_path)
                 root_files.append((bass.dirs[u'mods'].s, data_path))
             else:
                 root_files.append((bass.dirs[u'mods'].join(sp[0]).s, sp[1]))
@@ -2541,9 +2541,9 @@ class InstallersData(DataStore):
         removedPlugins = set()
         removedInis = set()
         #--Construct list of files to delete
-        norm_ghost = Installer.getGhosted()
+        norm_ghost_get = Installer.getGhosted().get
         for ci_relPath in removes:
-            path = modsDirJoin(norm_ghost.get(ci_relPath, ci_relPath))
+            path = modsDirJoin(norm_ghost_get(ci_relPath, ci_relPath))
             if path.exists():
                 if reModExtSearch(ci_relPath):
                     removedPlugins.add(GPath(ci_relPath))
@@ -2747,10 +2747,10 @@ class InstallersData(DataStore):
         try:
             from . import modInfos
             emptyDirs, mods = set(), set()
-            norm_ghost = Installer.getGhosted()
+            norm_ghost_get = Installer.getGhosted().get
             for filename in removes:
                 full_path = bass.dirs[u'mods'].join(
-                    norm_ghost.get(filename, filename))
+                    norm_ghost_get(filename, filename))
                 try:
                     full_path.moveTo(destDir.join(filename)) # will drop .ghost
                     if modInfos.rightFileType(full_path):
@@ -3021,13 +3021,13 @@ class InstallersData(DataStore):
 
     def createFromData(self, projectPath, ci_files, progress):
         if not ci_files: return
-        norm_ghost = Installer.getGhosted()
+        norm_ghost_get = Installer.getGhosted().get
         subprogress = SubProgress(progress, 0, 0.8, full=len(ci_files))
         srcJoin = bass.dirs[u'mods'].join
         dstJoin = self.store_dir.join(projectPath).join
         for i,filename in enumerate(ci_files):
             subprogress(i, filename)
-            srcJoin(norm_ghost.get(filename, filename)).copyTo(
+            srcJoin(norm_ghost_get(filename, filename)).copyTo(
                 dstJoin(filename))
         # Refresh, so we can manipulate the InstallerProject item
         self._inst_types[1].refresh_installer(projectPath, self, progress,

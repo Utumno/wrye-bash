@@ -20,7 +20,6 @@
 #  https://github.com/wrye-bash
 #
 # =============================================================================
-from collections import OrderedDict
 
 from . import bEnableWizard, BashFrame
 from .constants import installercons
