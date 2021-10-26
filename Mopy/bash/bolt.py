@@ -289,6 +289,14 @@ class CIstr(str):
     """See: http://stackoverflow.com/q/43122096/281545"""
     __slots__ = ()
 
+    def __new__(cls, unicode_str, *args, **kwargs):
+        if (typ := type(unicode_str)) is not str:
+            if typ is CIstr:
+                return unicode_str
+            raise ValueError(f'{unicode_str!r} type is {typ} - a str is '
+                             f'required')
+        return super(CIstr, cls).__new__(unicode_str, *args, **kwargs)
+
     #--Hash/Compare
     def __hash__(self):
         return hash(self.lower())
@@ -320,7 +328,7 @@ class CIstr(str):
     def __repr__(self):
         return u'%s(%s)' % (type(self).__name__, super(CIstr, self).__repr__())
 
-class LowerDict(dict):
+class LowerDict(dict): ##: todo only accept strings
     """Dictionary that transforms its keys to CIstr instances.
     See: https://stackoverflow.com/a/43457369/281545
     """
@@ -337,48 +345,39 @@ class LowerDict(dict):
         super(LowerDict, self).__init__(self._process_args(mapping, **kwargs))
 
     def __getitem__(self, k):
-        return super(LowerDict, self).__getitem__(
-            CIstr(k) if type(k) is str else k)
+        return super(LowerDict, self).__getitem__(CIstr(k))
 
     def __setitem__(self, k, v):
-        return super(LowerDict, self).__setitem__(
-            CIstr(k) if type(k) is str else k, v)
+        return super(LowerDict, self).__setitem__(CIstr(k), v)
 
     def __delitem__(self, k):
-        return super(LowerDict, self).__delitem__(
-            CIstr(k) if type(k) is str else k)
+        return super(LowerDict, self).__delitem__(CIstr(k))
 
     def copy(self): # don't delegate w/ super - dict.copy() -> dict :(
         return type(self)(self)
 
     def get(self, k, default=None):
-        return super(LowerDict, self).get(
-            CIstr(k) if type(k) is str else k, default)
+        return super(LowerDict, self).get(CIstr(k), default)
 
     def setdefault(self, k, default=None):
-        return super(LowerDict, self).setdefault(
-            CIstr(k) if type(k) is str else k, default)
+        return super(LowerDict, self).setdefault(CIstr(k), default)
 
     __no_default = object()
     def pop(self, k, v=__no_default):
         if v is LowerDict.__no_default:
             # super will raise KeyError if no default and key does not exist
-            return super(LowerDict, self).pop(
-                CIstr(k) if type(k) is str else k)
-        return super(LowerDict, self).pop(
-            CIstr(k) if type(k) is str else k, v)
+            return super(LowerDict, self).pop(CIstr(k))
+        return super(LowerDict, self).pop(CIstr(k), v)
 
     def update(self, mapping=(), **kwargs):
         super(LowerDict, self).update(self._process_args(mapping, **kwargs))
 
     def __contains__(self, k):
-        return super(LowerDict, self).__contains__(
-            CIstr(k) if type(k) is str else k)
+        return super(LowerDict, self).__contains__(CIstr(k))
 
     @classmethod
     def fromkeys(cls, keys, v=None):
-        return super(LowerDict, cls).fromkeys((CIstr(k) if type(
-            k) is str else k for k in keys), v)
+        return super(LowerDict, cls).fromkeys(map(CIstr, keys), v)
 
     def __repr__(self):
         return u'%s(%s)' % (
