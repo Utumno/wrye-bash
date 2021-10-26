@@ -64,7 +64,8 @@ import wx
 
 #--Local
 from .. import bush, bosh, bolt, bass, env, load_order, archives
-from ..bolt import GPath, SubProgress, deprint, round_size, dict_sort
+from ..bolt import GPath, SubProgress, deprint, round_size, dict_sort, \
+    top_level_items, GPath_no_norm, cext_
 from ..bosh import omods, ModInfo
 from ..exception import AbstractError, BoltError, CancelError, FileError, \
     SkipError, UnknownListener
@@ -2562,11 +2563,12 @@ class InstallersList(balt.UIList):
     @balt.conversation
     def OnDropFiles(self, x, y, filenames):
         filenames = [GPath(x) for x in filenames]
+        dirs = {x for x in filenames if x.isdir()}
         omodnames = [x for x in filenames if
-                     not x.isdir() and x.cext in archives.omod_exts]
+                     not x in dirs and x.cext in archives.omod_exts]
         converters = [x for x in filenames if
                       bosh.converters.ConvertersData.validConverterName(x)]
-        filenames = [x for x in filenames if x.isdir()
+        filenames = [x for x in filenames if x in dirs
                      or x.cext in archives.readExts and x not in converters]
         if omodnames:
             with balt.Progress(_(u'Extracting OMODs...'), u'\n' + u' ' * 60,
@@ -3151,19 +3153,18 @@ class InstallersPanel(BashTab):
         if settings.get(u'bash.installers.updatedCRCs',True): #only checked here
             settings[u'bash.installers.updatedCRCs'] = False
             self._data_dir_scanned = False
-        installers_paths = bass.dirs[
-            u'installers'].list() if self.frameActivated else ()
+        do_refresh = scan_data_dir = scan_data_dir or not self._data_dir_scanned
+        refresh_info = None
         if self.frameActivated:
-            omds = [inst_path for inst_path in installers_paths if
-                    inst_path.cext in archives.omod_exts]
+            folders, files = top_level_items(bass.dirs[u'installers'].s)
+            omds = [GPath_no_norm(inst_path) for inst_path in files
+                    if cext_(inst_path) in archives.omod_exts]
             if any(inst_path not in omods.failedOmods for inst_path in omds):
                 self.__extractOmods(omds) ##: change above to all?
-        do_refresh = scan_data_dir = scan_data_dir or not self._data_dir_scanned
-        if not do_refresh and self.frameActivated:
-            refresh_info = self.listData.scan_installers_dir(installers_paths,
-                                                             fullRefresh)
-            do_refresh = refresh_info.refresh_needed()
-        else: refresh_info = None
+            if not do_refresh:
+                refresh_info = self.listData.scan_installers_dir(folders,
+                    files, fullRefresh)
+                do_refresh = refresh_info.refresh_needed()
         refreshui = False
         if do_refresh:
             with balt.Progress(_(u'Refreshing Installers...'),
