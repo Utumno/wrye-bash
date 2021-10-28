@@ -987,8 +987,6 @@ def clearReadOnly(dirPath):
 # TMP functions to deprecate Paths functionality for simple filenames - SLOW!
 def cext_(string_val):
     return os.path.splitext(string_val)[-1].lower()
-def body_(string_val):
-    return os.path.basename(os.path.splitext(string_val)[0])
 
 # Util Constants --------------------------------------------------------------
 #--Unix new lines

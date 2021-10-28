@@ -94,7 +94,7 @@ imageExts = {u'.gif', u'.jpg', u'.png', u'.jpeg', u'.bmp', u'.tif'}
 class ListInfo(object):
     """Info object displayed in Wrye Bash list."""
     __slots__ = ()
-    _valid_exts_re = u''
+    _valid_exts_re = ''
     _is_filename = True
     _has_digits = False
 
@@ -164,7 +164,7 @@ class ListInfo(object):
 
     @classmethod
     def get_store(cls):
-        raise AbstractError(u'%s does not provide a data store' % type(cls))
+        raise AbstractError(f'{type(cls)} does not provide a data store')
 
     # Instance methods --------------------------------------------------------
     def get_rename_paths(self, newName):
