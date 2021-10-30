@@ -786,9 +786,8 @@ class Mod_JumpToInstaller(AppendableLink, OneItemLink):
         u'bash.installers.enabled']
 
     def _enable(self):
-        return (super(Mod_JumpToInstaller, self)._enable()
-                and self.window.get_installer(self._selected_item)
-                is not None) # need a boolean here
+        return (super(Mod_JumpToInstaller, self)._enable() #need a boolean here
+                and bool(self.window.get_installer(self._selected_item)))
 
     def Execute(self): self.window.jump_to_mods_installer(self._selected_item)
 

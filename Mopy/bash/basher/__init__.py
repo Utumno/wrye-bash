@@ -1313,8 +1313,7 @@ class ModList(_ModsUIList):
     def get_installer(self, modName):
         if not balt.Link.Frame.iPanel or not bass.settings[
             u'bash.installers.enabled']: return None
-        installer = self.data_store.table.getColumn(u'installer').get(modName)
-        return GPath(installer)
+        return FName(self.data_store.table.getColumn(u'installer').get(modName))
 
 #------------------------------------------------------------------------------
 class _DetailsMixin(object):
