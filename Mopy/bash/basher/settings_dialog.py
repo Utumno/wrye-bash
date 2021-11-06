@@ -29,7 +29,8 @@ from . import BashStatusBar, tabInfo
 from .constants import colorInfo, settingDefaults
 from .. import balt, barb, bass, bolt, bosh, bush, env, exception
 from ..balt import colors, Link, Resources, showOk
-from ..bolt import deprint, GPath, readme_url, os_name
+from ..bolt import deprint, readme_url, os_name
+from ..bolt import GPath as _GPath
 from ..gui import ApplyButton, BusyCursor, Button, CancelButton, Color, \
     ColorPicker, DialogWindow, DropDown, HLayout, HorizontalLine, \
     LayoutOptions, OkButton, PanelWin, Stretch, TextArea, TreePanel, VLayout, \
@@ -574,7 +575,7 @@ class LanguagePage(_AScrollablePage):
 
     def _edit_l10n(self):
         """Opens the selected localization file in an editor."""
-        chosen_editor = GPath(bass.settings[u'bash.l10n.editor.path'])
+        chosen_editor = _GPath(bass.settings[u'bash.l10n.editor.path'])
         editor_arg_fmt = bass.settings[u'bash.l10n.editor.param_fmt']
         # First, verify that the chosen editor is valid
         if not chosen_editor:

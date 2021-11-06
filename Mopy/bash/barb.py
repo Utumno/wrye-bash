@@ -45,7 +45,8 @@ from . import bass # for settings (duh!)
 from . import bolt
 from . import initialization
 from .bass import dirs, AppVersion
-from .bolt import GPath, deprint, top_level_files
+from .bolt import deprint, top_level_files
+from .bolt import GPath as _GPath
 from .exception import BoltError, StateError
 
 def _init_settings_files(bak_name, mg_name, root_prefix, mods_folder):
@@ -103,19 +104,21 @@ class BackupSettings(object):
 
     def __init__(self, settings_file, bak_name, mg_name, root_prefix,
                  mods_folder):
-        self._backup_dest_file = GPath(settings_file) # absolute path to dest 7z file
+        self._backup_dest_file = _GPath(settings_file) # absolute path to dest 7z file
         self.files = {}
         for (bash_dir, tmpdir), setting_files in _init_settings_files(
                 bak_name, mg_name, root_prefix, mods_folder).items():
+            tmp_dir = _GPath(tmpdir)
             if not setting_files: # we have to backup everything in there
-                setting_files = bash_dir.list()
-            tmp_dir = GPath(tmpdir)
-            for fname in setting_files:
-                fpath = bash_dir.join(fname)
-                if fpath.exists():
-                    self.files[tmp_dir.join(fname)] = fpath
+                self.files.update(
+                    (tmp_dir.join(fname), bash_dir.join(fname)) for fname in
+                    bash_dir.list())
+            else:
+                self.files.update(
+                    (tmp_dir.join(fname), fpath) for fname in setting_files if
+                    (fpath := bash_dir.join(fname)).exists())
         # backup save profile settings
-        rel_save_dir = GPath(u'My Games').join(mg_name)
+        rel_save_dir = _GPath(u'My Games').join(mg_name)
         save_dirs = ['', *initialization.getLocalSaveDirs()]
         for save_dir in save_dirs:
             for txt in (['plugins.txt'], ['loadorder.txt'],
@@ -204,7 +207,7 @@ class RestoreSettings(object):
     __unset = bolt.Path('')
 
     def __init__(self, settings_file):
-        self._settings_file = GPath(settings_file)
+        self._settings_file = _GPath(settings_file)
         self._saved_settings_version = self._settings_saved_with = None
         # bash.ini handling
         self._timestamped_old = self.__unset
@@ -272,15 +275,15 @@ class RestoreSettings(object):
         for dest_dir, back_path in restore_paths:
             full_back_path = self._extract_dir.join(back_path)
             for fname in top_level_files(full_back_path):
-                _restore_file(dest_dir, GPath(back_path), fname)
+                _restore_file(dest_dir, _GPath(back_path), fname)
         # restore savegame profile settings
-        back_path = GPath(u'My Games').join(mg_name, u'Saves')
+        back_path = _GPath(u'My Games').join(mg_name, u'Saves')
         saves_dir = dirs[u'saveBase'].join(u'Saves')
         full_back_path = self._extract_dir.join(back_path)
         if full_back_path.exists():
             for root_dir, folders, files_ in full_back_path.walk(
                     True, None, relative=True):
-                root_dir = GPath(u'.%s' % root_dir)
+                root_dir = _GPath(u'.%s' % root_dir)
                 for fname in files_:
                     _restore_file(saves_dir, back_path, root_dir, fname)
 
@@ -356,10 +359,10 @@ class RestoreSettings(object):
             return # we did not move bash.ini
         if self._timestamped_old is not None:
             bolt.deprint(u'Restoring bash.ini')
-            GPath(self._timestamped_old).copyTo(u'bash.ini')
+            _GPath(self._timestamped_old).copyTo(u'bash.ini')
         elif self._bash_ini_path:
             # remove bash.ini as it is the one from the backup
-            bolt.GPath(u'bash.ini').remove()
+            _GPath(u'bash.ini').remove()
 
     @staticmethod
     def warn_message(balt_, msg=u''):
