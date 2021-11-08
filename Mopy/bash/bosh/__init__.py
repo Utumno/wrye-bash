@@ -3533,7 +3533,9 @@ def initTooldirs():
     tooldirs[u'Freeplane'] = pathlist(u'Freeplane',u'freeplane.exe')
 
 def initDefaultSettings():
-    #other settings from the INI:
+    # *some* settings from the INI - note we get some ini settings (such as
+    # sOblivionMods) via get_ini_option/get_path_from_ini we never store those
+    # in bass.inisettings
     inisettings[u'ScriptFileExt'] = u'.txt'
     inisettings[u'ResetBSATimestamps'] = True
     inisettings[u'EnsurePatchExists'] = True

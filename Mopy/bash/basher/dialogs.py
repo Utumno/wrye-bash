@@ -191,26 +191,26 @@ class CreateNewProject(DialogWindow):
 
     def OnClose(self):
         """ Create the New Project and add user specified extras. """
-        projectName = bolt.GPath(self.textName.text_content.strip())
+        projectName = self.textName.text_content.strip()
+        # Destination project directory in installers dir
         projectDir = bass.dirs[u'installers'].join(projectName)
-
         if projectDir.exists():
             balt.showError(self, _(
                 u'There is already a project with that name!') + u'\n' + _(
                 u'Pick a different name for the project and try again.'))
             return
-
         # Create project in temp directory, so we can move it via
-        # Shell commands (UAC workaround)
+        # Shell commands (UAC workaround) ##: TODO(ut) needed?
         tmpDir = bolt.Path.tempDir()
         tempProject = tmpDir.join(projectName)
-        if self.checkEsp.is_checked:
-            fileName = u'Blank, %s.esp' % bush.game.displayName
-            bosh.modInfos.create_new_mod(fileName, directory=tempProject)
-        if self.checkEspMasterless.is_checked:
-            fileName = u'Blank, %s (masterless).esp' % bush.game.displayName
-            bosh.modInfos.create_new_mod(fileName, directory=tempProject,
-                                         wanted_masters=[])
+        if (masterless := self.checkEspMasterless.is_checked) or \
+                self.checkEsp.is_checked:
+            file_body, wanted_masters = f'Blank, {bush.game.displayName}', None
+            if masterless:
+                file_body = f'{file_body} (masterless)'
+                wanted_masters = []
+            bosh.modInfos.create_new_mod(GPath_no_norm(f'{file_body}.esp'),
+                directory=tempProject, wanted_masters=wanted_masters)
         if self.checkWizard.is_checked:
             # Create empty wizard.txt
             wizardPath = tempProject.join(u'wizard.txt')
