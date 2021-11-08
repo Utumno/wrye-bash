@@ -30,7 +30,6 @@ import io
 import re
 import traceback
 # Local
-from . import configIsCBash
 from .constants import settingDefaults
 from .files_links import File_Redate
 from .frames import DocBrowser
@@ -69,6 +68,12 @@ __all__ = [u'Mod_FullLoad', u'Mod_CreateDummyMasters', u'Mod_OrderByName',
            u'Mod_FlipEsm', u'Mod_FlipEsl', u'Mod_FlipMasters',
            u'Mod_SetVersion', u'Mod_ListDependent', u'Mod_JumpToInstaller',
            u'Mod_Move', u'Mod_RecalcRecordCounts']
+
+def _configIsCBash(patchConfigs):
+    for config_key in patchConfigs:
+        if u'CBash' in config_key:
+            return True
+    return False
 
 #------------------------------------------------------------------------------
 # Mod Links -------------------------------------------------------------------
@@ -948,8 +953,8 @@ class Mod_Patch_Update(_Mod_BP_Link):
     def _initData(self, window, selection):
         super(Mod_Patch_Update, self)._initData(window, selection)
         # Detect the mode the patch was build in
-        config = self._selected_info.get_table_prop(u'bash.patch.configs', {})
-        self._config_is_cbash = configIsCBash(config)
+        self._bp_config = self._selected_info.get_table_prop(u'bash.patch.configs', {})
+        self._config_is_cbash = _configIsCBash(self._bp_config)
         self.mods_to_reselect = set()
 
     @balt.conversation
@@ -988,6 +993,7 @@ class Mod_Patch_Update(_Mod_BP_Link):
                       u'default. If you click "No", the patch building will '
                       u'abort now.'), title=_(u'Unsupported CBash Patch')):
                 return
+            self._bp_config = {}
         patch_files.executing_patch = self._selected_item
         mods_prior_to_patch = load_order.cached_lower_loading(
             self._selected_item)
@@ -1028,7 +1034,7 @@ class Mod_Patch_Update(_Mod_BP_Link):
                 liststyle=u'tree',bOk=_(u'Continue Despite Errors')) as dialog:
                    if not dialog.show_modal(): return
         with PatchDialog(self.window, self._selected_info,
-                self.mods_to_reselect) as patchDialog:
+                self.mods_to_reselect, self._bp_config) as patchDialog:
             patchDialog.show_modal()
         return self._selected_item
 
@@ -1105,7 +1111,7 @@ class Mod_ListPatchConfig(_Mod_BP_Link):
         #--Config
         config = self._selected_info.get_table_prop(u'bash.patch.configs', {})
         # Detect and warn about patch mode
-        if configIsCBash(config):
+        if _configIsCBash(config):
             self._showError(_(u'The selected patch was built in CBash mode, '
                               u'which is no longer supported by this version '
                               u'of Wrye Bash.'),
