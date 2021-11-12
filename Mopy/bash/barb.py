@@ -116,7 +116,7 @@ class BackupSettings(object):
                     self.files[tmp_dir.join(fname)] = fpath
         # backup save profile settings
         savedir = GPath(u'My Games').join(mg_name)
-        profiles = [u''] + initialization.getLocalSaveDirs()
+        profiles = ['', *initialization.getLocalSaveDirs()]
         for profile in profiles:
             pluginsTxt = (u'Saves', profile, u'plugins.txt')
             loadorderTxt = (u'Saves', profile, u'loadorder.txt')
