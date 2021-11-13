@@ -404,9 +404,10 @@ class Game(object):
         raise exception.AbstractError
 
     # MODFILES PARSING --------------------------------------------------------
-    def _parse_modfile(self, path):
+    def _parse_modfile(self, path, path_exists=None):
         """:rtype: (list[bolt.Path], list[bolt.Path])"""
-        if not path.exists(): return [], []
+        path_exists = path.exists() if path_exists is None else path_exists
+        if not path_exists: return [], []
         #--Read file
         acti, _lo = _parse_plugins_txt_(path, self.mod_infos, _star=self._star)
         return acti, _lo
@@ -419,7 +420,7 @@ class Game(object):
         """:rtype: (list[bolt.Path], list[bolt.Path])"""
         if not self.plugins_txt_path.exists(): return [], []
         #--Read file
-        acti, _lo = self._parse_modfile(self.plugins_txt_path)
+        acti, _lo = self._parse_modfile(self.plugins_txt_path, True)
         self.__update_plugins_txt_cache_info()
         return acti, _lo
 
@@ -1098,7 +1099,7 @@ class TextfileGame(Game):
             bolt.deprint(f'Created {self.loadorder_txt_path}')
             return mods
         #--Read file
-        _acti, lo = self._parse_modfile(self.loadorder_txt_path)
+        _acti, lo = self._parse_modfile(self.loadorder_txt_path, True)
         # handle desync with plugins txt
         if cached_active is not None:
             cached_active_copy = cached_active[:]

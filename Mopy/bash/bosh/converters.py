@@ -29,8 +29,8 @@ import re
 from .. import bolt, archives, bass
 from ..archives import defaultExt, readExts, compressionSettings, \
     compressCommand
-from ..bolt import DataDict, PickleDict, GPath, Path, SubProgress, \
-    top_level_files, GPath_no_norm
+from ..bolt import DataDict, PickleDict, Path, SubProgress, top_level_files, \
+    GPath_no_norm
 from ..exception import ArgumentError, StateError
 
 converters_dir = None
@@ -451,9 +451,9 @@ class InstallerConverter(object):
             for fileName, __size, fileCRC in installer.fileSizeCrcs:
                 srcFiles[fileCRC] = (installerCRC, fileName)
                 #--Note any subArchives
-                if GPath(fileName).cext in readExts:
+                if GPath_no_norm(fileName).cext in readExts:
                     fileAppend(fileName)
-            if len(fileList): subArchives[installerCRC] = fileList
+            if fileList: subArchives[installerCRC] = fileList
         # TODO(inf) Hacky temp fix - real fix is probably passing a valid
         #  crc_installer param to this method
         if len(subArchives) and crc_installer:
