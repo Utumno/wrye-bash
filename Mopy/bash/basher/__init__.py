@@ -2117,10 +2117,10 @@ class SaveList(balt.UIList):
         """Disable save by changing its extension so it's not loaded by the
         game."""
         #--Pass Event onward
-        hitItem = self._getItemClicked(lb_dex_and_flags, on_icon=True)
-        if not hitItem: return
+        fn_item = self._getItemClicked(lb_dex_and_flags, on_icon=True)
+        if not fn_item: return
         # Don't allow enabling backups, the game won't read them either way
-        if hitItem.cext == u'.bak':
+        if fn_item.cext == u'.bak':
             balt.showError(self, _(u'You cannot enable save backups.'))
             return
         enabled_ext = bush.game.Ess.ext
@@ -2131,12 +2131,12 @@ class SaveList(balt.UIList):
             u'save_ext_on': enabled_ext, u'save_ext_off': disabled_ext}
         if not balt.askContinue(self, msg, u'bash.saves.askDisable.continue'):
             return
-        sinf = self.data_store[hitItem]
+        sinf = self.data_store[fn_item]
         do_enable = not sinf.is_save_enabled()
         extension = enabled_ext if do_enable else disabled_ext
-        rename_res = self.try_rename(sinf, hitItem.root, ext=extension)
+        rename_res = self.try_rename(sinf, fn_item.root, ext=extension)
         if rename_res:
-            self.RefreshUI(redraw=[rename_res[1]], to_del=[hitItem])
+            self.RefreshUI(redraw=[rename_res[1]], to_del=[fn_item])
 
     # Save profiles
     def set_local_save(self, new_saves, refreshSaveInfos):
