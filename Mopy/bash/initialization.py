@@ -190,13 +190,12 @@ def init_dirs(bashIni_, personal, localAppData, game_info):
         try:
             try:
                 # Try UTF-8 first, will also work for ASCII-encoded files
-                with data_oblivion_ini.open(u'r', encoding=u'utf8') as ins:
-                    oblivionIni.readfp(ins)
+                oblivionIni.read(data_oblivion_ini.s, encoding='utf8')
             except UnicodeDecodeError:
                 # No good, this is a nonstandard encoding
                 with data_oblivion_ini.open(u'rb') as ins:
                     ini_contents = ins.read()
-                oblivionIni.readfp(io.StringIO(decoder(ini_contents)))
+                oblivionIni.read_file(io.StringIO(decoder(ini_contents)))
         except MissingSectionHeaderError:
             # Probably not actually a game INI - might be reshade
             init_warnings.append(
