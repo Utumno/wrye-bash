@@ -159,7 +159,7 @@ class LoadFactory(object):
     def __repr__(self):
         return u'<LoadFactory: load %u types (%s), %s others>' % (
             len(self.recTypes),
-            u', '.join(self.recTypes),
+            u', '.join([r.decode('ascii') for r in self.recTypes]),
             u'keep' if self.keepAll else u'discard',
         )
 
