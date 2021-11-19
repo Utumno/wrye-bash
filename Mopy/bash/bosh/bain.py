@@ -1102,7 +1102,7 @@ class Installer(ListInfo):
             for asDir, sDirs, sFiles in os.walk(proj_dir.s):
                 if not (sDirs or sFiles): empties.add(GPath(asDir))
             for empty in empties: empty.removedirs()
-            self.abs_path.makedirs()  #--In case it just got wiped out.
+            proj_dir.makedirs()  #--In case it just got wiped out.
         return upt_numb, del_numb
 
     def size_or_mtime_changed(self, apath):
