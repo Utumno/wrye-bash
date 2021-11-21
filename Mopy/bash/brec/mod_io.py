@@ -112,7 +112,7 @@ class RecHeader(RecordHeader):
 
     def __repr__(self):
         return u'<Record Header: [%s:%s] v%u>' % (
-            self.recType, strFid(self.fid), self.form_version)
+            self.recType.decode('ascii'), strFid(self.fid), self.form_version)
 
 class GrupHeader(RecordHeader):
     """Fixed size structure serving as a fencepost in the plugin file,
@@ -165,8 +165,11 @@ class GrupHeader(RecordHeader):
         return self.size - self.__class__.rec_header_size
 
     def __repr__(self):
-        return u'<GRUP Header: %s, %s>' % (
-            group_types[self.groupType], self.label)
+        decoded_label = self.label # Hacky, but all label code currently is
+        if isinstance(decoded_label, bytes):
+            decoded_label = decoded_label.decode('ascii')
+        return u'<GRUP Header: %s, %s>' % (group_types[self.groupType],
+                                           decoded_label)
 
 class TopGrupHeader(GrupHeader):
     """Fixed size structure signaling a top level group of records."""
