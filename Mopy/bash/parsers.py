@@ -147,7 +147,7 @@ class CsvParser(_TextParser):
 
         :param csv_path: The path to the CSV file that should be read."""
         ##: drop utf-8-sig? backwards compat?
-        with open(csv_path, u'r', encoding=u'utf-8-sig') as ins:
+        with open(csv_path, encoding=u'utf-8-sig') as ins:
             first_line = ins.readline()
             ##: drop 'excel-tab' format and delimiter = ';'? backwards compat?
             excel_fmt = 'excel-tab' if '\t' in first_line else 'excel'
