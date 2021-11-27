@@ -200,11 +200,13 @@ class DialogWindow(_TopLevelWin):
         """Closes the modal dialog with a 'normal' exit code. Equivalent to
         clicking the OK button."""
         self._native_widget.EndModal(_wx.ID_OK)
+        self.on_closing()
 
     def cancel_modal(self):
         """Closes the modal dialog with an 'abnormal' exit code. Equivalent to
         clicking the Cancel button."""
         self._native_widget.EndModal(_wx.ID_CANCEL)
+        self.on_closing()
 
 class StartupDialog(DialogWindow):
     """Dialog shown during early boot, generally due to errors."""
