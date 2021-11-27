@@ -58,17 +58,22 @@ class BSA_ExtractToProject(ItemLink):
                          in selected_bsas]
         # More error checking
         # TODO(inf) Maybe create bosh.installers_data singleton?
-        for project, _bsa_inf in to_unpack:
+        for project, _bsa_inf in to_unpack: # list(to_unpack)
             proj_path = bass.dirs[u'installers'].join(project)
             if proj_path.isfile():
                 self._showWarning(_(u'%s is a file.') % project)
+                # to_unpack.remove((project, _bsa_inf))
+                # continue
                 return
             if proj_path.isdir():
-                if not self._askYes(
-                        _(u'%s already exists. Overwrite it?') % project,
-                        default=False): return
+                question = _(u'%s already exists. Overwrite it?') % project
+                if not self._askYes(question, default=False):
+                    # to_unpack.remove((project, _bsa_inf))
+                    # continue
+                    return
                 # Clear existing project, user wanted to overwrite it
                 proj_path.rmtree(safety=u'Installers')
+        if not to_unpack: return
         # All error checking is done, proceed to extract
         with Progress(_(u'Extracting BSAs...')) as prog:
             prog_curr = 0.0
@@ -98,7 +103,7 @@ class BSA_ListContents(ItemLink):
         full_text = u'=== Selected BSA Contents:'
         full_text += u'\n[spoiler]'
         for bsa_inf in self.iselected_infos():
-            full_text += u'\n\n* %s:\n' % bsa_inf.abs_path.tail
+            full_text += u'\n\n* %s:\n' % bsa_inf.ci_key
             full_text += u'\n'.join(sorted(bsa_inf.assets))
         full_text += u'\n[/spoiler]'
         copy_text_to_clipboard(full_text)

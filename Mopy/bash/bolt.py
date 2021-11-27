@@ -28,6 +28,7 @@ import copy
 import datetime
 import io
 import os
+import pathlib
 import pickle
 import re
 import shutil
@@ -38,7 +39,7 @@ import subprocess
 import sys
 import tempfile
 import textwrap
-import traceback
+import traceback as _traceback
 import webbrowser
 from binascii import crc32
 from contextlib import contextmanager, redirect_stdout
@@ -1735,9 +1736,9 @@ def text_wrap(text_to_wrap, width=60):
 deprintOn = False
 
 import inspect
-def deprint(*args,**keyargs):
+def deprint(*args, traceback=False, trace=True, frame=1, on=False):
     """Prints message along with file and line location.
-       Available keyword arguements:
+       Available keyword arguments:
        trace: (default True) - if a Truthy value, displays the module,
               line number, and function this was used from
        traceback: (default False) - if a Truthy value, prints any tracebacks
@@ -1745,16 +1746,15 @@ def deprint(*args,**keyargs):
        frame: (default 1) - With `trace`, determines the function caller's
               frame for getting the function name
     """
-    if not deprintOn and not keyargs.get(u'on'): return
-    if keyargs.get(u'trace', True):
-        frame = keyargs.get(u'frame', 1)
+    if not deprintOn and not on: return
+    if trace:
         stack = inspect.stack()
         file_, line, function = stack[frame][1:4]
-        msg = u'%s %4d %s: ' % (GPath(file_).tail, line, function)
+        msg = u'%s %4d %s: ' % (pathlib.Path(file_).name, line, function)
     else:
         msg = u''
     try:
-        msg += u' '.join([u'%s'%x for x in args]) # OK, even with unicode args
+        msg += ' '.join(['%s' % x for x in args]) # OK, even with unicode args
     except UnicodeError:
         # If the args failed to convert to unicode for some reason
         # we still want the message displayed any way we can
@@ -1763,8 +1763,8 @@ def deprint(*args,**keyargs):
                 msg += u' %s' % x
             except UnicodeError:
                 msg += u' %r' % x
-    if keyargs.get(u'traceback',False):
-        exc_fmt = traceback.format_exc()
+    if traceback:
+        exc_fmt = _traceback.format_exc()
         msg += f'\n{exc_fmt}'
     try:
         # Should work if stdout/stderr is going to wxPython output
