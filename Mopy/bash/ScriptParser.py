@@ -92,9 +92,10 @@ def validNumber(string):
 # Define Some Constants ---------------------------
 
 # Some error string
-ERR_CANNOT_SET = u"Cannot set %s '%s': type is '%s'."
 ERR_TOO_FEW_ARGS = u"Too few arguments to %s '%s':  got %s, expected %s."
 ERR_TOO_MANY_ARGS = u"Too many arguments to %s '%s':  got %s, expected %s."
+def err_cant_set(obj_type, obj_name, type_enum):
+    error(f"Cannot set {obj_type} '{obj_name}': type is '{Types[type_enum]}'.")
 
 class KEY(object):
     # Constants for keyword args
@@ -484,29 +485,29 @@ class Parser(object):
     def SetOperator(self, op_name, *args, **kwdargs):
         type_ = getType(op_name, self)
         if type_ not in [NAME,OPERATOR,UNKNOWN]:
-            error(ERR_CANNOT_SET % (u'operator', op_name, Types[type_]))
+            err_cant_set(u'operator', op_name,  type_)
         self.operators[op_name] = Parser.Operator(op_name, *args, **kwdargs)
         for i in op_name:
             if i not in self.opChars: self.opChars += i
     def SetKeyword(self, keywrd_name, *args, **kwdargs):
         type_ = getType(keywrd_name, self)
         if type_ not in [NAME,KEYWORD]:
-            error(ERR_CANNOT_SET % (u'keyword', keywrd_name, Types[type_]))
+            err_cant_set(u'keyword', keywrd_name,  type_)
         self.keywords[keywrd_name] = Parser.Keyword(keywrd_name, *args, **kwdargs)
     def SetFunction(self, fun_name, *args, **kwdargs):
         type_ = getType(fun_name, self)
         if type_ not in [NAME,FUNCTION]:
-            error(ERR_CANNOT_SET % (u'function', fun_name, Types[type_]))
+            err_cant_set(u'function', fun_name,  type_)
         self.functions[fun_name] = Parser.Function(fun_name, *args, **kwdargs)
     def SetConstant(self, const_name, value):
         type_ = getType(const_name, self)
         if type_ not in [NAME,CONSTANT]:
-            error(ERR_CANNOT_SET % (u'constant', const_name, Types[type_]))
+            err_cant_set(u'constant', const_name,  type_)
         self.constants[const_name] = value
     def SetVariable(self, var_name, value):
         type_ = getType(var_name, self)
         if type_ not in [NAME, VARIABLE]:
-            error(ERR_CANNOT_SET % (u'variable', var_name, Types[type_]))
+            err_cant_set(u'variable', var_name,  type_)
         self.variables[var_name] = value
 
     # Flow control stack

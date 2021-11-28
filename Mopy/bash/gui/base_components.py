@@ -485,7 +485,7 @@ class ImageWrapper(object):
         if not os.path.exists(self._img_path.split(u';')[0]):
             raise ArgumentError(f'Missing resource file: {filename}.')
 
-    def GetBitmap(self):
+    def get_bitmap(self):
         if not self.bitmap:
             if self._img_type == _wx.BITMAP_TYPE_ICO:
                 self.GetIcon()
@@ -512,7 +512,7 @@ class ImageWrapper(object):
                     self.icon = _wx.Icon(self._img_path, _wx.BITMAP_TYPE_ICO)
             else:
                 self.icon = _wx.Icon()
-                self.icon.CopyFromBitmap(self.GetBitmap())
+                self.icon.CopyFromBitmap(self.get_bitmap())
         return self.icon
 
     @staticmethod

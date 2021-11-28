@@ -95,6 +95,7 @@ def _import_wx(debug):
         # Disable image loading errors - wxPython is missing the actual flag
         # constants for some reason, so just use 0 (no flags)
         _wx.Image.SetDefaultLoadFlags(0)
+
         return _wx.version()
     except Exception: ##: tighten this except
         but_kwargs = {u'text': u"QUIT",
@@ -332,7 +333,7 @@ def _main(opts, wx_locale, wxver):
         msg2 = _(u'done')
         try: print(msg1)
         except UnicodeError: print(msg1.encode(bolt.Path.sys_fs_enc))
-        from . import belt ##: why import belt here?
+        from . import belt ##: belt does bolt.codebox = WryeParser.codebox - FIXME decouple!
         bolt.WryeText.genHtml(opts.genHtml)
         try: print(msg2)
         except UnicodeError: print(msg2.encode(bolt.Path.sys_fs_enc))
