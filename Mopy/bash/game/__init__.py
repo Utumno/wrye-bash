@@ -333,7 +333,7 @@ class GameInfo(object):
         # time.mktime result due to locale issues. Generally used to redate
         # the vanilla BSAs before all mod BSAs, and all BSAs before loose
         # files by choosing dates older than the game's release date.
-        redate_dict = defaultdict(lambda: 1136066400) # '2006-01-01'
+        redate_dict = bolt.DefaultFNDict(lambda: 1136066400) # '2006-01-01'
         # All BSA versions accepted by this game. If empty, indicates that this
         # game does not use BSA versions and so BSA version checks will be
         # skipped entirely.

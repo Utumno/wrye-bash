@@ -43,7 +43,7 @@ class NehrimGameInfo(OblivionGameInfo):
     nexusKey = u'bash.installers.openNehrimNexus.continue'
 
     class Bsa(OblivionGameInfo.Bsa):
-        redate_dict = defaultdict(lambda: 1136066400, { # '2006-01-01'
+        redate_dict = bolt.DefaultFNDict(lambda: 1136066400, { # '2006-01-01'
             u'N - Textures1.bsa': 1104530400, # '2005-01-01'
             u'N - Textures2.bsa': 1104616800, # '2005-01-02'
             u'L - Voices.bsa': 1104703200,    # '2005-01-03'

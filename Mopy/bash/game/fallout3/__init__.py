@@ -93,7 +93,7 @@ class Fallout3GameInfo(PatchGame):
 
     class Bsa(GameInfo.Bsa):
         allow_reset_timestamps = True
-        redate_dict = defaultdict(lambda: 1136066400, { # '2006-01-01'
+        redate_dict = bolt.DefaultFNDict(lambda: 1136066400, { # '2006-01-01'
             'Fallout - MenuVoices.bsa': 1104530400,  # '2005-01-01',
             'Fallout - Meshes.bsa': 1104616800,      # '2005-01-02',
             'Fallout - Misc.bsa': 1104703200,        # '2005-01-03',
