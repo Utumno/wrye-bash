@@ -87,8 +87,6 @@ class Picture(_AComponent):
         caching"""
         if isinstance(bmp, Path):
             bmp = (bmp.isfile() and ImageWrapper(bmp).get_bitmap()) or None
-        elif isinstance(bmp, tuple):
-            bmp = ImageWrapper.GetImage(*bmp).ConvertToBitmap()
         self.bitmap = bmp
         self._handle_resize()
         return self.bitmap

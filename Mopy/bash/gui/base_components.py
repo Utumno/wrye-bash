@@ -526,13 +526,6 @@ class ImageWrapper(object):
         return bm
 
     @staticmethod
-    def GetImage(width, height, image_data):
-        """Hasty wrapper around wx.Image - absorb to GetBitmap."""
-        image = _wx.Image(width, height)
-        image.SetData(image_data)
-        return image
-
-    @staticmethod
     def Load(srcPath, quality):
         """Hasty wrapper around wx.Image - loads srcPath with specified
         quality if a jpeg."""
