@@ -1431,7 +1431,7 @@ class InstallerArchive(Installer):
         """Unpacks archive to build directory."""
         progress = progress or bolt.Progress()
         files = bolt.sortFiles([x[0] for x in self.fileSizeCrcs])
-        if not files: return 0
+        if not files: return 0 # WARN!! - will fail on stat after
         #--Clear Project
         destDir = bass.dirs[u'installers'].join(project)
         destDir.rmtree(safety=u'Installers')

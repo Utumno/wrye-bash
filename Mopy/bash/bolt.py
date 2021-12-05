@@ -39,6 +39,7 @@ import sys
 import tempfile
 import textwrap
 import traceback
+import webbrowser
 from binascii import crc32
 from contextlib import contextmanager, redirect_stdout
 from functools import partial
@@ -834,7 +835,10 @@ class Path(object):
             else:
                 subprocess.Popen(exeArgs, executable=self._s, close_fds=True)
         else:
-            os.startfile(self._s)
+            if sys.platform == 'darwin':
+                webbrowser.open(f'file://{self._s}')
+            else:
+                os.startfile(self._s) # TTT linux
     def copyTo(self,destName):
         """Copy self to destName, make dirs if necessary and preserve mtime."""
         destName = GPath(destName)
