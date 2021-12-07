@@ -261,8 +261,7 @@ class ModReader(object):
         if endPos == -1:
             return filePos == self.size
         elif filePos > endPos:
-            raise ModError(self.inName,
-                           u'Exceeded limit of: %s' % (debug_strs,))
+            raise ModReadError(self.inName, debug_strs, filePos, endPos)
         else:
             return filePos == endPos
 

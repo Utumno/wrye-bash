@@ -95,15 +95,15 @@ class LoadFactory(object):
     def addClass(self, recClass, __cell_rec_sigs=frozenset([b'WRLD', b'ROAD',
             b'CELL', b'REFR', b'ACHR', b'ACRE', b'PGRD', b'LAND'])):
         """Adds specified class."""
-        if type(recClass) is bytes:
+        if isinstance(recClass, bytes):
             class_sig = recClass
             recClass = MreRecord
         else:
             try:
                 class_sig = recClass.rec_sig
             except AttributeError:
-                raise ValueError(u'addClass: bytes or MreRecord expected '
-                                 u'- got: %r!' % recClass)
+                raise ValueError(f'addClass: bytes or MreRecord expected - '
+                                 f'got: {recClass!r}!')
         #--Don't replace complex class with default (MreRecord) class
         if class_sig in self.type_class and recClass == MreRecord:
             return
@@ -170,12 +170,13 @@ class _RecGroupDict(dict):
         """Return top block of specified topType, creating it, if necessary.
         :raise ModError KeyError"""
         if top_grup_sig not in __rh.top_grup_sigs:
-            raise KeyError(u'Invalid top group type: ' + top_grup_sig)
+            raise KeyError(f'Invalid top group type: '
+                           f'{sig_to_str[top_grup_sig]}')
         topClass = self._mod_file.loadFactory.getTopClass(top_grup_sig)
         if topClass is None:
-                raise ModError(self._mod_file.fileInfo.ci_key,
-                   u'Failed to retrieve top class for %s; load factory is '
-                   u'%r' % (top_grup_sig, self._mod_file.loadFactory))
+            raise ModError(self._mod_file.fileInfo.ci_key,
+                f'Failed to retrieve top class for {sig_to_str[top_grup_sig]};'
+                f' load factory is {self._mod_file.loadFactory!r}')
         self[top_grup_sig] = topClass(TopGrupHeader(0, top_grup_sig, 0),
                                       self._mod_file.loadFactory)
         self[top_grup_sig].setChanged()
@@ -232,13 +233,13 @@ class ModFile(object):
                             # Duplicate top-level group and we can't merge due
                             # to not loading it fully. Log and replace the
                             # existing one
-                            deprint(u'%s: Duplicate top-level %s group '
-                                    u'loaded as MobBase, replacing')
+                            deprint(f'{self.fileInfo}: Duplicate top-level '
+                                f'{label} group loaded as MobBase, replacing')
                             self.tops[label] = new_top
                         else:
                             # Duplicate top-level group and we can merge
-                            deprint(u'%s: Duplicate top-level %s group, '
-                                    u'merging' % (self.fileInfo, label))
+                            deprint(f'{self.fileInfo}: Duplicate top-level '
+                                    f'{label} group, merging')
                             self.tops[label].merge_records(new_top, set(),
                                 set(), False, False)
                     else:
@@ -246,7 +247,7 @@ class ModFile(object):
                         header.skip_blob(ins)
                 except:
                     if catch_errors:
-                        deprint(u'Error in %s' % self.fileInfo, traceback=True)
+                        deprint(f'Error in {self.fileInfo}', traceback=True)
                         break
                     else:
                         # Useful for implementing custom error behavior, see
@@ -439,7 +440,7 @@ class ModFile(object):
             return self.cached_mgef_names
 
     def __repr__(self):
-        return u'ModFile<%s>' % self.fileInfo
+        return f'ModFile<{self.fileInfo}>'
 
 # TODO(inf) Use this for a bunch of stuff in mods_metadata.py (e.g. UDRs)
 class ModHeaderReader(object):
