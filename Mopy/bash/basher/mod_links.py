@@ -128,8 +128,8 @@ class Mod_RecalcRecordCounts(OneItemLink, _LoadLink):
     def Execute(self):
         modFile = self._load_mod(self._selected_info, do_map_fids=False)
         for top_grup_sig, block in dict_sort(modFile.tops):
-            bolt.deprint(u'%s GRUP has %u records' % (
-                top_grup_sig.decode(u'ascii'), block.getNumRecords()))
+            bolt.deprint(f'{sig_to_str[top_grup_sig]} GRUP has '
+                         f'{block.getNumRecords()} records')
 
 # File submenu ----------------------------------------------------------------
 # the rest of the File submenu links come from file_links.py

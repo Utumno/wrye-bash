@@ -265,7 +265,10 @@ class SigToStr(dict):
     __slots__ = ()
 
     def __missing__(self, key):
-        return self.setdefault(key, key.decode('iso-8859-1'))
+        try:
+            return self.setdefault(key, key.decode('iso-8859-1'))
+        except AttributeError:
+            return key
 
 sig_to_str = SigToStr()
 

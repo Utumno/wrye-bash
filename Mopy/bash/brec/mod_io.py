@@ -28,7 +28,8 @@ from io import BytesIO
 # no local imports beyond this, imported everywhere in brec
 from .utils_constants import _int_unpacker, group_types, null1, strFid
 from .. import bolt
-from ..bolt import decoder, struct_pack, struct_unpack, structs_cache
+from ..bolt import decoder, struct_pack, struct_unpack, structs_cache, \
+    sig_to_str
 from ..exception import ModError, ModReadError, ModSizeError
 
 #------------------------------------------------------------------------------
@@ -112,7 +113,7 @@ class RecHeader(RecordHeader):
 
     def __repr__(self):
         return u'<Record Header: [%s:%s] v%u>' % (
-            self.recType.decode('ascii'), strFid(self.fid), self.form_version)
+            sig_to_str[self.recType], strFid(self.fid), self.form_version)
 
 class GrupHeader(RecordHeader):
     """Fixed size structure serving as a fencepost in the plugin file,
@@ -165,11 +166,8 @@ class GrupHeader(RecordHeader):
         return self.size - self.__class__.rec_header_size
 
     def __repr__(self):
-        decoded_label = self.label # Hacky, but all label code currently is
-        if isinstance(decoded_label, bytes):
-            decoded_label = decoded_label.decode('ascii')
-        return u'<GRUP Header: %s, %s>' % (group_types[self.groupType],
-                                           decoded_label)
+        return f'<GRUP Header: {group_types[self.groupType]}, ' \
+               f'{sig_to_str[self.label]}>'
 
 class TopGrupHeader(GrupHeader):
     """Fixed size structure signaling a top level group of records."""

@@ -173,6 +173,26 @@ def test_decoder_encode_roundtrip():
               u'Atenção', u'Внимание'):
         assert decoder(encode(s)) == s
 
+# encode/decode dicts
+class TestSigToStr:
+
+    def test___missing__(self):
+        sigtostr = SigToStr()
+        assert sigtostr[b'TES4'] == 'TES4'
+        assert sigtostr[b'\x00IAD'] == '\0IAD' # game/falloutnv/records.py:473
+        # other values just pass through - use in f'{val}'but not in join(vals)
+        assert sigtostr[42] == 42
+        assert sigtostr['42'] == '42'
+
+class TestStrToSig:
+
+    def test___missing__(self):
+        strtosig = StrToSig()
+        assert strtosig['TES4'] == b'TES4'
+        assert strtosig['\x00IAD'] == b'\x00IAD'
+        with pytest.raises(AttributeError): strtosig[42]
+        with pytest.raises(AttributeError): strtosig[b'42']
+
 class TestLowerDict(object):
     dict_type = LowerDict
 
@@ -444,21 +464,3 @@ class TestRounder(object):
         assert not (rounder_5th == None)
         assert not (rounder_5th == True)
         assert not (rounder_5th == 55)
-
-class TestSigToStr:
-
-    def test___missing__(self):
-        sigtostr = SigToStr()
-        assert sigtostr[b'TES4'] == 'TES4'
-        assert sigtostr[b'\x00IAD'] == '\0IAD' # game/falloutnv/records.py:473
-        with pytest.raises(AttributeError): sigtostr[42]
-        with pytest.raises(AttributeError): sigtostr['42']
-
-class TestStrToSig:
-
-    def test___missing__(self):
-        strtosig = StrToSig()
-        assert strtosig['TES4'] == b'TES4'
-        assert strtosig['\x00IAD'] == b'\x00IAD'
-        with pytest.raises(AttributeError): strtosig[42]
-        with pytest.raises(AttributeError): strtosig[b'42']
