@@ -1315,7 +1315,7 @@ class PickleDict(object):
     class Mold(Exception):
         def __init__(self, moldedFile):
             msg = (u'Your settings in %s come from an ancient Bash version. '
-                   u'Please load them in 306 so they are converted '
+                   u'Please load them in 307 so they are converted '
                    u'to the newer format' % moldedFile)
             super(PickleDict.Mold, self).__init__(msg)
 
