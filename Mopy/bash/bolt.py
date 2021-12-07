@@ -277,7 +277,7 @@ class StrToSig(dict):
     __slots__ = ()
 
     def __missing__(self, key):
-        return self.setdefault(key, key.encode('iso-8859-1'))
+        return self.setdefault(key, key.encode('ascii'))
 
 str_to_sig = StrToSig()
 

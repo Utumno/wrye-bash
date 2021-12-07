@@ -38,7 +38,8 @@ from . import bush, load_order
 from .balt import Progress
 from .bass import dirs, inisettings
 from .bolt import GPath, decoder, deprint, setattr_deep, attrgetter_cache, \
-    str_or_none, int_or_none, structs_cache, int_or_zero, sig_to_str
+    str_or_none, int_or_none, structs_cache, int_or_zero, sig_to_str, \
+    str_to_sig
 from .brec import MreRecord, MelObject, genFid, RecHeader, null4, \
     attr_csv_struct
 from .exception import AbstractError
@@ -198,7 +199,7 @@ class _HandleAliases(CsvParser):
 
     def _parse_line(self, csv_fields):
         if self._grup_index is not None:
-            top_grup_sig = csv_fields[self._grup_index].encode(u'ascii')
+            top_grup_sig = str_to_sig[csv_fields[self._grup_index]]
         else:
             top_grup_sig = self._parser_sigs[0] # one rec type
         longid = self._coerce_fid(csv_fields[self._id_indexes[0]],
@@ -464,7 +465,7 @@ class ActorFactions(_AParser):
         aid = self._coerce_fid(amod, aobj)
         lfid = self._coerce_fid(fmod, fobj)
         rank = int(rank)
-        top_grup_sig = top_grup.encode(u'ascii')
+        top_grup_sig = str_to_sig[top_grup]
         if self._called_from_patcher:
             ret_obj = MreRecord.type_class[top_grup_sig].getDefault(u'factions')
             ret_obj.faction = lfid
@@ -890,7 +891,7 @@ class ItemStats(_HandleAliases):
         """Reads stats from specified text file."""
         top_grup, modName, objectStr = csv_fields[:3]
         longid = self._coerce_fid(modName, objectStr) # blow and exit on header
-        top_grup_sig = top_grup.encode(u'ascii')
+        top_grup_sig = str_to_sig[top_grup]
         attrs = self.sig_stats_attrs[top_grup_sig]
         eid_or_next = 3 + self._called_from_patcher
         attr_dex = {att: dex for att, dex in
@@ -1145,7 +1146,7 @@ class _UsesEffectsMixin(_HandleAliases):
             rec_type = MreRecord.type_class[self._parser_sigs[0]]
             eff = rec_type.getDefault(u'effects')
             effects.append(eff)
-            eff.effect_sig = eff_name.encode(u'ascii')
+            eff.effect_sig = str_to_sig[eff_name]
             eff.magnitude = magnitude
             eff.area = area
             eff.duration = duration
@@ -1176,7 +1177,7 @@ class _UsesEffectsMixin(_HandleAliases):
                 if sevisuals == u'' or sevisuals is None:
                     sevisuals = null4
                 else:
-                    sevisuals = sevisuals.encode(u'ascii')
+                    sevisuals = str_to_sig[sevisuals]
             else: # pack int to bytes
                 sevisuals = __packer(sevisuals)
             sevisual = sevisuals

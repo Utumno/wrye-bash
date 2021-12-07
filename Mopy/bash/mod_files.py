@@ -29,7 +29,7 @@ from zlib import decompress as zlib_decompress, error as zlib_error
 
 from . import bolt, bush, env, load_order
 from .bolt import deprint, SubProgress, structs_cache, struct_error, decoder, \
-    sig_to_str
+    sig_to_str, str_to_sig
 from .brec import MreRecord, ModReader, RecordHeader, RecHeader, null1, \
     TopGrupHeader, MobBase, MobDials, MobICells, MobObjects, MobWorlds, \
     unpack_header, FastModReader, Subrecord
@@ -395,10 +395,10 @@ class ModFile(object):
                               else nonhostile_recs)
                 target_set.add(record.eid)
                 try:
-                    target_set.add(unpack_eid(record.eid.encode(u'ascii'))[0])
+                    target_set.add(unpack_eid(str_to_sig[record.eid])[0])
                 except struct_error:
-                    raise ModError(None, u'Failed to unpack EDID for '
-                                         u'%r' % record)
+                    raise ModError(None, f'Failed to unpack EDID for '
+                                         f'{record!r}')
                 m_names[record.eid] = record.full or u'' # could this be None?
         self.cached_mgef_school = m_school
         self.cached_mgef_hostiles = m_hostiles - nonhostile_recs | hostile_recs
