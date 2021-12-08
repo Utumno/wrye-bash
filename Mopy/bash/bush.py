@@ -60,20 +60,19 @@ def reset_bush_globals():
 def _print_found_games(game_dict):
     """Formats and prints the specified dictionary of game detections in a
     human-readable way."""
+    msgs = []
     for found_name, found_paths in dict_sort(game_dict):
         if len(found_paths) == 1:
             # Single path, just print the name and path
-            deprint(u' - %s: %s' % (found_name, found_paths[0]))
+            msgs.append(f' - {found_name}: {found_paths[0]}')
         else:
             # Multiple paths, format as a multiline list
-            deprint(u' - %s: [%s,' % (found_name, found_paths[0]))
-            remaining_paths = found_paths[1:]
+            msg = f' - {found_name}: [{found_paths[0]},\n'
             space_padding = u' ' * (6 + len(found_name))
-            for i, found_path in enumerate(remaining_paths):
-                if i + 1 < len(remaining_paths):
-                    deprint(u'%s%s,' % (space_padding, found_path))
-                else:
-                    deprint(u'%s%s]' % (space_padding, found_path))
+            msg += '\n'.join(f'{space_padding}{p},' for p in found_paths[1:-1])
+            msg += f'\n{space_padding}{found_paths[-1]}]'
+            msgs.append(msg)
+    deprint('\n'.join(msgs))
 
 def _supportedGames():
     """Set games supported by Bash and return their paths from the registry."""
