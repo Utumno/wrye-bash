@@ -216,7 +216,6 @@ class _StdImageButton(ImageButton): ##: deprecate? makes us wx dependent
     """Base class for ImageButtons that come with a standard wx-supplied
     image."""
     _wx_icon_key = 'OVERRIDE'
-    _dip_size = (16, 16)
 
     def __init__(self, parent, **kwargs):
         super(_StdImageButton, self).__init__(parent, **kwargs)
@@ -249,7 +248,6 @@ class QuitButton(_StdImageButton, CancelButton):
     """Similar to CancelButton, also has a standard image shown on it."""
     _default_label =_(u'Quit')
     _wx_icon_key = 'ART_ERROR'
-    _dip_size = (32, 32)
 
 class ReloadButton(ImageButton):
     """An image button with no text that displays two arrows in a circle. Used
