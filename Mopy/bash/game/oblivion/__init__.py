@@ -112,9 +112,9 @@ class OblivionGameInfo(PatchGame):
         redate_dict = defaultdict(lambda: 1136066400, { # '2006-01-01',
             u'Oblivion - Voices1.bsa': 1104616800, # '2005-01-02'
             u'Oblivion - Voices2.bsa': 1104703200, # '2005-01-03'
-            u'Oblivion - Meshes.bsa': 1104789600, # '2005-01-04'
-            u'Oblivion - Sounds.bsa': 1104876000, # '2005-01-05'
-            u'Oblivion - Misc.bsa': 1104962400, # '2005-01-06'
+            u'Oblivion - Meshes.bsa': 1104789600,  # '2005-01-04'
+            u'Oblivion - Sounds.bsa': 1104876000,  # '2005-01-05'
+            u'Oblivion - Misc.bsa': 1104962400,    # '2005-01-06'
         })
         valid_versions = {0x67}
 
