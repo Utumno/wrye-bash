@@ -33,7 +33,7 @@ from .basic_elements import MelBase, MelFid, MelGroup, MelGroups, MelLString, \
     MelStrings, MelUInt8, MelFidList
 from .utils_constants import _int_unpacker, FID, null1
 from ..bolt import Flags, encode, struct_pack, struct_unpack, unpack_byte, \
-    dict_sort
+    dict_sort, TrimmedFlags
 from ..exception import ModError, ModSizeError
 
 #------------------------------------------------------------------------------
@@ -56,8 +56,7 @@ class MelActionFlags(MelUInt32Flags):
 #------------------------------------------------------------------------------
 class MelActivateParents(MelGroup):
     """XAPD/XAPR (Activate Parents) subrecords for REFR records."""
-    _ap_flags = Flags.from_names(u'parent_activate_only',
-                                 unknown_is_unused=True)
+    _ap_flags = TrimmedFlags.from_names(u'parent_activate_only')
 
     def __init__(self):
         super(MelActivateParents, self).__init__(u'activate_parents',
@@ -253,12 +252,12 @@ class MelCtdaFo3(MelCtda):
 
 #------------------------------------------------------------------------------
 class MelDecalData(MelOptStruct):
-    _decal_data_flags = Flags.from_names(
+    _decal_data_flags = TrimmedFlags.from_names(
         u'parallax',
         u'alphaBlending',
         u'alphaTesting',
         u'noSubtextures', # Skyrim+, will just be ignored for earlier games
-    unknown_is_unused=True)
+    )
 
     def __init__(self):
         super(MelDecalData, self).__init__(b'DODT',

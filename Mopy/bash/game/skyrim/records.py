@@ -23,7 +23,8 @@
 """This module contains the skyrim record classes."""
 from collections import OrderedDict
 from ... import brec, bolt, bush
-from ...bolt import Flags, struct_pack, structs_cache, unpack_str16
+from ...bolt import Flags, struct_pack, structs_cache, unpack_str16, \
+    TrimmedFlags
 from ...brec import MelRecord, MelObject, MelGroups, MelStruct, FID, \
     MelGroup, MelString, MreLeveledListBase, MelSet, MelFid, MelNull, \
     MelOptStruct, MelFids, MreHeaderBase, MelBase, MelFidList, MelRelations, \
@@ -101,7 +102,7 @@ class MelBipedObjectData(MelStruct):
     _bp_flags = BipedFlags()
 
     # Legacy Flags, (For BODT subrecords) - #4 is the only one not discarded.
-    LegacyFlags = Flags.from_names(
+    LegacyFlags = TrimmedFlags.from_names( ##: TrimmedFlags mirrors xEdit, though it doesn't make sense
         u'modulates_voice', # From ARMA
         u'unknown_2',
         u'unknown_3',
@@ -109,8 +110,7 @@ class MelBipedObjectData(MelStruct):
         u'non_playable', # From ARMO
         u'unknown_6',
         u'unknown_7',
-        u'unknown_8',
-    unknown_is_unused=True) # mirrors xEdit, though it doesn't make sense
+        u'unknown_8')
 
     ArmorTypeFlags = Flags.from_names('light_armor', 'heavy_armor', 'clothing')
 
@@ -1726,8 +1726,7 @@ class MreCell(MelRecord):
         (10, 'lightFadeDistances'),
     )
 
-    _land_flags = Flags.from_names(u'quad1', u'quad2', u'quad3', u'quad4',
-                                   unknown_is_unused=True)
+    _land_flags = TrimmedFlags.from_names('quad1', 'quad2', 'quad3', 'quad4')
 
     melSet = MelSet(
         MelEdid(),
@@ -2534,12 +2533,8 @@ class MreIdle(MelRecord):
     """Idle Animation."""
     rec_sig = b'IDLE'
 
-    IdleTypeFlags = Flags.from_names(
-        u'parent',
-        u'sequence',
-        u'noAttacking',
-        u'blocking',
-    unknown_is_unused=True)
+    IdleTypeFlags = TrimmedFlags.from_names(u'parent', u'sequence',
+                                            u'noAttacking', u'blocking')
 
     melSet = MelSet(
         MelEdid(),
@@ -4082,12 +4077,12 @@ class _MelTintMasks(MelGroups):
         )
         self._init_sigs = {b'TINI'}
 
-class _RaceDataFlags1(Flags):
+class _RaceDataFlags1(TrimmedFlags):
     """The Overlay/Override Head Part List flags are mutually exclusive."""
+    __slots__ = []
     def _clean_unused_flags(self):
         if self.overlay_head_part_list and self.override_head_part_list:
             self.overlay_head_part_list = False
-        super(_RaceDataFlags1, self)._clean_unused_flags()
 
 class MreRace(MelRecord):
     """Race."""
@@ -4112,12 +4107,11 @@ class MreRace(MelRecord):
         (1, u'non_hostile'),
         (4, u'allow_mounted_combat'),
     )
-    _equip_type_flags = Flags.from_names(
+    _equip_type_flags = TrimmedFlags.from_names(
         u'et_hand_to_hand_melee', u'et_one_hand_sword', u'et_one_hand_dagger',
         u'et_one_hand_axe', u'et_one_hand_mace', u'et_two_hand_sword',
         u'et_two_hand_axe', u'et_bow', u'et_staff', u'et_spell', u'et_shield',
-        u'et_torch', u'et_crossbow',
-    unknown_is_unused=True)
+        u'et_torch', u'et_crossbow')
 
     melSet = MelSet(
         MelEdid(),

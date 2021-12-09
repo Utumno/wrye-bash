@@ -1003,10 +1003,9 @@ class Flags(object):
     """Represents a flag field."""
     __slots__ = [u'_field']
     _names = {}
-    _unknown_is_unused = False
 
     @classmethod
-    def from_names(cls, *names, unknown_is_unused=False):
+    def from_names(cls, *names):
         """Return Flag subtype with specified names to index dictionary.
         Indices range may not be contiguous.
         Names are either strings or (index,name) tuples.
@@ -1019,18 +1018,16 @@ class Flags(object):
             elif flg_name: #--skip if "name" is 0 or None
                 namesDict[flg_name] = index
         class __Flags(cls):
+            __slots__ = []
             _names = namesDict
-            _unknown_is_unused = unknown_is_unused
         return __Flags
 
     #--Generation
     def __init__(self, value=0):
-        """Initialize. Attrs, if present, is mapping of attribute names to
-        indices. unknown_is_unused will discard unknown flags."""
+        """Set the internal int value."""
         object.__setattr__(self, u'_field', int(value))
-        self._clean_unused_flags()
 
-    def __call__(self,newValue=None):
+    def __call__(self,newValue=None): ##: ideally drop in favor of copy (explicit)
         """Returns a clone of self, optionally with new value."""
         if newValue is not None:
             return self.__class__(int(newValue))
@@ -1042,22 +1039,15 @@ class Flags(object):
         memo[id(self)] = newFlags ##: huh?
         return newFlags
 
-    def _clean_unused_flags(self):
-        """Removes all unknown flags if that option was set in __init__."""
-        if self.__class__._unknown_is_unused:
-            final_flags = 0
-            for flg_name, flg_idx in self.__class__._names.items():
-                if getattr(self, flg_name):
-                    final_flags |= 1 << flg_idx
-            self._field = final_flags
+    def __copy__(self):
+        return self.__class__(self._field)
 
     #--As hex string
     def hex(self):
         """Returns hex string of value."""
-        return u'%08X' % (self._field,)
+        return f'{self._field:08X}'
     def dump(self):
         """Returns value for packing"""
-        self._clean_unused_flags()
         return self._field
 
     #--As int
@@ -1083,8 +1073,7 @@ class Flags(object):
     def __getattr__(self, attr_key):
         """Get value by flag name. E.g. flags.isQuestItem"""
         try:
-            names = self.__class__._names
-            index = names[attr_key]
+            index = self.__class__._names[attr_key]
             return (object.__getattribute__(self, u'_field') >> index) & 1 == 1
         except KeyError:
             raise AttributeError(attr_key)
@@ -1140,6 +1129,26 @@ class Flags(object):
         """Shows all set flags."""
         all_flags = u', '.join(self.getTrueAttrs()) if self._field else u'None'
         return u'0x%s (%s)' % (self.hex(), all_flags)
+
+class TrimmedFlags(Flags):
+    """Flag subtype that will discard unknown flags on __init__ and dump."""
+    __slots__ = []
+
+    def __init__(self, value=0):
+        super().__init__(value)
+        self._clean_unused_flags()
+
+    def _clean_unused_flags(self):
+        """Removes all unknown flags if that option was set in __init__."""
+        final_flags = 0
+        for flg_name, flg_idx in self.__class__._names.items():
+            if getattr(self, flg_name):
+                final_flags |= 1 << flg_idx
+        self._field = final_flags
+
+    def dump(self):
+        self._clean_unused_flags()
+        super(TrimmedFlags, self).dump()
 
 #------------------------------------------------------------------------------
 class DataDict(object):

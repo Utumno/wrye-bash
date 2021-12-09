@@ -26,7 +26,7 @@ file must be imported till then."""
 from collections import OrderedDict
 
 from ... import brec, bush
-from ...bolt import Flags, structs_cache
+from ...bolt import Flags, structs_cache, TrimmedFlags
 from ...brec import MelRecord, MelGroups, MelStruct, FID, MelGroup, \
     MelString, MelSet, MelFid, MelOptStruct, MelFids, MreHeaderBase, \
     MelBase, MelFidList, MreGmstBase, MelBodyParts, MelMODS, MelFactions, \
@@ -57,7 +57,7 @@ if brec.MelModel is None:
                     (b'MOD4', b'MO4B', b'MO4T', b'MO4S'))
 
         _facegen_model_flags = Flags.from_names(u'head', u'torso',
-                                                u'rightHand', u'leftHand', )
+                                                u'rightHand', u'leftHand')
 
         def __init__(self, attr=u'model', index=0, with_facegen_flags=True):
             """Initialize. Index is 0,2,3,4 for corresponding type id."""
@@ -134,13 +134,12 @@ class MreActor(MreActorBase):
 class MelBipedData(MelStruct):
     """Handles the common BMDT (Biped Data) subrecord."""
     _biped_flags = BipedFlags.from_names()
-    _general_flags = Flags.from_names(
+    _general_flags = TrimmedFlags.from_names(
         fnv_only((2, u'hasBackpack')),
         fnv_only((3, u'medium_armor')),
         (5, u'powerArmor'),
         (6, u'notPlayable'),
-        (7, u'heavyArmor'),
-     unknown_is_unused=True)
+        (7, u'heavyArmor'))
 
     def __init__(self):
         super(MelBipedData, self).__init__(b'BMDT', [u'I', u'B', u'3s'],
@@ -161,8 +160,7 @@ class MelConditions(MelGroups):
 class MelDestructible(MelGroup):
     """Represents a set of destruct record."""
 
-    MelDestVatsFlags = Flags.from_names(u'vatsTargetable',
-                                        unknown_is_unused=True)
+    MelDestVatsFlags = TrimmedFlags.from_names(u'vatsTargetable')
     MelDestStageFlags = Flags.from_names(u'capDamage', u'disable', u'destroy')
 
     def __init__(self, attr=u'destructible'):
@@ -789,8 +787,7 @@ class MreCell(MelRecord):
         'fogPower'
     )
 
-    _land_flags = Flags.from_names(u'quad1', u'quad2', u'quad3',
-        u'quad4', unknown_is_unused=True)
+    _land_flags = TrimmedFlags.from_names('quad1', 'quad2', 'quad3', 'quad4')
 
     melSet = MelSet(
         MelEdid(),
@@ -832,8 +829,7 @@ class MreClas(MelRecord):
     """Class."""
     rec_sig = b'CLAS'
 
-    _flags = Flags.from_names(u'class_playable', u'class_guard',
-                              unknown_is_unused=True)
+    _flags = TrimmedFlags.from_names(u'class_playable', u'class_guard')
 
     melSet = MelSet(
         MelEdid(),
@@ -1524,12 +1520,8 @@ class MreImgs(MelRecord):
     """Image Space."""
     rec_sig = b'IMGS'
 
-    _dnam_flags = Flags.from_names(
-        u'saturation',
-        u'contrast',
-        u'tint',
-        u'brightness',
-    unknown_is_unused=True)
+    _dnam_flags = TrimmedFlags.from_names(u'saturation', u'contrast', u'tint',
+                                          u'brightness')
 
     # Struct elements shared by all three DNAM alternatives. Note that we can't
     # just use MelTruncatedStruct, because upgrading the format breaks interior
@@ -2140,7 +2132,7 @@ class MrePack(MelRecord):
         None,'alwaysSneak','allowSwimming','allowFalls',
         'unequipArmor','unequipWeapons','defensiveCombat','useHorse',
         'noIdleAnims')
-    _fallout_behavior_flags = Flags.from_names(
+    _fallout_behavior_flags = TrimmedFlags.from_names(
         u'hellos_to_player',
         u'random_conversations',
         u'observe_combat_behavior',
@@ -2149,8 +2141,7 @@ class MrePack(MelRecord):
         u'friendly_fire_comments',
         u'aggro_radius_behavior',
         u'allow_idle_chatter',
-        u'avoid_radiation',
-    unknown_is_unused=True)
+        u'avoid_radiation')
     _dialogue_data_flags = Flags.from_names(
         (0, u'no_headtracking'),
         (8, u'dont_control_target_movement'),
@@ -2937,6 +2928,7 @@ class MreSpel(MelRecord):
 
     class SpellFlags(Flags):
         """For SpellFlags, immuneToSilence activates bits 1 AND 3."""
+        __slots__ = []
         def __setitem__(self,index,value):
             setter = Flags.__setitem__
             setter(self,index,value)
@@ -3309,15 +3301,14 @@ class MreWrld(MelRecord):
     _flags = Flags.from_names('smallWorld', 'noFastTravel',
                               'oblivionWorldspace', None, 'noLODWater',
                               'noLODNoise', 'noAllowNPCFallDamage')
-    pnamFlags = Flags.from_names(
+    pnamFlags = TrimmedFlags.from_names(
         (0, u'useLandData'),
         (1, u'useLODData'),
         (2, u'useMapData'),
         (3, u'useWaterData'),
         (4, u'useClimateData'),
         (5, u'useImageSpaceData'),
-        (7, u'needsWaterAdjustment'),
-    unknown_is_unused=True)
+        (7, u'needsWaterAdjustment'))
 
     melSet = MelSet(
         MelEdid(),

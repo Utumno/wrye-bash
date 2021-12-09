@@ -99,9 +99,10 @@ def getFormIndices(form_id):
 # sense because it also marks all 32 of its possible flags as known
 class BipedFlags(Flags):
     """Biped flags element. Includes biped flag set by default."""
+    __slots__ = []
 
     @classmethod
-    def from_names(cls, *names, unknown_is_unused=False):
+    def from_names(cls, *names):
         from .. import bush
         flag_names = *bush.game.Esp.biped_flag_names, *names
         return super(BipedFlags, cls).from_names(*flag_names)
