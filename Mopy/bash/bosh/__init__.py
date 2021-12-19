@@ -2066,7 +2066,7 @@ def _lo_cache(lord_func):
 def _bsas_from_ini(bsa_ini, bsa_key, available_bsas):
     """Helper method for get_bsa_lo and friends. Retrieves BSA paths from an
     INI file."""
-    r_bsas = (GPath_no_norm(x.strip()) for x in
+    r_bsas = (x.strip() for x in
               bsa_ini.getSetting(u'Archive', bsa_key, u'').split(u','))
     return (available_bsas[b] for b in r_bsas if b in available_bsas)
 
@@ -2923,7 +2923,7 @@ class ModInfos(FileInfos):
         can cache it during early boot for massive speedups. The real solution
         to this is a full BSA LO cache though - see #233 as well."""
         # We'll be removing BSAs from here once we've given them a position
-        available_bsas = dict(bsaInfos.items())
+        available_bsas = FNDict(bsaInfos.items())
         bsa_lo = OrderedDict() # Final load order, -1 means it came from an INI
         bsa_cause = {} # Reason each BSA was loaded
         # BSAs from INI files load first
@@ -2942,7 +2942,7 @@ class ModInfos(FileInfos):
         res_ov_key = bush.game.Ini.resource_override_key
         if res_ov_key:
             # Start out with the defaults set by the engine
-            res_ov_bsas = [available_bsas[GPath_no_norm(b)] for b in
+            res_ov_bsas = [available_bsas[b] for b in
                            bush.game.Ini.resource_override_defaults]
             res_ov_cause = f'{bush.game.Ini.dropdown_inis[0]} ({res_ov_key})'
             # Then look if any INIs overwrite them
