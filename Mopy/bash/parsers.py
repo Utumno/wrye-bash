@@ -82,14 +82,16 @@ class _TextParser(object):
         raise AbstractError(f'{type(self)} must implement _header_row')
 
     # Load plugin -------------------------------------------------------------
-    def _load_plugin(self, mod_info, keepAll=True, target_types=None):
-        """Loads the specified record types in the specified ModInfo and
-        returns the result.
+    def _load_plugin(self, mod_info, keepAll=True, target_types=None,
+                     load_fact=None):
+        """Load the specified record types in the specified ModInfo and
+        return the result.
 
         :param mod_info: The ModInfo object to read.
         :param target_types: An iterable yielding record signatures to load.
         :return: An object representing the loaded plugin."""
-        mod_file = ModFile(mod_info, self._load_factory(keepAll, target_types))
+        mod_file = ModFile(mod_info, load_fact or self._load_factory(
+            keepAll, target_types))
         mod_file.load(do_unpack=True)
         return mod_file
 
@@ -508,8 +510,8 @@ class ActorLevels(_HandleAliases):
         loadFactory = self._load_factory(keepAll=False)
         for modName in (*modInfo.masterNames, modInfo.ci_key):
             if modName in gotLevels: continue
-            modFile = ModFile(bosh.modInfos[modName],loadFactory)
-            modFile.load(True)
+            modFile = self._load_plugin(bosh.modInfos[modName],
+                                        load_fact=loadFactory)
             for rfid, record in modFile.tops[b'NPC_'].iter_present_records():
                 items = zip((u'eid', u'flags.pcLevelOffset', u'level_offset',
                           u'calcMin', u'calcMax'), (record.eid,

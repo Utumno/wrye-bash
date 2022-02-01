@@ -2584,7 +2584,7 @@ class InstallersList(balt.UIList):
                 if outDir.exists():
                     if balt.askYes(progress.dialog, _(
                         u"The project '%s' already exists.  Overwrite "
-                        u"with '%s'?") % (omod.body, om_name)):
+                        u"with '%s'?") % (omod.sbody, om_name)):
                         env.shellDelete(outDir, parent=self,
                                         recycle=True)  # recycle
                     else: continue

@@ -864,7 +864,7 @@ class ModInfo(FileInfo):
     def getStringsPaths(self, lang=u'English'):
         """If Strings Files are available as loose files, just point to
         those, otherwise extract needed files from BSA if needed."""
-        baseDirJoin = self.getPath().head.join
+        baseDirJoin = self.info_dir.join
         extract = set()
         paths = set()
         #--Check for Loose Files first
@@ -891,14 +891,14 @@ class ModInfo(FileInfo):
                 if not extract:
                     break
             else:
-                msg = (u'This plugin is localized, but the following strings '
-                       u'files seem to be missing:\n%s' %
-                       u'\n'.join(u' - %s' % e for e in extract))
+                msg = ('This plugin is localized, but the following strings '
+                       'files seem to be missing:\n%s' % u'\n'.join(
+                    f' - {e}' for e in extract))
                 if potential_bsas:
                     msg += (u'\nThe following BSAs were scanned (based on '
                             u'name and INI settings), but none of them '
                             u'contain the missing files:\n%s' % u'\n'.join(
-                        u' - %s' % bsa_inf for bsa_inf in potential_bsas))
+                        f' - {bsa_inf}' for bsa_inf in potential_bsas))
                 else:
                     msg += (u'\nNo BSAs were found that could contain the '
                             u'missing strings - this is bad, validate your '
@@ -911,8 +911,7 @@ class ModInfo(FileInfo):
                     bsa_inf.extract_assets(assets, out_path.s)
                 except BSAError as e:
                     raise ModError(self.ci_key,
-                                   u'Could not extract Strings File from '
-                                   u"'%s': %s" % (bsa_inf, e))
+                      f"Could not extract Strings File from '{bsa_inf}': {e}")
                 paths.update(map(out_path.join, assets))
         return paths
 
@@ -2648,7 +2647,7 @@ class ModInfos(FileInfos):
         dir_added, dir_removed = read_dir_tags(mname)
         has_tags_source |= bool(dir_added | dir_removed)
         tags_file = u"'%s/BashTags/%s'" % (bush.game.mods_dir,
-                                           mname.body + u'.txt')
+                                           mname.sbody + u'.txt')
         if dir_added:
             tagList = _tags(_(u'Added by %s: ') % tags_file, sorted(dir_added),
                             tagList)

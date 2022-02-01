@@ -26,7 +26,6 @@ points to BashFrame.modList singleton."""
 
 import copy
 import io
-import re
 import traceback
 from collections import defaultdict, OrderedDict
 from itertools import chain
@@ -84,8 +83,8 @@ class _LoadLink(ItemLink):
     def _load_fact(self, keepAll=True):
         return LoadFactory(keepAll, by_sig=self._load_sigs)
 
-    def _load_mod(self, mod_info, keepAll=True, **kwargs):
-        loadFactory = self._load_fact(keepAll=keepAll)
+    def _load_mod(self, mod_info, keepAll=True, load_fact=None, **kwargs):
+        loadFactory = load_fact or self._load_fact(keepAll=keepAll)
         modFile = ModFile(mod_info, loadFactory)
         modFile.load(True, **kwargs)
         return modFile
@@ -1451,9 +1450,8 @@ class Mod_DecompileAll(_NotObLink, _LoadLink):
                 if scpt_grp.getNumRecords(includeGroups=False):
                     master_factory = self._load_fact(keepAll=False)
                     for master in modFile.tes4.masters:
-                        masterFile = ModFile(bosh.modInfos[master],
-                                             master_factory)
-                        masterFile.load(True)
+                        masterFile = self._load_mod(bosh.modInfos[master],
+                                             load_fact=master_factory)
                         for rfid, r in masterFile.tops[b'SCPT'].iter_present_records():
                             id_text[rfid] = r.script_source
                     newRecords = []
@@ -1596,14 +1594,12 @@ class Mod_FlipMasters(OneItemLink, _Esm_Esl_Flip):
     @property
     def _already_flagged(self): return not self.toEsm
 
-    def _initData(self, window, selection,
-            __reEspExt=re.compile(r'\.esp(.ghost)?$', re.I | re.U)):
+    def _initData(self, window, selection):
         present_mods = window.data_store
         modinfo_masters = present_mods[selection[0]].masterNames
         if len(selection) == 1 and len(modinfo_masters) > 1:
-            self.espMasters = [master for master in modinfo_masters if
-                               master in present_mods and __reEspExt.search(
-                                   master.s)]
+            self.espMasters = [m for m in modinfo_masters if
+                               m in present_mods and m.cext == '.esp']
             self._do_enable = bool(self.espMasters)
         else:
             self.espMasters = []
