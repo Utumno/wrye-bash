@@ -96,8 +96,8 @@ class Mod_FullLoad(OneItemLink, _LoadLink):
     _load_sigs = tuple(MreRecord.type_class) # all available (decoded) records
 
     def Execute(self):
-        with balt.Progress(_(u'Loading:') + u'\n%s'
-                % self._selected_item.stail) as progress:
+        msg = _(u'Loading:') + f'\n{self._selected_item}'
+        with balt.Progress(msg) as progress:
             bolt.deprint(MreRecord.type_class)
             try:
                 self._load_mod(self._selected_info, keepAll=False,

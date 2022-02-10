@@ -835,7 +835,7 @@ class ModInfo(FileInfo):
         is_attached = re.compile(bsa_pattern, re.I | re.U).match
         # bsaInfos must be updated and contain all existing bsas
         if bsa_infos is None: bsa_infos = bsaInfos
-        return [i for b, i in bsa_infos.items() if is_attached(b.s)]
+        return [binf for k, binf in bsa_infos.items() if is_attached(k.s)]
 
     def hasBsa(self):
         """Returns True if plugin has an associated BSA."""
@@ -927,8 +927,8 @@ class ModInfo(FileInfo):
         # master (e.g. Skyrim.esm -> Skyrim - Textures0.bsa).
         heuristics = self._bsa_heuristics
         last_index = len(heuristics) # last place to sort unwanted BSAs
-        def _bsa_heuristic(b_name):
-            b_lower = b_name.ci_key.csbody
+        def _bsa_heuristic(binf):
+            b_lower = binf.ci_key.csbody
             for i, h in heuristics:
                 if h in b_lower:
                     return i
@@ -2974,10 +2974,10 @@ class ModInfos(FileInfos):
         # BSAs loaded based on plugin name load in the middle of the pack
         if for_plugins is None: for_plugins = list(self)
         for i, p in enumerate(for_plugins):
-            for b in self[p].mod_bsas(available_bsas):
-                bsa_lo[b] = i
-                bsa_cause[b] = p.s
-                del available_bsas[b.ci_key]
+            for binf in self[p].mod_bsas(available_bsas):
+                bsa_lo[binf] = i
+                bsa_cause[binf] = p.s
+                del available_bsas[binf.ci_key]
         return bsa_lo, bsa_cause
 
     def get_active_bsas(self):
