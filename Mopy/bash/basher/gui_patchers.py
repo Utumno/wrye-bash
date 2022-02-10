@@ -777,8 +777,9 @@ class _TweakPatcherPanel(_ChoiceMenuMixin, _PatcherPanel):
                 self.gTweakList.lb_check_at_index(index, tweakie.isEnabled)
                 self.gTweakList.lb_set_label_at_index(index, tweakie.getListLabel())
             except KeyError: pass # no such key don't spam the log
-            except: bolt.deprint('Error importing Bashed Patch configuration. '
-                                 f'Item {tweakie} skipped.', traceback=True)
+            except: ##: needed??
+                bolt.deprint('Error importing Bashed Patch configuration. '
+                             f'Item {tweakie} skipped.', traceback=True)
 
     def get_patcher_instance(self, patch_file):
         enabledTweaks = [t for t in self._all_tweaks if t.isEnabled]
