@@ -528,9 +528,8 @@ class _Mod_Groups_Import(ItemLink):
         textPath = self._askOpen(_(u'Import names from:'), textDir, u'',
                                  u'*_Groups.csv')
         if not textPath: return
-        (textDir,textName) = textPath.headTail
         #--Extension error check
-        if textName.cext != u'.csv':
+        if textPath.cext != u'.csv':
             self._showError(_(u'Source file must be a csv file.'))
             return
         #--Import
@@ -1679,15 +1678,14 @@ class Mod_Fids_Replace(OneItemLink):
         textPath = self._askOpen(_(u'Form ID mapper file:'), textDir, u'',
                                  u'*_Formids.csv')
         if not textPath: return
-        (textDir,textName) = textPath.headTail
         #--Extension error check
-        if textName.cext != u'.csv':
+        if textPath.cext != u'.csv':
             self._showError(_(u'Source file must be a csv file.'))
             return
         #--Export
         with balt.Progress(_(u'Import Form IDs')) as progress:
             replacer = self._parser()
-            progress(0.1,_(u'Reading') + u' %s.' % textName)
+            progress(0.1, _(u'Reading') + f' {textPath.stail}.')
             replacer.read_csv(textPath)
             progress(0.2, _(u'Applying to') + u' %s.' % self._selected_item)
             changed = replacer.updateMod(self._selected_info)
@@ -1753,7 +1751,6 @@ class _Mod_Export_Link(_Import_Export_Link, _CsvExport_Link):
         textName = self.selected[0].root + self.__class__.csvFile
         textPath = self._csv_out(textName)
         if not textPath: return
-        (textDir, textName) = textPath.headTail
         #--Export
         with balt.Progress(self.__class__.progressTitle) as progress:
             parser = self._parser()
@@ -1762,7 +1759,7 @@ class _Mod_Export_Link(_Import_Export_Link, _CsvExport_Link):
             for index,(fileName,fileInfo) in enumerate(self.iselected_pairs()):
                 readProgress(index, _(u'Reading') + u' %s.' % fileName)
                 parser.readFromMod(fileInfo)
-            progress(0.8, _(u'Exporting to') + u' %s.' % textName)
+            progress(0.8, _(u'Exporting to') + f' {textPath.stail}.')
             parser.write_text_file(textPath)
             progress(1.0, _(u'Done.'))
 
@@ -1782,14 +1779,14 @@ class _Mod_Import_Link(_Import_Export_Link, OneItemLink):
         return _(u'Mod/Text File') + u'|*' + self.__class__.csvFile + u';*' \
                + espml + u';*.ghost'
 
-    def _import(self, ext, textDir, textName, textPath):
+    def _import(self, ext, textPath):
         with balt.Progress(self.__class__.progressTitle) as progress:
             parser = self._parser()
-            progress(0.1, _(u'Reading') + u' %s.' % textName)
+            progress(0.1, _(u'Reading') + f' {textPath.stail}.')
             if ext == u'.csv':
                 parser.read_csv(textPath)
             else:
-                srcInfo = bosh.ModInfo(GPath(textDir).join(textName))
+                srcInfo = bosh.ModInfo(textPath)
                 parser.readFromMod(srcInfo)
             progress(0.2, _(u'Applying to') + f' {self._selected_item}.')
             changed = parser.writeToMod(self._selected_info)
@@ -1821,9 +1818,8 @@ class _Mod_Import_Link(_Import_Export_Link, OneItemLink):
         textPath = self._askOpen(self.__class__.askTitle, textDir, textName,
                                  self._wildcard)
         if not textPath: return
-        (textDir, textName) = textPath.headTail
         #--Extension error check
-        ext = textName.cext
+        ext = textPath.cext
         if ext not in supportedExts:
             plugin_exts = u'or '.join(sorted(bush.game.espm_extensions
                                              | {u'.ghost'}))
@@ -1835,7 +1831,7 @@ class _Mod_Import_Link(_Import_Export_Link, OneItemLink):
             self._showError(csv_err)
             return
         #--Import
-        changed = self._import(ext, textDir, textName, textPath)
+        changed = self._import(ext, textPath)
         #--Log
         self.show_change_log(changed, self._selected_item)
 
@@ -2287,9 +2283,8 @@ class Mod_EditorIds_Import(_Mod_Import_Link):
         textPath = self._askOpen(self.__class__.askTitle, textDir,
                                  textName, self._wildcard)
         if not textPath: return
-        (textDir,textName) = textPath.headTail
         #--Extension error check
-        if textName.cext != u'.csv':
+        if textPath.cext != u'.csv':
             self._showError(_(u'Source file must be a csv file.'))
             return
         #--Import
@@ -2298,7 +2293,7 @@ class Mod_EditorIds_Import(_Mod_Import_Link):
         try:
             with balt.Progress(self.__class__.progressTitle) as progress:
                 editorIds = self._parser(questionableEidsSet, badEidsList)
-                progress(0.1, _(u'Reading') + u' %s.' % textName)
+                progress(0.1, _(u'Reading') + f' {textPath.stail}.')
                 editorIds.read_csv(textPath)
                 progress(0.2, _(u'Applying to %s.') % self._selected_item)
                 changed = editorIds.writeToMod(self._selected_info)
